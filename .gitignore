@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+.pnpm-store/
+.next/
+coverage/
+playwright-report/
+test-results/
+dist/
+.data/
+spike-results/raw/upriver-usage.json
+*.tsbuildinfo
+.DS_Store
+.claude/

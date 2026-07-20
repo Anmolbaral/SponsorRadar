@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "description": "Captured Upriver pilot files used by the Phase 1 golden replay. Volatile signed profile-image query strings are removed; all other hash drift requires deliberate review.",
+  "files": [
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/config.json",
+      "sha256": "6c5ab881d23ce2129f7afbed7aabccd5135e0428f8df3a9c5e458bfb0db8e0c1"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/verification.json",
+      "sha256": "30b5c2f97c5f3f2718b52d7c00cdf644d2256d6e9878e0724dae7d360f36fb8b"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/creator-profiles.json",
+      "sha256": "7a7de4df8739f825f5924281eeefb69218b34658fb7f15037b5e2adde4820326"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/peer-dave2d-strict-90.json",
+      "sha256": "350b3f9721557a78c2ed207c9257922d43d0a57980d8fb6d11f76343aae244d3"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/peer-sarahgrace-strict-90.json",
+      "sha256": "2bda836b98d44aeeffaf6ba5b1134949ef5ac3efa010f90a7d4746958b6b7832"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/peer-haylsworld-strict-90.json",
+      "sha256": "cd508c03ce9135a6f0799a4d3ca877dfaeeffcd010a4c6f8e2d2f9d40c7b2afd"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-2026-07-19/raw/creator-profiles.json",
+      "sha256": "ec69a7dd4654915c6e6b6eaca149a9b94fb01c709de6fea726f525c0e37fc75e"
+    },
+    {
+      "path": "experiments/tech-product-reviewers-2026-07-19/raw/target-uravgconsumer-sponsors-365.json",
+      "sha256": "941c77c4dbb2a43b1a9fb1db0412f04104726c377734cbe94489f46af2b06397"
+    }
+  ]
+}

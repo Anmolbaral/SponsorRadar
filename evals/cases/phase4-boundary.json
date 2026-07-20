@@ -1,0 +1,42 @@
+[
+  {
+    "id": "valid-one-attempt",
+    "scenario": "valid"
+  },
+  {
+    "id": "duplicate-purpose-denied",
+    "scenario": "duplicate_purpose"
+  },
+  {
+    "id": "run-call-cap-denied",
+    "scenario": "call_cap"
+  },
+  {
+    "id": "run-token-reservation-denied",
+    "scenario": "token_reservation"
+  },
+  {
+    "id": "oversized-input-denied",
+    "scenario": "input_overflow"
+  },
+  {
+    "id": "tool-payload-denied",
+    "scenario": "tool_call"
+  },
+  {
+    "id": "refusal-fails-closed",
+    "scenario": "refusal"
+  },
+  {
+    "id": "provider-token-overrun-denied",
+    "scenario": "token_overrun"
+  },
+  {
+    "id": "invalid-schema-denied",
+    "scenario": "invalid_output"
+  },
+  {
+    "id": "provider-error-fails-closed",
+    "scenario": "provider_error"
+  }
+]

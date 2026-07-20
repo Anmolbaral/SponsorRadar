@@ -1,0 +1,114 @@
+{
+  "name": "Example Account",
+  "email": "example@example.invalid",
+  "usage_by_range": {
+    "7d": {
+      "features": {
+        "upriver_credits": {
+          "name": "upriver credits",
+          "balance": 10000,
+          "usage": 0,
+          "included_usage": 10000,
+          "next_reset_at": 1786733717605,
+          "usage_by_feature": {
+            "insights_api_request": {
+              "credit_rate": 7,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "brand_products_per_result": {
+              "credit_rate": 1,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "brand_research_api_request": {
+              "credit_rate": 3,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "broad_trends_per_result": {
+              "credit_rate": 3,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "industry_trends_per_result": {
+              "credit_rate": 5,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "sponsorships_search_per_sponsorship": {
+              "credit_rate": 3,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "sponsors_search_per_sponsor": {
+              "credit_rate": 5,
+              "quantity": 20,
+              "credits_used": 100
+            },
+            "playback_api_request": {
+              "credit_rate": 1,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "search_api_request": {
+              "credit_rate": 1,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "trends_media_api_request": {
+              "credit_rate": 1,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "creator_per_result": {
+              "credit_rate": 1,
+              "quantity": 1,
+              "credits_used": 1
+            },
+            "creator_per_enrichment": {
+              "credit_rate": 1,
+              "quantity": 2,
+              "credits_used": 2
+            },
+            "breakout_topic_per_result": {
+              "credit_rate": 4,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "trend_detail_api_request": {
+              "credit_rate": 5,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "trends_traction_api_request": {
+              "credit_rate": 1,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "breakout_search_api_request": {
+              "credit_rate": 2,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "breakout_list_api_request": {
+              "credit_rate": 2,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "breakout_similar_api_request": {
+              "credit_rate": 2,
+              "quantity": 0,
+              "credits_used": 0
+            },
+            "breakout_detail_api_request": {
+              "credit_rate": 4,
+              "quantity": 0,
+              "credits_used": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

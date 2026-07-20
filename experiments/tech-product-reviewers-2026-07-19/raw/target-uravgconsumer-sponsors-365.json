@@ -1,0 +1,1957 @@
+{
+  "results": [
+    {
+      "partner_name": "Amazon",
+      "total_ads_found": 30,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Solar Buddies Sunscreen Applicator - https://amzn.to/4vCMmpd",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Best Buy",
+      "total_ads_found": 16,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=_8Nl0la8Ruk",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-03",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Best Buy - https://bestbuycreators.7tiv.net/6koQ5E",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Nomad",
+      "sponsor_domain": "nomadgoods.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/nomad-goods",
+      "sponsor_description": "NOMAD designs and manufactures high-quality, durable tech accessories and lifestyle gear, focusing on premium materials and meticulous attention to detail. Their products, ranging from phone cases and charging solutions to wallets and watch bands, are built to enhance the modern individual's everyday carry and support an adventurous lifestyle.",
+      "total_ads_found": 5,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=-oC_buOwyeI",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-31",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Nomad Mag Leather Back - https://bit.ly/4uLKM42",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Lenovo",
+      "sponsor_domain": "lenovo.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/lenovo",
+      "total_ads_found": 4,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=NKnktyKpPsI",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-04-21",
+        "evidence": {
+          "source": "description",
+          "excerpt": "This video is sponsored by Lenovo and Intel.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Ridge",
+      "sponsor_domain": "ridge.com",
+      "total_ads_found": 4,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=LEO2j7cmrbg",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-04-12",
+        "evidence": {
+          "source": "description",
+          "excerpt": "MKBHD Commuter Pro Backpack: https://bit.ly/4t1OoOf",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Intel",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=NKnktyKpPsI",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-04-21",
+        "evidence": {
+          "source": "description",
+          "excerpt": "This video is sponsored by Lenovo and Intel.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "AT&T",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=E_l7UjYL1F8",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-02",
+        "evidence": {
+          "source": "description",
+          "excerpt": "AT&T Connected Life + Google Home. Full video on the channel. @att #Ad",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Dell",
+      "sponsor_domain": "dell.com",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/shorts/WqQjK_pfX_c",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks again to Dell for sponsoring this video. Learn more about the XPS laptops here: https://dell.to/6001CT1Jz",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Google",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=E_l7UjYL1F8",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-02",
+        "evidence": {
+          "source": "description",
+          "excerpt": "AT&T Connected Life + Google Home.",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "LiberNovo",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=5WFFmX_DPhQ",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "The early bird special is nuts... Find their kickstarter here: LiberNovo OMNI",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "NordVPN",
+      "sponsor_domain": "nordvpn.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/nord-vpn",
+      "sponsor_description": "NordVPN is a leading VPN service provider that secures internet connections and protects user privacy. It offers a global network of servers and advanced security features to ensure a free and open internet experience.",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=p-dMIh3udoo",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-04-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get you hands on NordVPN here: https://nordvpn.com/consumer Code: consumer Thanks to NordVPN for sponsoring this video.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "SHARGE",
+      "sponsor_domain": "sharge.com",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Sharge Disk Pro: http://bit.ly/4w8xPS3",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "TORRAS",
+      "sponsor_domain": "torraslife.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/torraslife",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the @TORRAS x COOLiFY collection here:",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "ZipRecruiter",
+      "sponsor_domain": "ziprecruiter.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/ziprecruiter",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bSPP1tUF3lk",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-11-24",
+        "evidence": {
+          "source": "text",
+          "excerpt": "Make the smart hire with ZipRecruiter here: https://www.ziprecruiter.com/consumer",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Acer",
+      "sponsor_domain": "acer.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/acer",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=d_plVS78yZs",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-06",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Find them here: Acer Swift AI 16 https://hop.li/RXdxHie",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Alienware",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/shorts/XAFOjwebWBI",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks again to Alienware for sponsoring this video. Learn more about the Alienware laptops here: https://aw.gg/6006CTEKr #AlienwarePartner #IntelGaming @AlienwareChannel @Intel",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Amazon Ads",
+      "sponsor_domain": "amazon.com",
+      "sponsor_description": "AWS is a comprehensive cloud computing platform that provides a broad set of global infrastructure services, including compute, storage, and databases, enabling organizations to scale and innovate with pay-as-you-go pricing.",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Find everything here: ChargeKey 240W V2 - https://amzn.to/3QOWDiH",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Anker",
+      "sponsor_domain": "ankersolix.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=iJOhfZ6XbaI",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-02-05",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Unlock $3,000 Perk: https://ankersolix.tech/AnkerSOLIX_E10_NPL_UrAvgConsumer_0_790842",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Beats",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Beats Pill - https://amzn.to/4beOknm",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Carvana",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QXnX7xdWw-I",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Sponsored by Carvana",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Colorware",
+      "sponsor_domain": "colorware.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=rjYnUYACF8M",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-03-07",
+        "evidence": {
+          "source": "description",
+          "excerpt": "ColorWare PS5 Dualsense Edge SuperNova - https://www.colorware.com/products/colorware-dualsense-edge-supernova",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Corsair",
+      "sponsor_domain": "corsair.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/corsair",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=gA8x4HFe0Gw",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-11-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Corsair Platform 4 - https://bit.ly/3WGfhcb CORSAIR XENEON EDGE 14.5\" LCD Touchscreen - https://bit.ly/47xx4bS",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Drop",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=gA8x4HFe0Gw",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-11-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Drop + Grell OAE1 Headphones - https://bit.ly/49EDQ0z",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "EcoFlow",
+      "sponsor_domain": "ecoflow.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/ecoflowtech",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aacWVkX4wvo",
+        "sponsor_type": "promotion",
+        "published_date": "2025-12-01",
+        "evidence": {
+          "source": "text",
+          "excerpt": "RAPID Mag series power banks & other models, and enjoy an extra 5% off with my code 25EFRMUAC!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Elikliv",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Elikliv Coin Microscope: https://amzn.to/4w6HOqX",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "EMEET",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=JgvKR5Yr1wo",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the EMEET Pixy below and use the code: EMEETPIXY to save 6% Official site link: https://bit.ly/43quWk1",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Ergonofis",
+      "sponsor_domain": "ergonofis.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/ergonofis",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=tpvaiM2BK9M",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "ergonofis Wall Shelf - https://shrsl.com/4x8l1",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Extremerate",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Extremerate DIY replacement buttons: https://amzn.to/4xM8PkX",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Fanttik",
+      "sponsor_domain": "fanttik.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=r2PXzJcZvvw",
+        "sponsor_type": "promotion",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get $400 off for Fanttik Aero X Robotic Pool Cleaner at Amazon or Fanttik website",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "First 4 Figures",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=hkoU2G6A7-0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "First 4 Figures, Shadow The Hedgehog - https://bit.ly/4qqIdl9",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Fitbit",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "FitBit Air - https://amzn.to/4vyeolH",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "flydigi",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "flydigi vader 5s: https://amzn.to/4vtS9NH",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Framer Creator Micro",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=yRRMHhKlGQc",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-12-12",
+        "evidence": {
+          "source": "text",
+          "excerpt": "Grab the Framer Creator Micro here: https://framer.link/AvgConsumer",
+          "confidence": 0.0
+        }
+      }
+    },
+    {
+      "partner_name": "GameSir",
+      "sponsor_domain": "gamesir.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=5hgwfejFMV8",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-12-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Gamesir X3 pro - https://bit.ly/4p0LYNw",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Genki",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Genki ShadowCast 3 Pro - https://bit.ly/4tZcCJv",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Govee",
+      "sponsor_domain": "govee.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/govee",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=jYJ2eXFYppY",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-01-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out all of the new Govee products here: https://www.govee.com/",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Haworth",
+      "sponsor_domain": "haworth.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=tpvaiM2BK9M",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Haworth x Halo Office Chair - https://bit.ly/3Goaesl",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Hollyland Technology",
+      "sponsor_domain": "hollyland.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/hollylandtech",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=iUviDrl0GdA",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-10-03",
+        "evidence": {
+          "source": "transcript",
+          "excerpt": "So, shout out to Hollland for not only sponsoring today's video, but letting us get these early so we can test them out. But before we get started, we got to jump into the boxes and see what you get with these guys.",
+          "offset_seconds": 19.68,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "HyperX Systems LLC",
+      "sponsor_domain": "hyperx.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/hyperx-systems-llc",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=RsGnCVufA-I",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-02-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the new @hyperx OMEN MAX 16 and the rest of the latest gear here: https://hyperx.gg/UrAvgConsumer @intelgaming #hyperxpartner #IntelCoreUltra #HyperXOMENMAX16 #HyperXOMEN15 Thanks to HyperX and Intel for sponsoring this video.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Insta360",
+      "sponsor_domain": "insta360.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/insta360",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=GL96OAjkB2Q",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Insta360 X5 - https://store.insta360.com/product/x5?utm_term=INRF0XB",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "JerryRigKnife",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=t39WzbIcoc8",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-09-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "MINI JerryRig Razor Knife - https://bit.ly/4p0P58Z",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "koogold",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "koogold wireless hdmi transmitter and receiver usb c: https://amzn.to/4uSMDmM",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Kusini",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Kusini Smores Maker Tabletop - https://amzn.to/4eKvEwN",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Liene",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "promotion",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Liene PixCut S1 link: https://amzn.to/4w07BBX Code:15PIXCUT5(15% off)",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Lowe's",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=4IGZs3hAYHk",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Natural Unfinished Oak Wall Fully Assembled Cabinet - https://low.es/4uRKw2t",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Maono",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=4IGZs3hAYHk",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Maono PD200WT is on sale for an absolute steal at $84.99! - https://amzn.to/4oY7KCL",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Marshall",
+      "sponsor_domain": "marshall.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=1tTw3ubAXso",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Grab that Marshall Middleton II here: https://www.marshall.com/us/en/product/middleton-ii?pid=1007428&utm_source=UrAvgConsumer&utm_medium=cpc&utm_campaign=MiddletonII_marketing_us_20251210&utm_content=UrAvgConsumer-MiddletonII",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Matic Robots",
+      "sponsor_domain": "maticrobots.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/maticrobots",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Matic Robot Vacuum - https://bit.ly/4nko4gk",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Meta Quest",
+      "sponsor_domain": "meta.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/facebook",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bD5YQp9dehs",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-02-28",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Paid partnership with Meta. #MetaRayBanDisplayPartner",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Micro Center",
+      "sponsor_domain": "microcenter.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/micro-center",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QcF5jSIG7zA",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-03-22",
+        "evidence": {
+          "source": "description",
+          "excerpt": "AMD Bundle 7500X3D - https://www.microcenter.com/product/5007290/amd-ryzen-5-7500x3d",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Microsoft Copilot",
+      "sponsor_domain": "microsoft.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/microsoft",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=c3FGezWytWE",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-11-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "You can actually use this RIGHT NOW, so check out what it can do here: https://aka.ms/JudnerCopilotYT",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "ModRetro",
+      "sponsor_domain": "modretro.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=s_OUnDHHWVc",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Find everything here: ModRetro Chromatic - https://bit.ly/4ogHh2w",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "MOVA",
+      "sponsor_domain": "mova.tech",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l1XpUnDeVPc",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-03-02",
+        "evidence": {
+          "source": "description",
+          "excerpt": "MOVA MOBIUS 60 Robot Vacuum (Valid from Feb 20 to Mar 5: Save $130 Instantly Buy on Amazon: https://amzn.to/4bRTK9h Buy on Website: https://bit.ly/4kyUXEL",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "myAir.O",
+      "sponsor_domain": "myair0.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=s_OUnDHHWVc",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Find everything here: myAir.O Foldable Mouse - https://myair0.com/en-us",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Ninja",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Ninja CREAMi Scoop & Swirl Ice Cream Maker - https://amzn.to/4eNOmUt",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Nordeco House",
+      "sponsor_domain": "nordecohouse.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=rjYnUYACF8M",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-03-07",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Gundam Helmet - https://nordecohouse.com/products/rx-78-2-gundam-wearable-helmet",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Nothing",
+      "sponsor_domain": "nothing.tech",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/nothingtech",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=EEOk652Mmg8",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Nothing Phone 3a - https://bit.ly/3UkmSvN",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Ohsnap",
+      "sponsor_domain": "ohsnap.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=rjYnUYACF8M",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-03-07",
+        "evidence": {
+          "source": "description",
+          "excerpt": "MCON Dock - https://ohsnap.com/products/mcon-dock?_pos=1&_sid=ff391402d&_ss=r",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "OPPO",
+      "sponsor_domain": "oppo.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/oppo",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=XSzcuHIC0Ag",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-11-04",
+        "evidence": {
+          "source": "text",
+          "excerpt": "Thanks to OPPO for sponsoring this video!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Pavlov",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Pavlov Shock Clock 3: https://amzn.to/4uY5D3o",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "PlayStation",
+      "sponsor_domain": "playstation.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/santa-monica-studio",
+      "sponsor_description": "PlayStation is a leading brand in video game consoles and software, offering generation-defining hardware, pioneering network services, and award-winning games. It is known for immersive gaming experiences and a vast library of titles across its platforms.",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=BlgYAbYbB2E",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-01",
+        "evidence": {
+          "source": "description",
+          "excerpt": "PlayStation just dropped a full lineup of desktop gaming gear, and I got hands-on with the Pulse Elevate speakers, the new 27\" monitor, and the FlexStrike fight stick.",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "partner_name": "PlayStation Plus Premium",
+      "sponsor_domain": "playstation.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/santa-monica-studio",
+      "sponsor_description": "PlayStation is a leading brand in video game consoles and software, offering generation-defining hardware, pioneering network services, and award-winning games. It is known for immersive gaming experiences and a vast library of titles across its platforms.",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=hkoU2G6A7-0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "God of War Controller -https://bit.ly/4pVzLdJ",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Pokémon",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=hkoU2G6A7-0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Pokémon Pokenade Monster Ball - https://bit.ly/3KPj7NV",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Pokémon Center",
+      "sponsor_domain": "pokemoncenter.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Pokemon 30th anniversary gear - https://bit.ly/49nhgst",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "RingConn",
+      "sponsor_domain": "ringconn.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/ringconn/",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bgdThAYzUB0",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-07",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the RingConn Gen 3 here: https://bit.ly/4y51lJZ Thanks @ringconn, for sponsoring this video!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "rocco",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "rocco The Super Smart Fridge - https://bit.ly/4nlrv6u",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Rokid Corporation Ltd",
+      "sponsor_domain": "rokid.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/rokid-inc",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=TaUSsP_GeE8",
+        "sponsor_type": "promotion",
+        "published_date": "2026-01-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "The Rokid AI Glass Style launches January 19, at $398 for the all-day photochromic solution. Launch price only valid until January 31. Find it here: https://bit.ly/3YoE8Ce",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "RugOne",
+      "sponsor_domain": "rugone.net",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=hkoU2G6A7-0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Rugone Xever 7 Pro - https://bit.ly/3L9W0h5",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Samsung",
+      "sponsor_domain": "samsung.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/samsung-electronics-america",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=CxlnQKtZFLk",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-02-22",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Samsung for sponsoring this video. Find everything here: Samsung Bespoke AI Vented Combo - https://bit.ly/JudnerYT2",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Samsung Display",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=H82G3YWLlG4",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-01",
+        "evidence": {
+          "source": "description",
+          "excerpt": "#SamsungDisplay #AD #SamsungDisplayPartner #PentaTandem #QDOLED",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Satechi",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Satechi Passport Holder with Tracker - https://amzn.to/4uWLHxz",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Shokz",
+      "sponsor_domain": "shokz.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=modTpTpp_gc",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-01-18",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get the Shokz OpenFit Pro here: https://shokz.com/products/openfit-pro?utm_source=creator&utm_medium=UrAvgConsumer",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Skullcandy",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=t39WzbIcoc8",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-09-19",
+        "evidence": {
+          "source": "text",
+          "excerpt": "Skullcandy Method ANC - https://amzn.to/41vAgRJ",
+          "confidence": 0.0
+        }
+      }
+    },
+    {
+      "partner_name": "SmallRig",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "SmallRig S-70 C2 Wireless Microphone - https://a.co/d/0enjeEgu",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Soundcore",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Soundcore Boom 2 - https://amzn.to/4wlNVYK",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "SpeakON",
+      "sponsor_domain": "speakon.app",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=GzZ3V1y2tNw",
+        "sponsor_type": "promotion",
+        "published_date": "2026-05-19",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the SpeakON here: https://bit.ly/4c0OwYi - Discount Code: UrAvgConsumer ($15 off)",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "SPEEDIANCE",
+      "sponsor_domain": "speediance.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/speediance",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=dytX3LZlrEI",
+        "sponsor_type": "promotion",
+        "published_date": "2026-01-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the compact Speediance Gym Monster 2 here: https://bit.ly/4qXQbSY",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Spigen",
+      "sponsor_domain": "spigen.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=hkoU2G6A7-0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-01-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Spigen Life Tumbler Holder Bag - https://bit.ly/3MT1Xzr",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Taurus",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=Q29RhuspX10",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-10-01",
+        "evidence": {
+          "source": "transcript",
+          "excerpt": "which is perfect for our sponsor, Taurus. So, check it out. No matter which iPhone you upgrade to this year, you'll want a charger that can handle the new fast charging speeds. And this Taurus Flex Line charger is definitely one of my favorites. It pushes 67 watts for max",
+          "offset_seconds": 121.28833333333333,
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Tempo",
+      "sponsor_domain": "tempo.fit",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=tpvaiM2BK9M",
+        "sponsor_type": "affiliate",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Tempo Move Home Gym - https://bit.ly/44Ddyb5",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Thermacell",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thermacell E-ZoneGuard Patio Mosquito Repeller - https://amzn.to/4v2bJzu",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Timekettle",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=a6gN4bZcvt8",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2025-09-21",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to TimeKettle\n⁠ for sponsoring today’s video!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Tomtoc",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Tomtoc backpack: https://amzn.to/3SqY8nW",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Typeless",
+      "sponsor_domain": "typeless.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=DV-mndx62HI",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-03-18",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Try Typeless for FREE here: https://www.typeless.com/?via=judner Disclosure: This description contains affiliate links. I may receive a small commission on purchases made through these links at no additional cost to you.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "URBAN ARMOR GEAR (UAG)",
+      "sponsor_domain": "urbanarmorgear.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/urban-armor-gear-llc",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=l-9GTEqDZNY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "UAG SRGE Slim 5K Power Bank with stand - https://bit.ly/4cZzOS0",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Vernal",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=tpvaiM2BK9M",
+        "sponsor_type": "promotion",
+        "published_date": "2025-08-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Vernal standing desk 6% OFF: UrAvgConsumer (US): https://bit.ly/4d4vhMt",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "VITURE",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=fF80_6PVodI",
+        "sponsor_type": "promotion",
+        "published_date": "2025-08-19",
+        "evidence": {
+          "source": "text",
+          "excerpt": "Use my code 'UrAvgConsumer' for 10% OFF everything: https://www.viture.com/UrAvgConsumer",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Voltrx",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=AsQ6ztx6AS0",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "VOLTRX Electric Protein Shaker Bottle - https://amzn.to/4eUR8Y3",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Zapier",
+      "sponsor_domain": "zapier.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "UrAvgConsumer",
+        "publication_url": "https://youtube.com/@UrAvgConsumer",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ejQSaCR6fzo",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Zapier MCP levels you up, connecting you directly to apps to automate your workflow. Start building with Zapier MCP today: https://bit.ly/4vVte5m #ZapierPartner Sponsored by Zapier!",
+          "confidence": 1.0
+        }
+      }
+    }
+  ],
+  "total_count": 89,
+  "has_more": false
+}

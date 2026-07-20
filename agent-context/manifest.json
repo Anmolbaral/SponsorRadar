@@ -1,0 +1,106 @@
+{
+  "schema_version": 2,
+  "manifest_id": "sponsor-radar-phase4-context-v1",
+  "hash_algorithm": "sha256",
+  "review": {
+    "status": "approved",
+    "reviewed_at": "2026-07-20",
+    "reviewer": "sponsor-radar-maintainers"
+  },
+  "files": [
+    {
+      "id": "policy",
+      "path": "APP_POLICY.md",
+      "authority": "system_policy",
+      "source": "local:agent-context/APP_POLICY.md",
+      "upstream_version": "phase5-v1",
+      "fetched_at": "2026-07-20",
+      "file_sha256": "cfcfb4f4722cfdb434ea501a23f5f19ad10a20bef8d8efb605f2568b1ecdaaca",
+      "file_bytes": 2158,
+      "runtime_loadable": true,
+      "sections": [
+        {
+          "id": "policy.full",
+          "selector": {
+            "type": "document"
+          },
+          "section_sha256": "2c860a49b606abaea377cffc53e8ab18c4ba5d0b1353340da51a2c3bd4b7af12",
+          "content_bytes": 2157
+        }
+      ]
+    },
+    {
+      "id": "upriver.skill",
+      "path": "upriver/SKILL.md",
+      "authority": "untrusted_reference",
+      "source": "https://docs.upriver.ai/skill.md",
+      "upstream_version": "1.0.0",
+      "fetched_at": "2026-07-19",
+      "file_sha256": "77b76328f73b305fcaae8e14c3115973bfea3de45d881dfb64f40d5c693e3902",
+      "file_bytes": 18726,
+      "runtime_loadable": true,
+      "sections": [
+        {
+          "id": "upriver.creators",
+          "selector": {
+            "type": "markdown_heading_path",
+            "path": [
+              "Skills",
+              "Creators"
+            ]
+          },
+          "section_sha256": "25c574d2c3937865685c0e4af20160582b37eb0d1be2a15a09c94c8a89dc2a97",
+          "content_bytes": 3464
+        },
+        {
+          "id": "upriver.sponsorships",
+          "selector": {
+            "type": "markdown_heading_path",
+            "path": [
+              "Skills",
+              "Sponsorships"
+            ]
+          },
+          "section_sha256": "256fc63761d6e47c299b4a8145d5b052dfd51b9bbce3ea24cb257f9b683b9cd5",
+          "content_bytes": 1552
+        }
+      ]
+    },
+    {
+      "id": "upriver.index",
+      "path": "upriver/llms.txt",
+      "authority": "untrusted_reference",
+      "source": "https://docs.upriver.ai/llms.txt",
+      "upstream_version": null,
+      "fetched_at": "2026-07-19",
+      "file_sha256": "9728731d9527a07c127933174901a9bb896826e0da4cff6b47c46e75432e6d6c",
+      "file_bytes": 11768,
+      "runtime_loadable": false,
+      "sections": []
+    }
+  ],
+  "purposes": {
+    "peer_rationale": {
+      "section_ids": [
+        "policy.full",
+        "upriver.creators"
+      ],
+      "max_sections": 2,
+      "max_context_bytes": 5621
+    },
+    "grounded_report_wording": {
+      "section_ids": [
+        "policy.full",
+        "upriver.sponsorships"
+      ],
+      "max_sections": 2,
+      "max_context_bytes": 3709
+    }
+  },
+  "runtime_policy": {
+    "executable": false,
+    "load_mode": "purpose_bound",
+    "allowed_consumer": "src/agent/context",
+    "network_permission_granted_by_context": false
+  }
+}

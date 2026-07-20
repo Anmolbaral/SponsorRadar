@@ -1,0 +1,57 @@
+{
+  "revision": 1,
+  "runId": "run_11111111111111111111111111111111",
+  "savedAt": "2026-07-20T05:44:59.422Z",
+  "storageVersion": 1,
+  "value": {
+    "approvals": {
+      "execution": null,
+      "plan": null
+    },
+    "auditEvents": [],
+    "error": null,
+    "mode": "fixture",
+    "peerProposal": null,
+    "plan": {
+      "executionCreditCeiling": 0,
+      "maxPeers": 3,
+      "operations": [
+        "Resolve the requested YouTube channel",
+        "Confirm three locked reach-comparable peers",
+        "Retrieve bounded sponsor evidence",
+        "Apply the strict product-continuity gate"
+      ],
+      "planId": "plan_18b2ca29d01889e99ec80a0ff6c2746d",
+      "resolutionCreditCeiling": 0,
+      "totalCreditCeiling": 0
+    },
+    "quota": {
+      "executionCreditsUsed": 0,
+      "executionReservationId": null,
+      "resolutionCreditsUsed": 0,
+      "resolutionReservationId": null
+    },
+    "report": null,
+    "requestedChannel": "@LegacyPlanned",
+    "resolvedCohort": null,
+    "runId": "run_11111111111111111111111111111111",
+    "schemaVersion": 1,
+    "state": {
+      "createdAt": "2026-07-20T05:44:59.400Z",
+      "history": [
+        {
+          "actor": "application",
+          "from": "submitted",
+          "occurredAt": "2026-07-20T05:44:59.400Z",
+          "reason": "Created an immutable research plan with bounded credit ceilings",
+          "sequence": 1,
+          "to": "planned"
+        }
+      ],
+      "state": "planned",
+      "updatedAt": "2026-07-20T05:44:59.400Z",
+      "version": 1
+    }
+  },
+  "valueSchemaVersion": 1
+}

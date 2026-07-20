@@ -1,0 +1,51 @@
+{
+  "name": "upriver-sponsor-radar",
+  "version": "0.4.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "node scripts/prepare-standalone.mjs",
+    "start": "node .next/standalone/server.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run tests/unit --coverage",
+    "test:integration": "vitest run tests/integration",
+    "test:acceptance": "vitest run tests/acceptance",
+    "test:live": "vitest run tests/live/upriver-live-smoke.test.ts",
+    "test:live-discovery": "vitest run tests/live/upriver-dynamic-discovery.test.ts",
+    "test:live-similar-diagnostic": "vitest run tests/live/upriver-similar-diagnostic.test.ts",
+    "test:live-full": "vitest run tests/live/full-dynamic-workflow.test.ts",
+    "test:live-llm": "vitest run tests/live/openai-live-smoke.test.ts",
+    "test:live-llm-deep": "vitest run tests/live/openai-live-deep.test.ts",
+    "eval": "vitest run evals",
+    "test:phase1": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:phase2": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:phase3": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:phase4": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm test:phase4 && pnpm build"
+  },
+  "dependencies": {
+    "next": "^16.2.10",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.2.10",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "results": [
+    {
+      "sponsor_id": "br_bf5cc52bead244bd856d823d6aaa0868",
+      "sponsor_name": "Crusoe",
+      "sponsor_domain": "crusoe.ai",
+      "sponsor_type": "implicit_ad",
+      "partner_confidence": 0.95,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+      "published_date": "2026-07-10",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Crusoe gave me early access to their new serverless fine-tuning product... Learn more at https://crusoe.ai/dwarkesh",
+        "confidence": 0.95
+      }
+    },
+    {
+      "sponsor_id": "br_a644ce1148af453e94327ceab369cfab",
+      "sponsor_name": "Cursor",
+      "sponsor_domain": "cursor.com",
+      "sponsor_description": "Cursor is an AI coding agent platform that helps developers build software faster by understanding codebases and automating tasks. It is known for its agentic approach and integration across the development lifecycle.",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 0.9,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+      "published_date": "2026-07-10",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Cursor’s iOS app lets me kick off real work... Check out the app now at https://cursor.com/dwarkesh",
+        "confidence": 0.9
+      }
+    },
+    {
+      "sponsor_id": "br_15fb12097b1d496abae56944362b338c",
+      "sponsor_name": "Jane Street",
+      "sponsor_domain": "janestreet.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/jane-street-global",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 0.9,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+      "published_date": "2026-07-10",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Check out open positions at https://janestreet.com/dwarkesh",
+        "confidence": 0.9
+      }
+    },
+    {
+      "sponsor_id": "br_a644ce1148af453e94327ceab369cfab",
+      "sponsor_name": "Cursor",
+      "sponsor_domain": "cursor.com",
+      "sponsor_description": "Cursor is an AI coding agent platform that helps developers build software faster by understanding codebases and automating tasks. It is known for its agentic approach and integration across the development lifecycle.",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=TfyPshgMbug",
+      "published_date": "2026-06-30",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Cursor’s harness lets me use models for a huge range of tasks at the podcast. For example, Cursor cuts out the ads from each episode I produce so I can post them on Bilibili. It also helps me prep for interviews — I have a repo full of books and papers that Cursor sorts through t",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_id": "br_288cc4af36904385a6c1ed2a291b2aea",
+      "sponsor_name": "Google",
+      "sponsor_domain": "google.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/google-for-startups",
+      "sponsor_description": "Google is a global technology company that provides a wide range of internet-related services and products, including cloud computing, software development tools, artificial intelligence, and digital translation services.",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=TfyPshgMbug",
+      "published_date": "2026-06-30",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Gemini 3.5 Live Translate is what I wished I'd had on my last trip to China. It detects more than 70 languages and translates them in near real-time… and it preserves your original pacing and intonation. If you're building an app that needs live translation, you should check out ",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_name": "Jane Street",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=TfyPshgMbug",
+      "published_date": "2026-06-30",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Jane Street sponsors 3Blue1Brown, so Grant has gotten to spend a lot of time with various Jane Streeters. He actually just recorded an interview with a few of them, so when we sat down for this episode, he told me about some of the things he learned, like how Jane Street keeps th",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_id": "br_846f8300332547c19e0b0728cf29b6f5",
+      "sponsor_name": "Mercury",
+      "sponsor_domain": "mercury.com",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=20p5-kQXF_Q",
+      "published_date": "2026-06-26",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Thanks to Mercury for sponsoring this essay.",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_id": "br_846f8300332547c19e0b0728cf29b6f5",
+      "sponsor_name": "Mercury",
+      "sponsor_domain": "mercury.com",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=4pG3SJQPAwk",
+      "published_date": "2026-06-19",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Thanks to Mercury for sponsoring this essay.",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_id": "br_bf5cc52bead244bd856d823d6aaa0868",
+      "sponsor_name": "Crusoe",
+      "sponsor_domain": "crusoe.ai",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=U1FrhkLQnCI",
+      "published_date": "2026-06-17",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Crusoe is turning the AI datacenter buildout into an industrial process. At their massive Colorado factory, they assemble Spark units, modular datacenters with power, cooling, and fire suppression built in. They also manufacture specific components in-house to skip the longest le",
+        "confidence": 1.0
+      }
+    },
+    {
+      "sponsor_id": "br_a644ce1148af453e94327ceab369cfab",
+      "sponsor_name": "Cursor",
+      "sponsor_domain": "cursor.com",
+      "sponsor_description": "Cursor is an AI coding agent platform that helps developers build software faster by understanding codebases and automating tasks. It is known for its agentic approach and integration across the development lifecycle.",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=U1FrhkLQnCI",
+      "published_date": "2026-06-17",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Cursor recently saved one of my podcast recordings. When a video file from a shoot came out corrupted, I pointed Cursor at it: it recovered the footage on its own, tracking down the right reference file from the file’s metadata and realigning the out-of-sync audio. My whole team ",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "total_count": 10,
+  "next_cursor": "eyJkIjogIjIwMjYtMDYtMTciLCAicCI6ICJDdXJzb3IiLCAibSI6ICJ5b3V0dWJlOlUxRnJoa0xRbkNJIiwgInUiOiAiMTdmNTU4OGUtOGE0My01ZDdkLTg0ODMtNTZhYzI1NjI1ZDM4In0=",
+  "has_more": true,
+  "tracking_status": {
+    "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+    "channel_name": "Dwarkesh Patel",
+    "status": "active",
+    "message": ""
+  }
+}

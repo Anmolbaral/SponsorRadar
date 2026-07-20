@@ -1,0 +1,111 @@
+{
+  "channels": [
+    {
+      "platform": "youtube",
+      "handle": "@DwarkeshPatel",
+      "url": "https://www.youtube.com/@DwarkeshPatel",
+      "platform_id": "UCXl4i9dYBrFOabk0xGmbkRA",
+      "display_name": "Dwarkesh Patel",
+      "profile_pic_url": "https://yt3.googleusercontent.com/lG-z7sTfhFIW2Ne1oXMHvXMXyZSaA02_I17gUel0GAEj7OypsSHQ7PE91Vp4bTbpm3PTIAWJdko=s160-c-k-c0x00ffffff-no-rj",
+      "subscriber_count": 1350000,
+      "subscriber_count_text": "1.35M",
+      "follower_bucket": {
+        "id": "over_1m",
+        "display": "1M+ followers",
+        "min_followers": 1000000
+      }
+    },
+    {
+      "platform": "x",
+      "handle": "@dwarkesh_sp",
+      "url": "https://twitter.com/dwarkesh_sp",
+      "platform_id": "1209960539390201864",
+      "display_name": "Dwarkesh Patel",
+      "profile_pic_url": "https://pbs.twimg.com/profile_images/1925260306684813315/NjNQZmhZ_normal.jpg",
+      "subscriber_count": 242000,
+      "subscriber_count_text": "242K",
+      "follower_bucket": {
+        "id": "100k_300k",
+        "display": "100K-300K followers",
+        "min_followers": 100000,
+        "max_followers": 299999
+      }
+    },
+    {
+      "platform": "youtube",
+      "handle": "@DwarkeshClips",
+      "url": "https://youtube.com/@DwarkeshClips",
+      "platform_id": "UCZa18YV7qayTh-MRIrBhDpA",
+      "display_name": "Dwarkesh Clips",
+      "profile_pic_url": "https://yt3.googleusercontent.com/xWdM_c4Rz1Co1xoCbmOBQGHbwgg6MNCu5jM_eC5Kvr74sQz4XgerEJHGWHWIJhBuavxGZAoF=s72-c-k-c0x00ffffff-no-rj",
+      "subscriber_count": 76900,
+      "subscriber_count_text": "76.9K",
+      "follower_bucket": {
+        "id": "50k_100k",
+        "display": "50K-100K followers",
+        "min_followers": 50000,
+        "max_followers": 99999
+      }
+    },
+    {
+      "platform": "substack",
+      "handle": "@dwarkesh",
+      "url": "https://dwarkesh.substack.com/",
+      "platform_id": "dwarkesh",
+      "display_name": "Dwarkesh Podcast"
+    },
+    {
+      "platform": "instagram",
+      "handle": "@dwarkesh",
+      "url": "https://instagram.com/dwarkesh",
+      "platform_id": "17841465940130231",
+      "display_name": "Dwarkesh Patel",
+      "profile_pic_url": "https://instagram.fblq4-1.fna.fbcdn.net/v/t51.2885-19/436427047_1088345795722935_3721689346185601129_n.jpg",
+      "subscriber_count": 60200,
+      "subscriber_count_text": "60.2K",
+      "follower_bucket": {
+        "id": "50k_100k",
+        "display": "50K-100K followers",
+        "min_followers": 50000,
+        "max_followers": 99999
+      }
+    },
+    {
+      "platform": "tiktok",
+      "handle": "@dwarkesh_sp",
+      "url": "https://tiktok.com/@dwarkesh_sp",
+      "platform_id": "7478432808122991658",
+      "display_name": "dwarkesh_patel",
+      "profile_pic_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/472019fbd588852d0557d5c7647dc1a4~tplv-tiktokx-cropcenter:1080:1080.jpeg",
+      "subscriber_count": 18700,
+      "subscriber_count_text": "18.7K",
+      "follower_bucket": {
+        "id": "10k_50k",
+        "display": "10K-50K followers",
+        "min_followers": 10000,
+        "max_followers": 49999
+      }
+    }
+  ],
+  "associated_creators": [],
+  "labels": [
+    {
+      "id": "723aa4a8-c2a1-4725-a5a4-70380a843124",
+      "name": "Artificial Intelligence",
+      "type": "tag"
+    },
+    {
+      "id": "34636762-e58f-4e9b-8bff-8c65f83d2347",
+      "name": "Tech",
+      "type": "tag"
+    }
+  ],
+  "tags": [
+    {
+      "id": "tag:723aa4a8-c2a1-4725-a5a4-70380a843124",
+      "name": "Artificial Intelligence"
+    },
+    { "id": "tag:34636762-e58f-4e9b-8bff-8c65f83d2347", "name": "Tech" }
+  ],
+  "creator_id": "a1f678c9-a634-45b6-80c9-88981bafef79"
+}

@@ -1,0 +1,1 @@
+{"detail":"1 validation error for CreatorGetResponse\nchannels.0\n  Value error, Unsupported platform: podcast [type=value_error, input_value={'platform': 'podcast', '...me': 'apple:1264843400'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/value_error"}

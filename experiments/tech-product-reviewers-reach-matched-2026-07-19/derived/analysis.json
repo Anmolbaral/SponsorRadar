@@ -1,0 +1,304 @@
+{
+  "generated_at": "2026-07-19T08:20:31.045Z",
+  "as_of": "2026-07-19",
+  "method": {
+    "cached_target_history": true,
+    "peer_filter": [
+      "explicit_ad"
+    ],
+    "strict_gate": "S3 target + S3 peer + product-line continuity grade A or B"
+  },
+  "target": {
+    "name": "UrAvgConsumer",
+    "url": "https://www.youtube.com/@UrAvgConsumer",
+    "subscriber_count": 3450000,
+    "cached_raw_file": "../tech-product-reviewers-2026-07-19/raw/target-uravgconsumer-sponsors-365.json"
+  },
+  "reach": [
+    {
+      "name": "Dave2D",
+      "subscriber_count": 3690000,
+      "ratio_to_target": 1.07,
+      "percent_difference": 7
+    },
+    {
+      "name": "SarahGrace",
+      "subscriber_count": 3710000,
+      "ratio_to_target": 1.075,
+      "percent_difference": 7.5
+    },
+    {
+      "name": "Hayls World",
+      "subscriber_count": 2660000,
+      "ratio_to_target": 0.771,
+      "percent_difference": -22.9
+    }
+  ],
+  "counts": {
+    "cached_target_api_rows": 89,
+    "stale_domain_resolved_targets": 36,
+    "stale_api_explicit_target_candidates": 11,
+    "strict_peer_api_rows": 3,
+    "manually_confirmed_s3_peer_rows": 3,
+    "joinable_s3_peer_rows": 2,
+    "raw_domain_matches": 1,
+    "strict_product_continuous_passes": 1,
+    "brand_research_reports": 1
+  },
+  "peer_inventory": [
+    {
+      "peer": "Dave2D",
+      "partner_name": "Dell",
+      "api_domain": "dell.com",
+      "resolved_domain": "dell.com",
+      "api_type": "explicit_ad",
+      "latest_observed": "2026-06-16",
+      "latest_placement": {
+        "publication_name": "Dave2D",
+        "publication_url": "https://www.youtube.com/@Dave2D",
+        "publication_categories": [
+          "Consumer Electronics",
+          "personal_devices"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks again to Dell for sponsoring this video. Learn more about XPS 13 here: https://del.ly/Dave2D",
+          "confidence": 1
+        }
+      },
+      "strict_classification": "S3",
+      "inventory": {
+        "channel": "Dave2D",
+        "api_partner_name": "Dell",
+        "api_domain": "dell.com",
+        "manually_resolved_domain": "dell.com",
+        "strict_classification": "S3",
+        "join_status": "joinable",
+        "video_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+        "video_title": "The $599 Dell XPS Laptop",
+        "api_observed_date": "2026-06-16",
+        "public_page_date": "2026-06-16",
+        "paid_promotion_declaration": true,
+        "public_evidence": "The description explicitly says Dell sponsored the video, names XPS 13, and uses #DellCollab.",
+        "outbound_url": "https://del.ly/Dave2D",
+        "resolved_destination": "https://www.dell.com/en-us/lp/xps-laptops",
+        "product_line": "Dell XPS 13 / XPS laptops",
+        "verdict": "Confirmed Dell sponsorship in the XPS consumer-laptop family."
+      }
+    },
+    {
+      "peer": "SarahGrace",
+      "partner_name": "Wispr Flow",
+      "api_domain": null,
+      "resolved_domain": "wisprflow.ai",
+      "api_type": "explicit_ad",
+      "latest_observed": "2026-04-30",
+      "latest_placement": {
+        "publication_name": "SarahGrace",
+        "publication_url": "https://www.youtube.com/@TheSarahGrace",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bajgHpxpZ8E",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-04-30",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Sponsored by Wispr Flow! Wispr Flow is faster and more efficient than any other built-in dictation tool. Download today to try Wispr Flow Pro for one month free with promo code SARAH: https://ref....",
+          "confidence": 1
+        }
+      },
+      "strict_classification": "S3",
+      "inventory": {
+        "channel": "SarahGrace",
+        "api_partner_name": "Wispr Flow",
+        "api_domain": null,
+        "manually_resolved_domain": "wisprflow.ai",
+        "strict_classification": "S3",
+        "join_status": "joinable_after_manual_domain_resolution",
+        "video_url": "https://www.youtube.com/watch?v=bajgHpxpZ8E",
+        "video_title": "I Bought AI Generated Apple Products",
+        "api_observed_date": "2026-04-30",
+        "public_page_date": "2026-04-30",
+        "paid_promotion_declaration": false,
+        "public_evidence": "The description labels Wispr Flow as the sponsor, uses #WisprFlowPartner, and gives a creator promo code.",
+        "outbound_url": "https://ref.wisprflow.ai/SarahGrace",
+        "resolved_destination": "https://wisprflow.ai/?promo_code=SARAH",
+        "product_line": "Wispr Flow voice-dictation software",
+        "verdict": "Confirmed sponsorship; no stale target-domain match."
+      }
+    },
+    {
+      "peer": "Hayls World",
+      "partner_name": "Bitdefender",
+      "api_domain": null,
+      "resolved_domain": null,
+      "api_type": "explicit_ad",
+      "latest_observed": "2026-07-01",
+      "latest_placement": {
+        "publication_name": "Hayls World",
+        "publication_url": "https://www.youtube.com/@HaylsWorld",
+        "publication_categories": [
+          "Technology",
+          "Consumer Electronics"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=KEBYs72Qlac",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-01",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Huge thanks to @Bitdefender for inviting me out to Italy.",
+          "confidence": 1
+        }
+      },
+      "strict_classification": "S3",
+      "inventory": {
+        "channel": "Hayls World",
+        "api_partner_name": "Bitdefender",
+        "api_domain": null,
+        "manually_resolved_domain": null,
+        "strict_classification": "S3",
+        "join_status": "excluded_missing_domain",
+        "video_url": "https://www.youtube.com/watch?v=KEBYs72Qlac",
+        "video_title": "Where Ferrari TESTS ALL THEIR CARS!! 🏎️",
+        "api_observed_date": "2026-07-01",
+        "public_page_date": "2026-07-01",
+        "paid_promotion_declaration": true,
+        "public_evidence": "The page declares paid promotion and thanks Bitdefender for arranging the Italy experience; no sponsor destination is provided.",
+        "outbound_url": null,
+        "resolved_destination": null,
+        "product_line": "Bitdefender brand activation; specific product not stated",
+        "verdict": "Confirmed paid brand activation, but excluded from the domain join because no attributable sponsor domain was present."
+      }
+    }
+  ],
+  "overlaps": [
+    {
+      "domain": "dell.com",
+      "target": {
+        "domain": "dell.com",
+        "latest_observed": "2026-01-09",
+        "latest_type": "explicit_ad",
+        "latest_row": {
+          "partner_name": "Dell",
+          "sponsor_domain": "dell.com",
+          "total_ads_found": 2,
+          "most_recent_ad": {
+            "publication_name": "UrAvgConsumer",
+            "publication_url": "https://youtube.com/@UrAvgConsumer",
+            "publication_categories": [
+              "Technology",
+              "Consumer Electronics"
+            ],
+            "publication_platform": "youtube",
+            "content_url": "https://www.youtube.com/shorts/WqQjK_pfX_c",
+            "sponsor_type": "explicit_ad",
+            "published_date": "2026-01-09",
+            "evidence": {
+              "source": "description",
+              "excerpt": "Thanks again to Dell for sponsoring this video. Learn more about the XPS laptops here: https://dell.to/6001CT1Jz",
+              "confidence": 1
+            }
+          }
+        }
+      },
+      "peer": {
+        "peer": "Dave2D",
+        "partner_name": "Dell",
+        "api_domain": "dell.com",
+        "resolved_domain": "dell.com",
+        "api_type": "explicit_ad",
+        "latest_observed": "2026-06-16",
+        "latest_placement": {
+          "publication_name": "Dave2D",
+          "publication_url": "https://www.youtube.com/@Dave2D",
+          "publication_categories": [
+            "Consumer Electronics",
+            "personal_devices"
+          ],
+          "publication_platform": "youtube",
+          "content_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+          "sponsor_type": "explicit_ad",
+          "published_date": "2026-06-16",
+          "evidence": {
+            "source": "description",
+            "excerpt": "Thanks again to Dell for sponsoring this video. Learn more about XPS 13 here: https://del.ly/Dave2D",
+            "confidence": 1
+          }
+        },
+        "strict_classification": "S3",
+        "inventory": {
+          "channel": "Dave2D",
+          "api_partner_name": "Dell",
+          "api_domain": "dell.com",
+          "manually_resolved_domain": "dell.com",
+          "strict_classification": "S3",
+          "join_status": "joinable",
+          "video_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+          "video_title": "The $599 Dell XPS Laptop",
+          "api_observed_date": "2026-06-16",
+          "public_page_date": "2026-06-16",
+          "paid_promotion_declaration": true,
+          "public_evidence": "The description explicitly says Dell sponsored the video, names XPS 13, and uses #DellCollab.",
+          "outbound_url": "https://del.ly/Dave2D",
+          "resolved_destination": "https://www.dell.com/en-us/lp/xps-laptops",
+          "product_line": "Dell XPS 13 / XPS laptops",
+          "verdict": "Confirmed Dell sponsorship in the XPS consumer-laptop family."
+        }
+      },
+      "manual_verification": {
+        "domain": "dell.com",
+        "brand": "Dell",
+        "target_classification": "S3",
+        "peer_classification": "S3",
+        "product_line_continuity_grade": "A",
+        "gate_result": "strict_pass",
+        "business_unit": "Dell client / consumer XPS laptops",
+        "target_product_line": "Dell XPS 14 / XPS laptops",
+        "peer_product_line": "Dell XPS 13 / XPS laptops",
+        "continuity_reason": "Both placements explicitly promote the XPS laptop family to consumer technology buyers. The model differs, but the family, business unit, and buyer use case are the same.",
+        "target_latest_api_date": "2026-01-09",
+        "target_days_since_latest": 191,
+        "peer_latest_api_date": "2026-06-16",
+        "peer_days_since_latest": 33,
+        "target_evidence": {
+          "channel": "UrAvgConsumer",
+          "video_url": "https://www.youtube.com/shorts/WqQjK_pfX_c",
+          "video_title": "This new @Dell XPS is 🔥🔥🔥",
+          "api_observed_date": "2026-01-09",
+          "public_page_date": "2026-01-08",
+          "public_evidence": "The description thanks Dell for sponsoring the video, links the XPS laptop offer, and uses #DellCollab.",
+          "outbound_url": "https://dell.to/6001CT1Jz",
+          "resolved_destination": "Dell XPS 14 product page",
+          "verdict": "S3 confirmed sponsorship."
+        },
+        "peer_evidence": {
+          "channel": "Dave2D",
+          "video_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+          "video_title": "The $599 Dell XPS Laptop",
+          "api_observed_date": "2026-06-16",
+          "public_page_date": "2026-06-16",
+          "public_evidence": "The description thanks Dell for sponsoring the video, names XPS 13, links the XPS family page, and uses #DellCollab.",
+          "outbound_url": "https://del.ly/Dave2D",
+          "resolved_destination": "https://www.dell.com/en-us/lp/xps-laptops",
+          "verdict": "S3 confirmed sponsorship."
+        }
+      },
+      "strict_pass": true
+    }
+  ],
+  "comparison_to_first_pilot": {
+    "first_pilot_raw_domain_overlaps": 5,
+    "first_pilot_inclusive_accepted": 4,
+    "first_pilot_strict_passes_under_new_rubric": 0,
+    "second_pilot_raw_domain_matches": 1,
+    "second_pilot_strict_passes": 1
+  }
+}

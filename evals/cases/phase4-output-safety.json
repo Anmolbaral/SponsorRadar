@@ -1,0 +1,218 @@
+[
+  {
+    "id": "peer-valid-exact-cohort",
+    "task": "peer",
+    "scenario": "valid",
+    "expectedAccepted": true
+  },
+  {
+    "id": "peer-unknown-id",
+    "task": "peer",
+    "scenario": "unknown_id",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-missing-member",
+    "task": "peer",
+    "scenario": "missing_member",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-duplicate-member",
+    "task": "peer",
+    "scenario": "duplicate_member",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-reordered-members",
+    "task": "peer",
+    "scenario": "reordered",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-extra-field",
+    "task": "peer",
+    "scenario": "extra_field",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-invented-digit",
+    "task": "peer",
+    "scenario": "numeric_digit",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-invented-number-word",
+    "task": "peer",
+    "scenario": "numeric_word",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-prompt-injection",
+    "task": "peer",
+    "scenario": "prompt_injection",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-tool-request",
+    "task": "peer",
+    "scenario": "tool_request",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-unsupported-buyer",
+    "task": "peer",
+    "scenario": "unsupported_buyer",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-invented-url",
+    "task": "peer",
+    "scenario": "invented_url",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-wrong-evidence",
+    "task": "peer",
+    "scenario": "wrong_evidence",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-duplicate-evidence",
+    "task": "peer",
+    "scenario": "duplicate_evidence",
+    "expectedAccepted": false
+  },
+  {
+    "id": "peer-oversized-text",
+    "task": "peer",
+    "scenario": "oversized_text",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-valid-attribution",
+    "task": "report",
+    "scenario": "valid",
+    "expectedAccepted": true
+  },
+  {
+    "id": "report-unknown-lead",
+    "task": "report",
+    "scenario": "unknown_lead",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-added-lead",
+    "task": "report",
+    "scenario": "added_lead",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-removed-lead",
+    "task": "report",
+    "scenario": "removed_lead",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-unknown-claim",
+    "task": "report",
+    "scenario": "unknown_claim",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-duplicate-claim",
+    "task": "report",
+    "scenario": "duplicate_claim",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-removed-claim",
+    "task": "report",
+    "scenario": "removed_claim",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-wrong-side-evidence",
+    "task": "report",
+    "scenario": "wrong_evidence",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-missing-evidence",
+    "task": "report",
+    "scenario": "missing_evidence",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-invented-digit",
+    "task": "report",
+    "scenario": "numeric_digit",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-invented-number-word",
+    "task": "report",
+    "scenario": "numeric_word",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-invented-url",
+    "task": "report",
+    "scenario": "invented_url",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-unsupported-buyer",
+    "task": "report",
+    "scenario": "unsupported_buyer",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-unsupported-budget",
+    "task": "report",
+    "scenario": "unsupported_budget",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-active-campaign",
+    "task": "report",
+    "scenario": "active_campaign",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-stopped-sponsoring",
+    "task": "report",
+    "scenario": "stopped_sponsoring",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-prompt-injection",
+    "task": "report",
+    "scenario": "prompt_injection",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-html-payload",
+    "task": "report",
+    "scenario": "html_payload",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-extra-field",
+    "task": "report",
+    "scenario": "extra_field",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-fourth-sentence",
+    "task": "report",
+    "scenario": "fourth_sentence",
+    "expectedAccepted": false
+  },
+  {
+    "id": "report-duplicate-narrative",
+    "task": "report",
+    "scenario": "duplicate_narrative",
+    "expectedAccepted": false
+  }
+]

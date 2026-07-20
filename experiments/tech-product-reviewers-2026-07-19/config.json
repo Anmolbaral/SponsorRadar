@@ -1,0 +1,39 @@
+{
+  "as_of": "2026-07-19",
+  "target_window": {
+    "since": "2025-07-19",
+    "until": "2026-07-19"
+  },
+  "stale_cutoff_exclusive": "2026-04-20",
+  "peer_window": {
+    "since": "2026-04-20",
+    "until": "2026-07-19"
+  },
+  "target": {
+    "name": "UrAvgConsumer",
+    "url": "https://www.youtube.com/@UrAvgConsumer",
+    "raw_file": "raw/target-uravgconsumer-sponsors-365.json"
+  },
+  "peers": [
+    {
+      "name": "MKBHD",
+      "url": "https://www.youtube.com/@mkbhd",
+      "raw_file": "raw/peer-mkbhd-sponsors-90.json"
+    },
+    {
+      "name": "Mrwhosetheboss",
+      "url": "https://www.youtube.com/@Mrwhosetheboss",
+      "raw_file": "raw/peer-mrwhosetheboss-sponsors-90.json"
+    },
+    {
+      "name": "Linus Tech Tips",
+      "url": "https://www.youtube.com/@LinusTechTips",
+      "raw_file": "raw/peer-linustechtips-sponsors-90.json"
+    }
+  ],
+  "top_three_domains": [
+    "ridge.com",
+    "ecoflow.com",
+    "samsung.com"
+  ]
+}

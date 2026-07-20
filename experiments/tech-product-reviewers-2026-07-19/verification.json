@@ -1,0 +1,161 @@
+{
+  "verified_at": "2026-07-19",
+  "scope_definition": "The inclusive Upriver placement scope includes explicit sponsorships, promotions, and brand-specific affiliate placements. Generic product affiliate links without evidence of a brand campaign are rejected.",
+  "overlaps": [
+    {
+      "domain": "ridge.com",
+      "brand": "Ridge",
+      "inclusive_scope_status": "pass_with_caveat",
+      "strict_paid_sponsorship_status": "unconfirmed_on_target",
+      "verification_summary": "UrAvgConsumer had a monetized Ridge product placement, while MKBHD ran a Ridge promotion and Linus Tech Tips carried an explicit Ridge sponsorship.",
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/watch?v=LEO2j7cmrbg",
+        "video_title": "Can MKBHD's Tech Setup Replace Mine?",
+        "api_observed_date": "2026-04-12",
+        "public_page_date": "2026-04-11",
+        "public_evidence": "The description links a Ridge Commuter Pro Backpack and three named Ridge accessories, under a generic affiliate disclosure.",
+        "resolved_domain": "ridge.com",
+        "verdict": "Affiliate/product placement verified; direct paid sponsorship was not disclosed."
+      },
+      "peer_evidence": [
+        {
+          "channel": "MKBHD",
+          "video_url": "https://www.youtube.com/watch?v=_gCXmKjDecU",
+          "video_title": "WWDC 2026 Impressions: Yeah, That's About Right",
+          "api_observed_date": "2026-06-09",
+          "public_page_date": "2026-06-08",
+          "public_evidence": "The description offers up to 40% off through ridge.com/MKBHD.",
+          "resolved_domain": "ridge.com",
+          "verdict": "Brand-specific promotion verified."
+        },
+        {
+          "channel": "Linus Tech Tips",
+          "video_url": "https://www.youtube.com/watch?v=cHocYnA_JVY",
+          "video_title": "This $5000 PC From Just Four Years Ago SUCKS",
+          "api_observed_date": "2026-05-19",
+          "public_page_date": "2026-05-19",
+          "public_evidence": "The description says Ridge sponsored the video and links ridge.com/LTT.",
+          "resolved_domain": "ridge.com",
+          "verdict": "Explicit sponsorship verified."
+        }
+      ]
+    },
+    {
+      "domain": "dell.com",
+      "brand": "Dell",
+      "inclusive_scope_status": "reject",
+      "strict_paid_sponsorship_status": "rejected_on_peer",
+      "verification_summary": "The old UrAvgConsumer placement was an explicit Dell sponsorship, but the recent Linus Tech Tips row was only a product affiliate link among reviewed products.",
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/shorts/WqQjK_pfX_c",
+        "video_title": "This new @Dell XPS is 🔥🔥🔥",
+        "api_observed_date": "2026-01-09",
+        "public_page_date": "2026-01-08",
+        "public_evidence": "The description thanks Dell for sponsoring the video and uses #DellCollab.",
+        "resolved_domain": "dell.com",
+        "verdict": "Explicit sponsorship verified."
+      },
+      "peer_evidence": [
+        {
+          "channel": "Linus Tech Tips",
+          "video_url": "https://www.youtube.com/watch?v=x26A28DoT-w",
+          "video_title": "Was I Wrong About the Macbook Neo?",
+          "api_observed_date": "2026-04-23",
+          "public_page_date": "2026-04-23",
+          "public_evidence": "The description contains a Dell 16 product link and a generic affiliate disclaimer, but no Dell campaign or sponsor disclosure.",
+          "resolved_domain": "dell.com",
+          "verdict": "Rejected as a sponsor overlap."
+        }
+      ]
+    },
+    {
+      "domain": "ecoflow.com",
+      "brand": "EcoFlow",
+      "inclusive_scope_status": "pass",
+      "strict_paid_sponsorship_status": "confirmed_on_target_commercial_promotion_on_peer",
+      "verification_summary": "UrAvgConsumer disclosed an EcoFlow sponsorship; Linus Tech Tips recently ran an EcoFlow offer with a creator-specific code and tracked campaign URL.",
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/watch?v=aacWVkX4wvo",
+        "video_title": "The Travel Tech Everyone Should Own in 2025",
+        "api_observed_date": "2025-12-01",
+        "public_page_date": "2025-12-01",
+        "public_evidence": "The description thanks EcoFlow for sponsoring the video and the page declares a paid promotion.",
+        "resolved_domain": "ecoflow.com",
+        "verdict": "Explicit sponsorship verified."
+      },
+      "peer_evidence": [
+        {
+          "channel": "Linus Tech Tips",
+          "video_url": "https://www.youtube.com/watch?v=6FoAOhbeo5Y",
+          "video_title": "I Found Free Money in the Tech House",
+          "api_observed_date": "2026-06-11",
+          "public_page_date": "2026-06-11",
+          "public_evidence": "The description promotes EcoFlow DELTA 3 Ultra with creator code 26EFOUTLT.",
+          "resolved_domain": "ecoflow.com",
+          "verdict": "Brand-specific affiliate/promotion verified."
+        }
+      ]
+    },
+    {
+      "domain": "samsung.com",
+      "brand": "Samsung",
+      "inclusive_scope_status": "pass",
+      "strict_paid_sponsorship_status": "confirmed_on_target_commercial_showcase_on_peer",
+      "verification_summary": "UrAvgConsumer disclosed a Samsung partnership and paid promotion; Linus Tech Tips recently published a dedicated Samsung enterprise-laptop showcase.",
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/watch?v=CxlnQKtZFLk",
+        "video_title": "Our New Smart Laundry Room 2026!",
+        "api_observed_date": "2026-02-22",
+        "public_page_date": "2026-02-22",
+        "public_evidence": "The description uses #SamsungPartner and the page declares a paid promotion.",
+        "resolved_domain": "samsung.com",
+        "verdict": "Brand partnership verified."
+      },
+      "peer_evidence": [
+        {
+          "channel": "Linus Tech Tips",
+          "video_url": "https://www.youtube.com/watch?v=ZORciJStjdU",
+          "video_title": "I can securely erase this computer from anywhere!",
+          "api_observed_date": "2026-06-19",
+          "public_page_date": "2026-06-18",
+          "public_evidence": "The video is a dedicated Galaxy Book6 Enterprise Edition showcase with direct Samsung links and promotional copy.",
+          "resolved_domain": "samsung.com",
+          "verdict": "Dedicated brand showcase/promotion verified."
+        }
+      ]
+    },
+    {
+      "domain": "ohsnap.com",
+      "brand": "Ohsnap",
+      "inclusive_scope_status": "pass_with_caveat",
+      "strict_paid_sponsorship_status": "unconfirmed_on_both_sides",
+      "verification_summary": "Both channels carried brand-specific Ohsnap MCON product promotions, but neither public page explicitly disclosed paid sponsorship.",
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/watch?v=rjYnUYACF8M",
+        "video_title": "My MASSIVE Tech Unboxing 67.0!",
+        "api_observed_date": "2026-03-07",
+        "public_page_date": "2026-03-07",
+        "public_evidence": "The description links two Ohsnap MCON products and labels an Ohsnap MCON chapter under a generic affiliate disclosure.",
+        "resolved_domain": "ohsnap.com",
+        "verdict": "Brand-specific affiliate/product placement verified."
+      },
+      "peer_evidence": [
+        {
+          "channel": "Linus Tech Tips",
+          "video_url": "https://www.youtube.com/watch?v=9Pt1uZPL4Ew",
+          "video_title": "My Wife Needs a New Laptop",
+          "api_observed_date": "2026-06-29",
+          "public_page_date": "2026-06-29",
+          "public_evidence": "The description promotes an Ohsnap sale through a campaign link that resolves to the MCON controller.",
+          "resolved_domain": "ohsnap.com",
+          "verdict": "Brand-specific promotion verified."
+        }
+      ]
+    }
+  ]
+}

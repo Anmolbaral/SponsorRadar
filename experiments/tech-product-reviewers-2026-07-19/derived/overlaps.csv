@@ -1,0 +1,6 @@
+"domain","target_latest","target_ads","peer_count","peers","peer_latest","peer_ads","manual_status","strict_paid_status","brand_research"
+"ridge.com","2026-04-12","4","2","Linus Tech Tips; MKBHD","2026-06-09","2","pass_with_caveat","unconfirmed_on_target","yes"
+"dell.com","2026-01-09","2","1","Linus Tech Tips","2026-04-23","1","reject","rejected_on_peer","no"
+"ohsnap.com","2026-03-07","1","1","Linus Tech Tips","2026-06-29","1","pass_with_caveat","unconfirmed_on_both_sides","no"
+"samsung.com","2026-02-22","1","1","Linus Tech Tips","2026-06-19","1","pass","confirmed_on_target_commercial_showcase_on_peer","yes"
+"ecoflow.com","2025-12-01","1","1","Linus Tech Tips","2026-06-11","1","pass","confirmed_on_target_commercial_promotion_on_peer","yes"

@@ -1,0 +1,1604 @@
+{
+  "results": [
+    {
+      "partner_name": "dbrand",
+      "sponsor_domain": "dbrand.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/dbrand",
+      "total_ads_found": 59,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aAOgZ6cjrio",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "dbrand - Buy a \"Circuit\" series skin for your device: https://dbrand.com/pcb",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Secretlab",
+      "sponsor_domain": "secretlab.co",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/secretlabsgpteltd",
+      "total_ads_found": 54,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aAOgZ6cjrio",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Secretlab - Grab a TITAN Evo ergonomic gaming chair: https://lmg.gg/secretlabltt",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Private Internet Access",
+      "sponsor_domain": "privateinternetaccess.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/private-internet-access",
+      "total_ads_found": 34,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aAOgZ6cjrio",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "PIA - Get the VPN of our choice: https://www.piavpn.com/ltt",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "PIA",
+      "total_ads_found": 25,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Amazon",
+      "total_ads_found": 11,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=X6Cbt3Ro6u8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the HP Film Scanner: geni.us/d25hkL8",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "ASUS",
+      "total_ads_found": 6,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Saily",
+      "sponsor_domain": "saily.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/sailyworld",
+      "sponsor_description": "Saily is an eSIM provider offering affordable data plans for international travel, enabling effortless digital connectivity in over 200 destinations without physical SIM cards. It is known for its user-friendly app and global coverage.",
+      "total_ads_found": 6,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=S82W3hWDvZA",
+        "sponsor_type": "promotion",
+        "published_date": "2026-07-06",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get a 15% discount on Saily eSIM data plans! Download the Saily app and use code LTT at checkout. Or go to https://saily.com/ltt",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Razer",
+      "sponsor_domain": "razer.com",
+      "total_ads_found": 5,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=o4ub_WOWFoo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Razer Blade series of laptops; perfect for work or pleasure: https://lmg.gg/wanrazerblade\n\nGame or work in comfort on a Razer Iskur V2: https://lmg.gg/wanrazeriskur",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Squarespace",
+      "sponsor_domain": "squarespace.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/squarespace",
+      "sponsor_description": "Squarespace is a website builder and business management platform that helps entrepreneurs create professional websites and manage their operations. It is known for its design-focused templates and integrated business tools.",
+      "total_ads_found": 5,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=X6Cbt3Ro6u8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Start building your website today! Visit https://squarespace.syuh.net/LTT and use offer code LTT for 10% off",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Meter",
+      "sponsor_domain": "meter.com",
+      "total_ads_found": 4,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=Z1zDUDvOezo",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-08",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Meter for sponsoring this video! Go to https://meter.com/ltt to book a demo now!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Vessi",
+      "sponsor_domain": "vessi.com",
+      "total_ads_found": 4,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=Ro6RIKgs2mw",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-28",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Make summer plans easier with one pair that does it all! Vessi Weekend Classic and Stormburst are lightweight, and built for all-day comfort. ✨ Grab 15% off your first pair here: https://vessi.com/ltt",
+          "confidence": 0.95
+        }
+      }
+    },
+    {
+      "partner_name": "AMD Gaming",
+      "sponsor_domain": "amdgaming.com",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=o4ub_WOWFoo",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Enter AMD's latest giveaway at https://bit.ly/3RU8jkA to win a brand-new ROG Xbox Ally X!",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "AppControl",
+      "sponsor_domain": "appcontrol.com",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=zvaO4DPM1ZM",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-23",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out AppControl today to identify whatever is gunking up your system. Grab it for free here: https://www.appcontrol.com/",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Boot.dev",
+      "sponsor_domain": "boot.dev",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/bootdotdev",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aAOgZ6cjrio",
+        "sponsor_type": "promotion",
+        "published_date": "2026-07-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Click this link https://boot.dev/?promo=LTT and use my code LTT to get 25% off your first payment for boot.dev.",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Odoo",
+      "sponsor_domain": "odoo.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/odoo",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=eIqa3XQIbvk",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-20",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get a free 15-day trial of Odoo’s all-in-one business solution and see how it can make your life easier! Check it out at https://www.odoo.com/ltt",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "ThreatLocker",
+      "sponsor_domain": "threatlocker.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/threatlockerinc",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=5xN7ndof4Xc",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Secure your business with ThreatLocker today using our link: https://www.threatlocker.com/ltt",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "War Thunder",
+      "sponsor_domain": "warthunder.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/warthunder",
+      "total_ads_found": 3,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=b2vI8IjSWxY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-12",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Play War Thunder for FREE on PC, PlayStation, Xbox, and mobile using the links below!",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Bhvideo Photo",
+      "sponsor_domain": "bhphotovideo.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/the-studio-b-h",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=X6Cbt3Ro6u8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Leica M6 Camera: https://geni.us/QEN5WE",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Cape",
+      "sponsor_domain": "cape.co",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=BCyBANIkjlo",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-20",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Use code WAN and get 33% off your first 6 months: https://cape.co/wan",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "DeleteMe",
+      "sponsor_domain": "joindeleteme.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/deleteme/",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ydAqOAL2Bec",
+        "sponsor_type": "promotion",
+        "published_date": "2026-06-08",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get 20% off DeleteMe consumer plans when you go to http://joindeleteme.com/LTT20 and use promo code LTT20 at checkout",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Framework Computer, Inc",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QuksuOPRbvI",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-05-30",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Linus Sebastian is an investor in Framework Computer, Inc",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "HexOS by Eshtek",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QuksuOPRbvI",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-05-30",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Linus Sebastian is an investor in Framework Computer, Inc and HexOS by Eshtek.",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "ManageEngine",
+      "sponsor_domain": "manageengine.com",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=BCyBANIkjlo",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-20",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Sign up with the following links and enjoy the first 6 months of OpManager Nexus free. On-Site: https://lmg.gg/site24x7 Cloud: https://lmg.gg/manageengine",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "MSI",
+      "sponsor_domain": "msi.com",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=iKL-DHuXeek",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-06",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to MSI for sponsoring this episode! Head over to https://lmg.gg/asWi8",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "NexiGo",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bnJdls8vyNQ",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-20",
+        "evidence": {
+          "source": "description",
+          "excerpt": "lmg.gg/nexigo",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "REDTIGER Official",
+      "sponsor_domain": "redtigercam.com",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=o4ub_WOWFoo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out Redtiger during their Mega Sale from June 23rd to June 26th and save up to 50% off site-wide! Grab the F7NA with Code: RTF7NA4K for a final price of $118.99.",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "UGREEN",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=umaKDHNmfG8",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to UGREEN for sponsoring this video!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Aaliyah",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Acuity Scheduling",
+      "sponsor_domain": "acuityscheduling.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=BfRCEeRiLI4",
+        "sponsor_type": "promotion",
+        "published_date": "2026-04-22",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out https://acuity.yt.link/zFJ7HCE to save 20% off your first Acuity Scheduling subscription.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Artnice",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "BestBuy",
+      "sponsor_domain": "bestbuy.ca",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=9Pt1uZPL4Ew",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "HP Omnibook X: https://prsm2.com/6JXqKvKj4\nHP Omnibook 5: https://prsm2.com/DDj-Z-4_z",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Brondell",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Christie Digital Systems",
+      "sponsor_domain": "christiedigital.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/christie-digital-systems",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=JAPMSoM6U7w",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-13",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Christie Boxer 4K30: https://lmg.gg/KFVa8",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Cinati",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Crucial",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Dell",
+      "sponsor_domain": "dell.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=x26A28DoT-w",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-04-23",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Dell 16: https://prsm2.com/zMpaZ26QJ",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "EcoFlow",
+      "sponsor_domain": "ecoflow.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/ecoflowtech",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=6FoAOhbeo5Y",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Your FIRST choice for power backup is @EcoFlowTech. Save up to 63% OFF... Use code 26EFPDLTT for 5% OFF",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Elgato",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=6XQJBcO6Sfg",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Elgato Wave Mic Arm: https://prsm2.com/_a_FKW8C- Elgato Key Light: https://prsm2.com/LL_5JhSLu",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Epomaker",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Equinix",
+      "sponsor_domain": "equinix.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/equinix",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=fJduAvm70Ds",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-08",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Equinix for sponsoring this video and giving us a tour of their facilities! Head over to https://lmg.gg/EQUINIX",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Fractal Design",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Google",
+      "sponsor_domain": "vernalspace.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/google/jobs",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=6XQJBcO6Sfg",
+        "sponsor_type": "promotion",
+        "published_date": "2026-05-16",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Click the link below to get an extra 6% off your Vernal desk.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Govee",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Hack Club",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.7
+        }
+      }
+    },
+    {
+      "partner_name": "iamats.com",
+      "sponsor_domain": "iamats.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=M8fk9h3gsAs",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-07",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Buy the DDR Pad: https://www.iamats.com/",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "IKEA",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Intel",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=lOaRRVeB2tU",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-17",
+        "evidence": {
+          "source": "description",
+          "excerpt": "@Intel Core Ultra 7 270KI Plus",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "JVC",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=JAPMSoM6U7w",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-13",
+        "evidence": {
+          "source": "description",
+          "excerpt": "JVC DLA-RS3200: https://lmg.gg/ZheoF",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "KitchenAid",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Kiwi Ears",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "LinkSynergy",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=zvaO4DPM1ZM",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-23",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Kingston Fury Beast 16GB (2x8GB) DDR5: https://prsm2.com/vDxWD9z_X",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Mammotion",
+      "sponsor_domain": "mammotion.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=p59TuLQkl6A",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-05-09",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Mammotion for sponsoring this video! The Mammotion Memorial Day Sale is live from May 11–24 with limited-time savings on LUBA Series robot mowers. Extra discounts are available for new users after sign-up: Official Store: US: https://geni.us/LinusTechTipsUS CA: https://",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "MotionGrey",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=BCyBANIkjlo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-20",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the MotionGrey Ergo2 Pro at https://motiongrey.com/r?id=no5sc5",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Newegg",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=W5BMk-ErRno",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-02",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Cooler Master MWE Gold 1000 V4 with GPU Shield: https://www.newegg.com/...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Nintendo",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "NUTICT",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Ohsnap",
+      "sponsor_domain": "ohsnap.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=9Pt1uZPL4Ew",
+        "sponsor_type": "promotion",
+        "published_date": "2026-06-29",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get up to 50% off during Ohsnap's totally normal 4th of July Sale: https://tw-np.com/mcon-july-sale",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "privacy",
+      "sponsor_domain": "privacy.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=8KQFgWdiudo",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-10",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get your $5 sign-up bonus at http://privacy.com/ltt. You can use it on your first purchase!",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Qualcomm",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=s9igt2i91q0",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-13",
+        "evidence": {
+          "source": "description",
+          "excerpt": "#sponsoredbysnapdragon",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Redtiger",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Retailer",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=cHocYnA_JVY",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-05-19",
+        "evidence": {
+          "source": "description",
+          "excerpt": "NVIDIA RTX 5090 Founders Edition: https://prsm2.com/10LK-8seL",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Ridge",
+      "sponsor_domain": "ridge.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=cHocYnA_JVY",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-05-19",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Ridge for sponsoring this video! Head to https://Ridge.com/LTT and get something nice for your dad!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "ROG",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Samsung",
+      "sponsor_domain": "samsung.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/samsung-electronics-america",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=ZORciJStjdU",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-19",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Samsung Galaxy Book6 Enterprise Edition here:",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Seasonic",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "ServerPartDeals.com",
+      "sponsor_domain": "serverpartdeals.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/serverpartdeals-com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=cOOJEKS4sJs",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-13",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Get the drives you need without waiting months for supply to catch up. https://www.serverpartdeals.com/wan",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Shark",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Shokz",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=o4ub_WOWFoo",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-27",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Shokz OpenFit Pro through our links below and take advantage of their Prime Day sale with up to 35% off. Use code “WAN” at checkout for an extra 5% off.",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Sihoo",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=6FoAOhbeo5Y",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-11",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Save big on your SIHOO Doro C300 Pro V2 during the Prime Day sale from June 3rd to June 30th and save an additional 10% using code: YTBLINUSTECHTIP",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Silicone Power",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Sony",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=aAOgZ6cjrio",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-07-14",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out the Sony BRAVIA 9 II True RGB TV: https://prsm2.com/g3yOM9zWq",
+          "confidence": 0.8
+        }
+      }
+    },
+    {
+      "partner_name": "Tello",
+      "sponsor_domain": "tello.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/tello-mobile",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=JAPMSoM6U7w",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-13",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Tello for sponsoring this video!",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Thermalright",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Toshiba",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Wispr Flow",
+      "sponsor_domain": "wisprflow.ai",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/wisprflow",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=bNpmB1heEF0",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-05-28",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks Wispr Flow for sponsoring this video! Check them out at https://ref.wisprflow.ai/ltt",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Womier",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=2jMOVVNf2i8",
+        "sponsor_type": "affiliate",
+        "published_date": "2026-06-25",
+        "evidence": {
+          "source": "description",
+          "excerpt": "latest offerings at https://lmg.gg/f6PMg  Head over to https://bit.ly/4eqmQgE to win a ROG XBOX Ally X!  Go to https://stardance.hackclub.com/amd to check out t...",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Zapier",
+      "sponsor_domain": "zapier.com",
+      "total_ads_found": 1,
+      "most_recent_ad": {
+        "publication_name": "Linus Tech Tips",
+        "publication_url": "https://youtube.com/@LinusTechTips",
+        "publication_categories": [
+          "Gaming"
+        ],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=iKL-DHuXeek",
+        "sponsor_type": "implicit_ad",
+        "published_date": "2026-06-06",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Go to http://zapier.com/wan to join the millions of businesses",
+          "confidence": 0.9
+        }
+      }
+    }
+  ],
+  "total_count": 77,
+  "has_more": false
+}

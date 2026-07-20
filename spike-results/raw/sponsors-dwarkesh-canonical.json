@@ -1,0 +1,106 @@
+{
+  "results": [
+    {
+      "partner_name": "Cursor",
+      "sponsor_domain": "cursor.com",
+      "sponsor_description": "Cursor is an AI coding agent platform that helps developers build software faster by understanding codebases and automating tasks. It is known for its agentic approach and integration across the development lifecycle.",
+      "total_ads_found": 8,
+      "most_recent_ad": {
+        "publication_name": "Dwarkesh Patel",
+        "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+        "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-10",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Cursor’s iOS app lets me kick off real work... Check out the app now at https://cursor.com/dwarkesh",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Jane Street",
+      "sponsor_domain": "janestreet.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/jane-street-global",
+      "total_ads_found": 14,
+      "most_recent_ad": {
+        "publication_name": "Dwarkesh Patel",
+        "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+        "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=QbdbAhaJoCQ",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-07-10",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Check out open positions at https://janestreet.com/dwarkesh",
+          "confidence": 0.9
+        }
+      }
+    },
+    {
+      "partner_name": "Google",
+      "sponsor_domain": "google.com",
+      "sponsor_linkedin_url": "https://www.linkedin.com/company/google-for-startups",
+      "sponsor_description": "Google is a global technology company that provides a wide range of internet-related services and products, including cloud computing, software development tools, artificial intelligence, and digital translation services.",
+      "total_ads_found": 2,
+      "most_recent_ad": {
+        "publication_name": "Dwarkesh Patel",
+        "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+        "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=TfyPshgMbug",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-30",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Gemini 3.5 Live Translate is what I wished I'd had on my last trip to China. It detects more than 70 languages and translates them in near real-time… and it preserves your original pacing and intonation. If you're building an app that needs live translation, you should check out ",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Mercury",
+      "sponsor_domain": "mercury.com",
+      "total_ads_found": 8,
+      "most_recent_ad": {
+        "publication_name": "Dwarkesh Patel",
+        "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+        "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=20p5-kQXF_Q",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-26",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Thanks to Mercury for sponsoring this essay.",
+          "confidence": 1.0
+        }
+      }
+    },
+    {
+      "partner_name": "Crusoe",
+      "sponsor_domain": "crusoe.ai",
+      "total_ads_found": 4,
+      "most_recent_ad": {
+        "publication_name": "Dwarkesh Patel",
+        "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+        "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+        "publication_platform": "youtube",
+        "content_url": "https://www.youtube.com/watch?v=U1FrhkLQnCI",
+        "sponsor_type": "explicit_ad",
+        "published_date": "2026-06-17",
+        "evidence": {
+          "source": "description",
+          "excerpt": "Crusoe is turning the AI datacenter buildout into an industrial process. At their massive Colorado factory, they assemble Spark units, modular datacenters with power, cooling, and fire suppression built in. They also manufacture specific components in-house to skip the longest le",
+          "confidence": 1.0
+        }
+      }
+    }
+  ],
+  "total_count": 5,
+  "next_cursor": "eyJicmFuZF9uYW1lIjogIkNydXNvZSIsICJzb3J0IjogInJlY2VudCIsICJkIjogIjIwMjYtMDYtMTcifQ==",
+  "has_more": true
+}

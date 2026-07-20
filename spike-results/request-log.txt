@@ -1,0 +1,21 @@
+HTTP 200 | time 0.732553s
+GET /v1/sponsors | HTTP 400 | time 0.275407s | bytes 133
+GET /v1/sponsors | HTTP 400 | time 0.284610s | bytes 133
+GET /v1/sponsors | HTTP 200 | time 0.399275s | bytes 47
+HTTP 200 | time 1.292453s
+Dwarkesh diagnostic | HTTP 200 | time 0.690521s
+Dwarkesh + Crusoe exact | HTTP 200 | time 0.799172s
+Dwarkesh sponsors | HTTP 200 | time 0.843784s | bytes 3946
+Creator resolution | HTTP 200 | time 3.452825s
+Resolve Not Boring | HTTP 200 | time 0.664566s
+Resolve Acquired | HTTP 400 | time 0.379954s
+Resolve Not Boring | HTTP 200 | time 0.371999s
+Resolve Acquired | HTTP 400 | time 0.256276s
+Resolve Acquired profile-by-url | HTTP 400 | time 0.255976s
+Resolve Joe Rogan | HTTP 400 | time 0.402500s
+Resolve Oprah Super Soul | HTTP 400 | time 0.435598s
+Acquired search by name | HTTP 200 | time 1.080290s | bytes 8942
+Acquired resolve website | HTTP 400 | time 0.176571s | bytes 84
+Acquired resolve Spotify | HTTP 200 | time 0.349171s | bytes 229
+Acquired sponsorship Apple | HTTP 200 | time 0.323100s | bytes 47
+Acquired sponsorship Spotify | HTTP 200 | time 0.304506s | bytes 47

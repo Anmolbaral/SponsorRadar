@@ -1,0 +1,171 @@
+{
+  "verified_at": "2026-07-19",
+  "scope": {
+    "target": "UrAvgConsumer",
+    "target_history_reused": true,
+    "peer_window": {
+      "since": "2026-04-20",
+      "until": "2026-07-19"
+    },
+    "manual_review": "Every strict peer API row and every resulting domain overlap was checked against its public YouTube page. Tracking links were resolved where present."
+  },
+  "rubric": {
+    "placement_classes": {
+      "S3": "Confirmed paid sponsorship or partnership: the brand is named and the public page contains an unambiguous sponsor or partner disclosure, or an attributable YouTube paid-promotion declaration.",
+      "S2": "Confirmed brand promotion or showcase, but compensation is not publicly established.",
+      "S1": "Affiliate link, product mention, or monetized product placement only.",
+      "S0": "Organic editorial mention.",
+      "SU": "Insufficient public evidence to classify."
+    },
+    "product_line_continuity": {
+      "A": "Exact continuity: the same product family, model line, or direct successor, within the same business unit and buyer use case.",
+      "B": "Adjacent continuity: different lines within the same business unit and buyer use case, with a credible campaign progression.",
+      "C": "Business-unit or buyer-use-case mismatch.",
+      "U": "Product line cannot be established."
+    },
+    "strict_pass_gate": "Target S3 plus at least one peer S3 plus product-line continuity A or B.",
+    "exclusions": [
+      "A coupon or affiliate link alone cannot qualify as S3.",
+      "A conglomerate root-domain match cannot pass when the placements belong to different business units.",
+      "Unresolved product-line continuity cannot pass.",
+      "The result set is not padded when fewer than three matches pass."
+    ]
+  },
+  "peer_inventory": [
+    {
+      "channel": "Dave2D",
+      "api_partner_name": "Dell",
+      "api_domain": "dell.com",
+      "manually_resolved_domain": "dell.com",
+      "strict_classification": "S3",
+      "join_status": "joinable",
+      "video_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+      "video_title": "The $599 Dell XPS Laptop",
+      "api_observed_date": "2026-06-16",
+      "public_page_date": "2026-06-16",
+      "paid_promotion_declaration": true,
+      "public_evidence": "The description explicitly says Dell sponsored the video, names XPS 13, and uses #DellCollab.",
+      "outbound_url": "https://del.ly/Dave2D",
+      "resolved_destination": "https://www.dell.com/en-us/lp/xps-laptops",
+      "product_line": "Dell XPS 13 / XPS laptops",
+      "verdict": "Confirmed Dell sponsorship in the XPS consumer-laptop family."
+    },
+    {
+      "channel": "SarahGrace",
+      "api_partner_name": "Wispr Flow",
+      "api_domain": null,
+      "manually_resolved_domain": "wisprflow.ai",
+      "strict_classification": "S3",
+      "join_status": "joinable_after_manual_domain_resolution",
+      "video_url": "https://www.youtube.com/watch?v=bajgHpxpZ8E",
+      "video_title": "I Bought AI Generated Apple Products",
+      "api_observed_date": "2026-04-30",
+      "public_page_date": "2026-04-30",
+      "paid_promotion_declaration": false,
+      "public_evidence": "The description labels Wispr Flow as the sponsor, uses #WisprFlowPartner, and gives a creator promo code.",
+      "outbound_url": "https://ref.wisprflow.ai/SarahGrace",
+      "resolved_destination": "https://wisprflow.ai/?promo_code=SARAH",
+      "product_line": "Wispr Flow voice-dictation software",
+      "verdict": "Confirmed sponsorship; no stale target-domain match."
+    },
+    {
+      "channel": "Hayls World",
+      "api_partner_name": "Bitdefender",
+      "api_domain": null,
+      "manually_resolved_domain": null,
+      "strict_classification": "S3",
+      "join_status": "excluded_missing_domain",
+      "video_url": "https://www.youtube.com/watch?v=KEBYs72Qlac",
+      "video_title": "Where Ferrari TESTS ALL THEIR CARS!! 🏎️",
+      "api_observed_date": "2026-07-01",
+      "public_page_date": "2026-07-01",
+      "paid_promotion_declaration": true,
+      "public_evidence": "The page declares paid promotion and thanks Bitdefender for arranging the Italy experience; no sponsor destination is provided.",
+      "outbound_url": null,
+      "resolved_destination": null,
+      "product_line": "Bitdefender brand activation; specific product not stated",
+      "verdict": "Confirmed paid brand activation, but excluded from the domain join because no attributable sponsor domain was present."
+    }
+  ],
+  "overlaps": [
+    {
+      "domain": "dell.com",
+      "brand": "Dell",
+      "target_classification": "S3",
+      "peer_classification": "S3",
+      "product_line_continuity_grade": "A",
+      "gate_result": "strict_pass",
+      "business_unit": "Dell client / consumer XPS laptops",
+      "target_product_line": "Dell XPS 14 / XPS laptops",
+      "peer_product_line": "Dell XPS 13 / XPS laptops",
+      "continuity_reason": "Both placements explicitly promote the XPS laptop family to consumer technology buyers. The model differs, but the family, business unit, and buyer use case are the same.",
+      "target_latest_api_date": "2026-01-09",
+      "target_days_since_latest": 191,
+      "peer_latest_api_date": "2026-06-16",
+      "peer_days_since_latest": 33,
+      "target_evidence": {
+        "channel": "UrAvgConsumer",
+        "video_url": "https://www.youtube.com/shorts/WqQjK_pfX_c",
+        "video_title": "This new @Dell XPS is 🔥🔥🔥",
+        "api_observed_date": "2026-01-09",
+        "public_page_date": "2026-01-08",
+        "public_evidence": "The description thanks Dell for sponsoring the video, links the XPS laptop offer, and uses #DellCollab.",
+        "outbound_url": "https://dell.to/6001CT1Jz",
+        "resolved_destination": "Dell XPS 14 product page",
+        "verdict": "S3 confirmed sponsorship."
+      },
+      "peer_evidence": {
+        "channel": "Dave2D",
+        "video_url": "https://www.youtube.com/watch?v=eix1m_BY3Ts",
+        "video_title": "The $599 Dell XPS Laptop",
+        "api_observed_date": "2026-06-16",
+        "public_page_date": "2026-06-16",
+        "public_evidence": "The description thanks Dell for sponsoring the video, names XPS 13, links the XPS family page, and uses #DellCollab.",
+        "outbound_url": "https://del.ly/Dave2D",
+        "resolved_destination": "https://www.dell.com/en-us/lp/xps-laptops",
+        "verdict": "S3 confirmed sponsorship."
+      }
+    }
+  ],
+  "first_pilot_reclassification": {
+    "raw_overlaps": 5,
+    "inclusive_accepted": 4,
+    "strict_passes": 0,
+    "results": [
+      {
+        "domain": "ridge.com",
+        "strict_result": "fail",
+        "reason": "The target evidence was an affiliate/product placement (S1), not an S3 sponsorship."
+      },
+      {
+        "domain": "dell.com",
+        "strict_result": "fail",
+        "reason": "The large-peer evidence was a generic product affiliate link (S1), not an S3 Dell sponsorship."
+      },
+      {
+        "domain": "ohsnap.com",
+        "strict_result": "fail",
+        "reason": "Neither side had an unambiguous paid-sponsorship disclosure."
+      },
+      {
+        "domain": "samsung.com",
+        "strict_result": "fail",
+        "reason": "The peer placement was not confirmed S3 and the product lines crossed home appliances and enterprise laptops (continuity C)."
+      },
+      {
+        "domain": "ecoflow.com",
+        "strict_result": "fail",
+        "reason": "The target was S3, but the large-peer placement was a creator-code promotion without confirmed paid sponsorship (S2)."
+      }
+    ]
+  },
+  "brand_research_assessment": {
+    "domain": "dell.com",
+    "report_file": "raw/brand-research/dell.json",
+    "what_it_added": "A concise description of Dell's consumer and enterprise footprint, professional voice, broad audience, and technology positioning.",
+    "what_it_did_not_add": "It did not identify the XPS campaign, current product priority, media buyer, agency, creator brief, geography, or budget.",
+    "continuity_source": "The A-grade XPS continuity comes from the two manually verified placements and their destination pages, not from Brand Research.",
+    "standalone_usefulness_score": 4,
+    "combined_lead_brief_usefulness_score": 8
+  }
+}

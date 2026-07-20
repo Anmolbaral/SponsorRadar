@@ -1,0 +1,8 @@
+HTTP/2 200
+date: Sun, 19 Jul 2026 04:57:49 GMT
+content-type: application/json
+content-length: 229
+server: uvicorn
+x-request-id: 1a2782171174414db615d7c35b8483af
+cache-control: no-store
+x-content-type-options: nosniff

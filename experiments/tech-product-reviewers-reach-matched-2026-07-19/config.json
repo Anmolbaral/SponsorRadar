@@ -1,0 +1,44 @@
+{
+  "as_of": "2026-07-19",
+  "target_window": {
+    "since": "2025-07-19",
+    "until": "2026-07-19"
+  },
+  "stale_cutoff_exclusive": "2026-04-20",
+  "peer_window": {
+    "since": "2026-04-20",
+    "until": "2026-07-19"
+  },
+  "target": {
+    "name": "UrAvgConsumer",
+    "url": "https://www.youtube.com/@UrAvgConsumer",
+    "subscriber_count": 3450000,
+    "cached_raw_file": "../tech-product-reviewers-2026-07-19/raw/target-uravgconsumer-sponsors-365.json"
+  },
+  "peers": [
+    {
+      "name": "Dave2D",
+      "url": "https://www.youtube.com/@Dave2D",
+      "subscriber_count": 3690000,
+      "raw_file": "raw/peer-dave2d-strict-90.json"
+    },
+    {
+      "name": "SarahGrace",
+      "url": "https://www.youtube.com/@TheSarahGrace",
+      "subscriber_count": 3710000,
+      "raw_file": "raw/peer-sarahgrace-strict-90.json"
+    },
+    {
+      "name": "Hayls World",
+      "url": "https://www.youtube.com/@HaylsWorld",
+      "subscriber_count": 2660000,
+      "raw_file": "raw/peer-haylsworld-strict-90.json"
+    }
+  ],
+  "sponsor_types": [
+    "explicit_ad"
+  ],
+  "brand_research_domains": [
+    "dell.com"
+  ]
+}

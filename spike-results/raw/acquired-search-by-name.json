@@ -1,0 +1,350 @@
+{
+  "results": [
+    {
+      "score": 0.8599999999999999,
+      "channels": [
+        {
+          "platform": "tiktok",
+          "handle": "@acquiredstyle",
+          "url": "https://tiktok.com/@acquiredstyle",
+          "platform_id": "6766642825305588742",
+          "display_name": "ACQUIRED STYLE",
+          "profile_pic_url": "https://p16-common-sign.tiktokcdn-us.com/tos-useast5-avt-0068-tx/c3c67b5fea1f2da375c854854250d2d8~tplv-tiktokx-cropcenter:1080:1080.jpeg",
+          "subscriber_count": 1700000,
+          "subscriber_count_text": "1.70M",
+          "follower_bucket": {
+            "id": "over_1m",
+            "display": "1M+ followers",
+            "min_followers": 1000000
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "fashion",
+          "name": "Fashion",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "outfits_styling",
+          "name": "Outfits & Styling",
+          "type": "category",
+          "level": 2,
+          "parent_id": "fashion"
+        }
+      ],
+      "tags": [
+        {
+          "id": "tax:fashion",
+          "name": "Fashion"
+        },
+        {
+          "id": "tax:outfits_styling",
+          "name": "Outfits & Styling"
+        }
+      ]
+    },
+    {
+      "score": 0.8483010078058955,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@acquired.style",
+          "url": "https://instagram.com/acquired.style",
+          "platform_id": "17841418525302213",
+          "display_name": "Brigette Pheloung",
+          "profile_pic_url": "https://instagram.fhan5-9.fna.fbcdn.net/v/t51.2885-19/495276186_18087868618617511_5020808246914939841_n.jpg",
+          "subscriber_count": 971000,
+          "subscriber_count_text": "971K",
+          "follower_bucket": {
+            "id": "300k_1m",
+            "display": "300K-1M followers",
+            "min_followers": 300000,
+            "max_followers": 999999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "fashion",
+          "name": "Fashion",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "outfits_styling",
+          "name": "Outfits & Styling",
+          "type": "category",
+          "level": 2,
+          "parent_id": "fashion"
+        }
+      ],
+      "tags": [
+        {
+          "id": "tax:fashion",
+          "name": "Fashion"
+        },
+        {
+          "id": "tax:outfits_styling",
+          "name": "Outfits & Styling"
+        }
+      ]
+    },
+    {
+      "score": 0.8221657845739011,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@acquired_by_andrea",
+          "url": "https://instagram.com/acquired_by_andrea",
+          "platform_id": "17841401769018757",
+          "display_name": "Acquired by Andrea",
+          "profile_pic_url": "https://instagram.fagp3-1.fna.fbcdn.net/v/t51.2885-19/355653875_6272319449525926_324722716248850965_n.jpg",
+          "subscriber_count": 278000,
+          "subscriber_count_text": "278K",
+          "follower_bucket": {
+            "id": "100k_300k",
+            "display": "100K-300K followers",
+            "min_followers": 100000,
+            "max_followers": 299999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "home_diy",
+          "name": "Home & DIY",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "interior_design_decor",
+          "name": "Interior Design",
+          "type": "category",
+          "level": 2,
+          "parent_id": "home_diy"
+        }
+      ],
+      "tags": [
+        {
+          "id": "tax:home_diy",
+          "name": "Home & DIY"
+        },
+        {
+          "id": "tax:interior_design_decor",
+          "name": "Interior Design"
+        }
+      ]
+    },
+    {
+      "score": 0.7800581747105048,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@acquiredjack",
+          "url": "https://instagram.com/acquiredjack",
+          "platform_id": "17841404412679509",
+          "display_name": "guwop",
+          "profile_pic_url": "https://instagram.fqpa2-1.fna.fbcdn.net/v/t51.2885-19/471403557_1249438606272313_6441506576218747383_n.jpg",
+          "subscriber_count": 37100,
+          "subscriber_count_text": "37.1K",
+          "follower_bucket": {
+            "id": "10k_50k",
+            "display": "10K-50K followers",
+            "min_followers": 10000,
+            "max_followers": 49999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "music",
+          "name": "Music",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "artists_releases",
+          "name": "Artists & Releases",
+          "type": "category",
+          "level": 2,
+          "parent_id": "music"
+        }
+      ],
+      "creator_id": "d91fa8ba-357d-4aa4-813d-11da6121a3ec",
+      "tags": [
+        {
+          "id": "tax:music",
+          "name": "Music"
+        },
+        {
+          "id": "tax:artists_releases",
+          "name": "Artists & Releases"
+        }
+      ]
+    },
+    {
+      "score": 0.753478876487555,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@acquiredrevival",
+          "url": "https://instagram.com/acquiredrevival",
+          "platform_id": "17841464699899169",
+          "display_name": "Alex Nusinkis | Intentional Style Expert",
+          "profile_pic_url": "https://instagram.fmil1-1.fna.fbcdn.net/v/t51.82787-19/658346751_17942763894156664_1601025203781234047_n.jpg",
+          "subscriber_count": 10400,
+          "subscriber_count_text": "10.4K",
+          "follower_bucket": {
+            "id": "10k_50k",
+            "display": "10K-50K followers",
+            "min_followers": 10000,
+            "max_followers": 49999
+          }
+        },
+        {
+          "platform": "tiktok",
+          "handle": "@acquiredrevival",
+          "url": "https://tiktok.com/@acquiredrevival",
+          "platform_id": "7333276680953725998",
+          "display_name": "Alex Nusinkis",
+          "profile_pic_url": "https://p19-common-sign.tiktokcdn-us.com/tos-useast8-avt-0068-tx2/ef02eb8efd2d7215ca2c6ff6bba54364~tplv-tiktokx-cropcenter:1080:1080.jpeg",
+          "subscriber_count": 3060,
+          "subscriber_count_text": "3.06K",
+          "follower_bucket": {
+            "id": "under_5k",
+            "display": "Under 5K followers",
+            "min_followers": 0,
+            "max_followers": 4999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "fashion",
+          "name": "Fashion",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "outfits_styling",
+          "name": "Outfits & Styling",
+          "type": "category",
+          "level": 2,
+          "parent_id": "fashion"
+        }
+      ],
+      "creator_id": "4b38c776-4442-42a3-b009-ee0d28bcc3df",
+      "tags": [
+        {
+          "id": "tax:fashion",
+          "name": "Fashion"
+        },
+        {
+          "id": "tax:outfits_styling",
+          "name": "Outfits & Styling"
+        }
+      ]
+    },
+    {
+      "score": 0.751439418537101,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@acquiredfreedom",
+          "url": "https://instagram.com/acquiredfreedom",
+          "platform_id": "17841450705176001",
+          "display_name": "David Van Breda",
+          "profile_pic_url": "https://instagram.fbaq9-1.fna.fbcdn.net/v/t51.2885-19/485272855_1046691633910945_2829152656644998358_n.jpg",
+          "subscriber_count": 9450,
+          "subscriber_count_text": "9.45K",
+          "follower_bucket": {
+            "id": "5k_10k",
+            "display": "5K-10K followers",
+            "min_followers": 5000,
+            "max_followers": 9999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "business_entrepreneurship",
+          "name": "Business & Entrepreneurship",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "startups",
+          "name": "Startups",
+          "type": "category",
+          "level": 2,
+          "parent_id": "business_entrepreneurship"
+        }
+      ],
+      "tags": [
+        {
+          "id": "tax:business_entrepreneurship",
+          "name": "Business & Entrepreneurship"
+        },
+        {
+          "id": "tax:startups",
+          "name": "Startups"
+        }
+      ]
+    },
+    {
+      "score": 0.39517470518511555,
+      "channels": [
+        {
+          "platform": "instagram",
+          "handle": "@_tactically_acquired",
+          "url": "https://instagram.com/_tactically_acquired",
+          "platform_id": "17841401535867273",
+          "display_name": "Raymond Carney",
+          "profile_pic_url": "https://scontent-phl2-1.cdninstagram.com/v/t51.2885-19/468788797_518244714550571_3341459917031769341_n.jpg",
+          "subscriber_count": 4240,
+          "subscriber_count_text": "4.24K",
+          "follower_bucket": {
+            "id": "under_5k",
+            "display": "Under 5K followers",
+            "min_followers": 0,
+            "max_followers": 4999
+          }
+        }
+      ],
+      "associated_creators": [],
+      "labels": [
+        {
+          "id": "sports",
+          "name": "Sports",
+          "type": "category",
+          "level": 1
+        },
+        {
+          "id": "athletes",
+          "name": "Athletes",
+          "type": "category",
+          "level": 2,
+          "parent_id": "sports"
+        }
+      ],
+      "tags": [
+        {
+          "id": "tax:sports",
+          "name": "Sports"
+        },
+        {
+          "id": "tax:athletes",
+          "name": "Athletes"
+        }
+      ]
+    }
+  ]
+}

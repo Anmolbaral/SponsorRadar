@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "sponsor_id": "br_bf5cc52bead244bd856d823d6aaa0868",
+      "sponsor_name": "Crusoe",
+      "sponsor_domain": "crusoe.ai",
+      "sponsor_type": "explicit_ad",
+      "partner_confidence": 1.0,
+      "publication_name": "Dwarkesh Patel",
+      "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+      "publication_categories": ["News & Commentary", "Analysis & Opinion"],
+      "publication_platform": "youtube",
+      "content_url": "https://www.youtube.com/watch?v=Hrbq66XqtCo",
+      "published_date": "2026-04-15",
+      "evidence": {
+        "source": "description",
+        "excerpt": "Crusoe's cloud runs on state-of-the-art Blackwell GPUs, with Vera Rubin deployment scheduled for later this year. But hardware is only part of the story—for inference, Crusoe's MemoryAlloy tech implements a cluster-wide KV cache, delivering up to 10x faster TTFT and 5x better thr",
+        "confidence": 1.0
+      }
+    }
+  ],
+  "total_count": 1,
+  "has_more": false,
+  "tracking_status": {
+    "publication_url": "https://www.youtube.com/@DwarkeshPatel",
+    "channel_name": "Dwarkesh Patel",
+    "status": "active",
+    "message": ""
+  }
+}
