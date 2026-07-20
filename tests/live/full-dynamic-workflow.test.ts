@@ -31,6 +31,10 @@ if (
 }
 
 const RUN_CREDIT_LIMIT = 160;
+const COLD_RUN_CREDIT_QUOTE = 157;
+const RESOLUTION_CREDIT_CEILING = 11;
+const EXECUTION_CREDIT_CEILING = 146;
+const EXPECTED_TARGET_RESOLUTION_OBSERVATIONS = 2;
 const DEFAULT_TARGET = "@dwarkeshPatel";
 
 describe("manually approved live-evidence dynamic product workflow", () => {
@@ -77,19 +81,37 @@ describe("manually approved live-evidence dynamic product workflow", () => {
                       `${JSON.stringify({
                         type: "sponsor_radar_live_http",
                         phase: event.phase,
+                        outcome:
+                          event.phase === "completed"
+                            ? "success"
+                            : "failure",
                         operation: event.audit?.operation ?? null,
                         requestId: event.requestId,
                         providerRequestId:
                           event.meta.providerRequestId,
                         attempts: event.meta.attempts.length,
-                        usage:
+                        retryCount: Math.max(
+                          0,
+                          event.meta.attempts.length - 1
+                        ),
+                        latencyMs: event.meta.latencyMs,
+                        rows:
                           event.phase === "completed"
-                            ? (event.usage ?? null)
+                            ? (event.usage?.rows ?? null)
+                            : null,
+                        provisionalCredits:
+                          event.phase === "completed"
+                            ? (event.usage?.resultBasedCredits ?? null)
                             : null,
                         status:
+                          event.meta.attempts.at(-1)?.status ?? null,
+                        providerIssue:
                           event.phase === "failed"
-                            ? event.status
-                            : 200
+                            ? {
+                                code: event.code,
+                                status: event.status
+                              }
+                            : null
                       })}\n`
                     );
                   }
@@ -115,9 +137,15 @@ describe("manually approved live-evidence dynamic product workflow", () => {
 
         expect(created.mode).toBe("live");
         expect(created.status).toBe("awaiting_plan_approval");
-        expect(created.plan.totalCreditCeiling).toBeLessThanOrEqual(
-          RUN_CREDIT_LIMIT
-        );
+        expect(created.accounting).toEqual({
+          policy: "per_run_v1",
+          maximumCredits: RUN_CREDIT_LIMIT
+        });
+        expect(created.plan).toMatchObject({
+          resolutionCreditCeiling: RESOLUTION_CREDIT_CEILING,
+          executionCreditCeiling: EXECUTION_CREDIT_CEILING,
+          totalCreditCeiling: COLD_RUN_CREDIT_QUOTE
+        });
         expect(created.plan.llmCallCeiling).toBe(2);
 
         const proposed = await service.approvePlan(created.runId, {
@@ -134,9 +162,10 @@ describe("manually approved live-evidence dynamic product workflow", () => {
         expect(proposed.peerProposal!.peers.length).toBeLessThanOrEqual(
           3
         );
-        expect(proposed.peerProposal!.quote.creditCeiling).toBeLessThanOrEqual(
-          created.plan.executionCreditCeiling
-        );
+        expect(proposed.peerProposal!.quote).toMatchObject({
+          creditCeiling: EXECUTION_CREDIT_CEILING,
+          estimateKind: "maximum_reservation"
+        });
 
         const completed = await service.approveExecution(
           proposed.runId,
@@ -159,6 +188,16 @@ describe("manually approved live-evidence dynamic product workflow", () => {
             event.eventType === "llm.completed" ||
             event.eventType === "llm.failed"
         );
+        const targetResolutionObservations = terminalHttpEvents.filter(
+          (event) =>
+            event.phase === "completed" &&
+            event.audit?.operation === "live.resolve_target"
+        );
+        const automaticRetries = terminalHttpEvents.reduce(
+          (total, event) =>
+            total + Math.max(0, event.meta.attempts.length - 1),
+          0
+        );
         process.stdout.write(
           `${JSON.stringify({
             type: "sponsor_radar_live_full_result",
@@ -174,6 +213,8 @@ describe("manually approved live-evidence dynamic product workflow", () => {
             })),
             approvedCreditCeiling:
               proposed.peerProposal!.quote.creditCeiling,
+            runMaximumCredits: created.accounting.maximumCredits,
+            coldRunCreditQuote: created.plan.totalCreditCeiling,
             quota: completed.quota,
             outcome: completed.outcome,
             coverage: completed.report?.coverage ?? null,
@@ -193,11 +234,28 @@ describe("manually approved live-evidence dynamic product workflow", () => {
               requestId: event.requestId,
               providerRequestId: event.meta.providerRequestId,
               attempts: event.meta.attempts.length,
-              usage:
+              retryCount: Math.max(
+                0,
+                event.meta.attempts.length - 1
+              ),
+              latencyMs: event.meta.latencyMs,
+              rows:
                 event.phase === "completed"
-                  ? (event.usage ?? null)
+                  ? (event.usage?.rows ?? null)
+                  : null,
+              provisionalCredits:
+                event.phase === "completed"
+                  ? (event.usage?.resultBasedCredits ?? null)
+                  : null,
+              outcome:
+                event.phase === "completed" ? "success" : "failure",
+              providerIssue:
+                event.phase === "failed"
+                  ? { code: event.code, status: event.status }
                   : null
             })),
+            targetResolutionObservations:
+              targetResolutionObservations.length,
             wording: llmEvents.map((event) => ({
               provider: event.llm?.provider ?? null,
               eventType: event.eventType,
@@ -211,7 +269,7 @@ describe("manually approved live-evidence dynamic product workflow", () => {
             })),
             liveModelBoundary:
               "validated separately with synthetic data only",
-            automaticRetries: 0
+            automaticRetries
           })}\n`
         );
 
@@ -249,10 +307,22 @@ describe("manually approved live-evidence dynamic product workflow", () => {
         ).toHaveLength(0);
         expect(terminalHttpEvents.length).toBeGreaterThanOrEqual(4);
         expect(
+          new Set(terminalHttpEvents.map((event) => event.requestId)).size
+        ).toBe(terminalHttpEvents.length);
+        expect(
+          terminalHttpEvents.every(
+            (event) => event.requestId.trim().length > 0
+          )
+        ).toBe(true);
+        expect(targetResolutionObservations).toHaveLength(
+          EXPECTED_TARGET_RESOLUTION_OBSERVATIONS
+        );
+        expect(
           terminalHttpEvents.every(
             (event) => event.meta.attempts.length === 1
           )
         ).toBe(true);
+        expect(automaticRetries).toBe(0);
 
         expect(llmEvents.length).toBeGreaterThanOrEqual(1);
         expect(llmEvents.length).toBeLessThanOrEqual(2);
