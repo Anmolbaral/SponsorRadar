@@ -7,14 +7,9 @@ import {
   useState,
   type FormEvent
 } from "react";
-import type { AuditEvent } from "@/src/observability/audit";
 import type { Phase3RunResource } from "@/src/radar/application/run-workflow";
 import type { WinbackReport } from "@/src/radar/domain/types";
-
-interface ReportResponse {
-  report: WinbackReport;
-  events: AuditEvent[];
-}
+import { parseYouTubeChannelReference } from "@/src/radar/domain/youtube";
 
 interface PendingCreateAttempt {
   idempotencyKey: string;
@@ -275,19 +270,25 @@ export function SponsorRadarDemo() {
   }
 
   const channelInputIssue = issue ? isChannelInputIssue(issue) : false;
+  const interpretedChannel = interpretChannelInput(channel);
+  const channelDescription = [
+    "channel-note",
+    interpretedChannel ? "channel-interpretation" : null,
+    issue ? "channel-error" : null
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <section className="workspace" aria-label="Sponsor winback report">
       {!run ? (
         <form className="channel-form" onSubmit={submit}>
-          <label htmlFor="channel">Target YouTube channel</label>
+          <label htmlFor="channel">Channel handle or URL</label>
           <div className="input-row">
             <input
               id="channel"
               name="channel"
-              aria-describedby={
-                issue ? "channel-note channel-error" : "channel-note"
-              }
+              aria-describedby={channelDescription}
               aria-invalid={channelInputIssue ? "true" : undefined}
               value={channel}
               onChange={(event) => {
@@ -307,13 +308,24 @@ export function SponsorRadarDemo() {
                 ? "Starting research…"
                 : issue?.retryable
                   ? "Try again"
-                  : "Find winback opportunities"}
+                  : "Research channel"}
             </button>
           </div>
+          {interpretedChannel ? (
+            <p
+              className="form-note channel-interpretation"
+              id="channel-interpretation"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              We’ll research: <strong>{interpretedChannel}</strong>
+            </p>
+          ) : null}
           <p className="form-note" id="channel-note">
-            One click starts a bounded research run. The agent confirms the
-            channel, selects reach-comparable peers, and verifies sponsor
-            evidence automatically.
+            One click starts the research. We confirm the channel, compare
+            reach-comparable channels, and verify sponsor evidence
+            automatically.
           </p>
           {issue ? (
             <div
@@ -359,10 +371,7 @@ export function SponsorRadarDemo() {
 
       {run?.report ? (
         <ReportView
-          result={{
-            report: run.report,
-            events: run.auditEvents
-          }}
+          report={run.report}
           status={run.status}
           onStartOver={startOver}
         />
@@ -494,7 +503,7 @@ function WorkflowPanel({
               </strong>
               <p>
                 {paused
-                  ? "Your checkpoint is saved. Continue with the recovery action when ready."
+                  ? "Your progress is saved. Continue when you’re ready."
                   : workflowStepCopy(run)}
               </p>
             </div>
@@ -538,9 +547,10 @@ function WorkflowPanel({
           <h3>No comparable peers found</h3>
           <p>
             {run.resolvedCohort
-              ? `We resolved ${run.resolvedCohort.target.name}, but Upriver returned no eligible YouTube peers inside the 0.75×–1.25× reach band.`
+              ? `We confirmed ${run.resolvedCohort.target.name}, but found no comparable YouTube channels inside the selected audience range.`
               : "The channel resolved, but no eligible reach-comparable peers were available."}{" "}
-            No sponsor research was run and no execution credits were used.
+            Sponsor evidence was not checked, and no opportunities were
+            returned.
           </p>
         </div>
       ) : null}
@@ -551,7 +561,7 @@ function WorkflowPanel({
       ) : null}
       {!issue && state === "cancelled" ? (
         <p className="cancelled-note">
-          Research was cancelled at the last safe checkpoint.
+          Research was cancelled before more work started.
         </p>
       ) : null}
 
@@ -569,15 +579,14 @@ function WorkflowPanel({
 }
 
 function ReportView({
-  result,
+  report,
   status,
   onStartOver
 }: {
-  result: ReportResponse;
+  report: WinbackReport;
   status: Phase3RunResource["status"];
   onStartOver: () => void;
 }) {
-  const { report } = result;
   const opportunityCount = report.leads.length;
 
   return (
@@ -738,8 +747,7 @@ function ReportView({
                     <p>{lead.outreachHypothesis}</p>
                     {report.phase4?.status === "fallback" ? (
                       <p className="form-note">
-                        Bounded AI wording was unavailable, so this is the
-                        deterministic evidence summary.
+                        This result uses the verified evidence summary.
                       </p>
                     ) : null}
                   </>
@@ -764,53 +772,13 @@ function ReportView({
       </section>
 
       <details className="audit">
-        <summary>Demo data and performance</summary>
+        <summary>How this research works</summary>
         <p className="form-note">
-          These details help evaluate the data service. They are not part of
-          the sponsor recommendation.
+          We confirm the exact YouTube channel, compare reach-comparable
+          channels, and check sponsor evidence within the selected time
+          window.
         </p>
-        <div className="audit-grid">
-          <Metric value={report.audit.toolCalls} label="saved data lookups" />
-          <Metric value={report.audit.llmCalls} label="AI requests" />
-          <Metric
-            value={report.audit.resultBasedCreditEstimate}
-            label="credits estimated from returned rows"
-          />
-          <Metric
-            value={report.audit.projectedLiveCredits}
-            label="estimated credits with live data"
-          />
-        </div>
-        <p className="form-note">
-          Time to first opportunity:{" "}
-          {report.audit.timeToFirstResultMs === null
-            ? "no result"
-            : `${report.audit.timeToFirstResultMs} ms`}
-          . Total report time: {report.audit.totalDurationMs} ms.
-        </p>
-        <details className="event-log">
-          <summary>Technical activity log</summary>
-          <ol>
-            {result.events.map((event) => (
-              <li key={event.sequence}>
-                <code>{event.eventType}</code> — {event.reason}
-                {event.tool?.durationMs !== undefined
-                  ? ` (${event.tool.durationMs} ms, ${event.tool.rows ?? 0} rows)`
-                  : ""}
-              </li>
-            ))}
-          </ol>
-        </details>
       </details>
-    </div>
-  );
-}
-
-function Metric({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="metric">
-      <strong>{value}</strong>
-      <span>{label}</span>
     </div>
   );
 }
@@ -1022,11 +990,11 @@ function publicWorkflowErrorMessage(
   switch (code) {
     case "research_unavailable":
     case "workflow_persistence_conflict":
-      return "We can’t complete this search because the demo service needs attention. Please contact the demo owner.";
+      return "We couldn’t complete this research right now. Start a new search or try again later.";
     case "run_credit_limit_reached":
-      return "This search reached the demo’s per-run research limit. No additional provider research was started.";
+      return "This research reached its safety limit. Start a new search.";
     case "run_restart_required":
-      return "This saved search uses an older accounting policy. Start a new search to continue safely.";
+      return "This saved search can’t continue safely. Start a new search.";
     case "rate_limited":
       return "Too many research requests were started at once. Wait briefly, then try again.";
     case "run_conflict":
@@ -1039,7 +1007,7 @@ function publicWorkflowErrorMessage(
       return "Research capacity is currently full. Please try again in a little while.";
   }
   if (status === 400 || status === 422) {
-    return "Enter one exact YouTube @handle or channel URL.";
+    return "Enter a YouTube channel handle or URL.";
   }
   if (status === 404) {
     return "We couldn’t find this saved search. Start a new one.";
@@ -1051,7 +1019,7 @@ function publicWorkflowErrorMessage(
     return "Research capacity is currently full. Please try again in a little while.";
   }
   if (status === 503) {
-    return "Research is unavailable because the demo service is not fully configured. Please contact the demo owner.";
+    return "We couldn’t complete this research right now. Start a new search or try again later.";
   }
   return "Something went wrong while checking this search. Please try again later.";
 }
@@ -1074,6 +1042,18 @@ function isChannelInputIssue(issue: WorkflowIssue): boolean {
     issue.code === "invalid_channel" ||
     issue.code === "invalid_workflow_request"
   );
+}
+
+export function interpretChannelInput(input: string): string | null {
+  if (!input.trim()) return null;
+  try {
+    return parseYouTubeChannelReference(input).lookupUrl.replace(
+      /^https:\/\/www\./,
+      ""
+    );
+  } catch {
+    return null;
+  }
 }
 
 function shouldPollRun(run: Phase3RunResource): boolean {
@@ -1165,7 +1145,7 @@ function workflowTitle(run: Phase3RunResource): string {
     case "failed":
       return "Research stopped safely";
     case "cancelled":
-      return "Run cancelled";
+      return "Research cancelled";
   }
 }
 
@@ -1207,7 +1187,7 @@ function workflowStepCopy(run: Phase3RunResource): string {
     case "peers_proposed":
     case "peers_approved":
     case "credit_approved":
-      return "Locking the saved cohort and bounded evidence request.";
+      return "Preparing a focused evidence check across the selected comparable channels.";
     case "executing":
       return "Comparing recent peer sponsorships with the target channel’s history.";
     case "verifying":
@@ -1217,7 +1197,7 @@ function workflowStepCopy(run: Phase3RunResource): string {
     case "partial":
     case "failed":
     case "cancelled":
-      return "The research run has ended.";
+      return "The research has ended.";
   }
 }
 

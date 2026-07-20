@@ -42,6 +42,21 @@ The deterministic pipeline—not the LLM—owns dates, joins, sponsorship class,
 credit arithmetic, eligibility, result count, state transitions, cache keys,
 expiry, idempotency, and per-run credit reservation.
 
+### Current public presentation boundary
+
+The rendered page asks for one **Channel handle or URL**. While that field is
+editable, the UI reuses the domain parser to show the canonical interpretation
+that will be submitted. Selecting **Research channel** starts the bounded run;
+the user then sees concise capability-based progress and the final result or
+an actionable failure. The result does not render internal credit metrics or
+the append-only activity log.
+
+This presentation boundary is ahead of the transport boundary. The browser
+still posts hidden internal progression actions, and `/api/runs` still returns
+the internal run resource. Moving progression to a durable server worker and
+introducing a capability-named public DTO are explicit remaining migrations;
+neither is claimed complete here.
+
 ## What each component is
 
 | Component | Kind | Responsibility | May call the LLM? | May call Upriver? |

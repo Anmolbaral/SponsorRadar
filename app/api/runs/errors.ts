@@ -86,7 +86,7 @@ export function workflowErrorResponse(error: unknown): NextResponse {
   if (error instanceof PersistenceConflictError) {
     reportInternalError("persistence_conflict", "research_unavailable", 409);
     return publicErrorResponse(
-      "Research cannot start because the service needs attention. Please contact the demo owner.",
+      "We couldn’t complete this research right now. Start a new search or try again later.",
       "research_unavailable",
       false,
       409
@@ -103,7 +103,7 @@ export function workflowErrorResponse(error: unknown): NextResponse {
   }
   if (error instanceof RunCreditLimitExceededError) {
     return publicErrorResponse(
-      "This search reached the demo’s per-run research limit. No additional provider research was started.",
+      "This research reached its safety limit. Start a new search.",
       "run_credit_limit_reached",
       false,
       409
@@ -111,7 +111,7 @@ export function workflowErrorResponse(error: unknown): NextResponse {
   }
   if (error instanceof RunAccountingMigrationRequiredError) {
     return publicErrorResponse(
-      "This saved search uses an older accounting policy. Start a new search to continue safely.",
+      "This saved research can’t continue safely. Start a new search.",
       "run_restart_required",
       false,
       409
@@ -120,7 +120,7 @@ export function workflowErrorResponse(error: unknown): NextResponse {
   if (error instanceof LiveWorkflowDisabledError) {
     reportInternalError("live_workflow_disabled", "research_unavailable", 503);
     return publicErrorResponse(
-      "Research is unavailable because the demo service is not fully configured. Please contact the demo owner.",
+      "We couldn’t complete this research right now. Start a new search or try again later.",
       "research_unavailable",
       false,
       503
@@ -129,7 +129,7 @@ export function workflowErrorResponse(error: unknown): NextResponse {
   if (error instanceof PersistenceCorruptionError) {
     reportInternalError("persistence_corruption", "research_unavailable", 500);
     return publicErrorResponse(
-      "Research cannot continue because its saved data needs attention. Please contact the demo owner.",
+      "We couldn’t complete this research right now. Start a new search or try again later.",
       "research_unavailable",
       false,
       500

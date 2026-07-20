@@ -2,7 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 import type { Phase3RunResource } from "@/src/radar/application/run-workflow";
 
 const savedRunIdKey = "sponsor-radar-run-id";
-const submitButtonName = "Find winback opportunities";
+const channelInputLabel = "Channel handle or URL";
+const submitButtonName = "Research channel";
 
 test("production-safe smoke renders empty intake without starting research", async ({
   page
@@ -19,12 +20,76 @@ test("production-safe smoke renders empty intake without starting research", asy
   await expect(
     page.getByRole("heading", { level: 1, name: "Sponsor Winback Radar" })
   ).toBeVisible();
-  await expect(page.getByLabel("Target YouTube channel")).toHaveValue("");
+  await expect(page.getByLabel(channelInputLabel)).toHaveValue("");
   await expect(
     page.getByRole("button", { name: submitButtonName })
   ).toBeEnabled();
   await expectNoReviewUi(page);
+  await expectPublicSurfaceSafe(page);
   expect(runRequests).toEqual([]);
+});
+
+test("channel interpretation stays canonical, accessible, and editable", async ({
+  page
+}) => {
+  await page.goto("/");
+
+  const input = page.getByLabel(channelInputLabel);
+  const interpretation = page.getByRole("status");
+  await expect(interpretation).toHaveCount(0);
+
+  await input.fill("dave2d");
+  await expect(input).toBeEditable();
+  await expect(interpretation).toHaveText(
+    "We’ll research: youtube.com/@dave2d"
+  );
+  await expect(input).toHaveAccessibleDescription(
+    /We’ll research: youtube\.com\/@dave2d/
+  );
+
+  await input.fill("m.youtube.com/@MKBHD");
+  await expect(input).toHaveValue("m.youtube.com/@MKBHD");
+  await expect(interpretation).toHaveText(
+    "We’ll research: youtube.com/@MKBHD"
+  );
+  await expect(input).toHaveAccessibleDescription(
+    /We’ll research: youtube\.com\/@MKBHD/
+  );
+});
+
+test("rendered failures hide implementation vocabulary and diagnostics", async ({
+  page
+}) => {
+  const internalHash =
+    "5f4b7f44e6924ad88f4ca4e19efd7da904b4264a4564d299c14016fc74851760";
+  await page.route("**/api/runs", async (route) => {
+    await route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error:
+          `Phase 4 fixture provider payload at /Users/operator/.data/sponsor-radar: ` +
+          `Quota quota_${internalHash} has maximumUnits 150; ` +
+          "UPRIVER_API_KEY configuration failed.",
+        code: "research_unavailable",
+        retryable: false
+      })
+    });
+  });
+
+  await page.goto("/");
+  await page.getByLabel(channelInputLabel).fill("@UrAvgConsumer");
+  await page.getByRole("button", { name: submitButtonName }).click();
+
+  await expect(page.getByRole("main").getByRole("alert")).toContainText(
+    "We couldn’t complete this research right now. Start a new search or try again later."
+  );
+  await expectPublicSurfaceSafe(page);
+  const publicText = (await page.getByRole("main").textContent()) ?? "";
+  expect(publicText).not.toContain(internalHash);
+  expect(publicText).not.toContain("maximumUnits");
+  expect(publicText).not.toContain("UPRIVER_API_KEY");
+  expect(publicText).not.toContain("/Users/operator/.data/sponsor-radar");
 });
 
 test("one click returns and restores only the Dell XPS lead", async ({
@@ -80,10 +145,13 @@ test("one click returns and restores only the Dell XPS lead", async ({
     })
   ).toBeVisible();
 
-  await page.getByText("Demo data and performance").click();
+  await page.getByText("How this research works").click();
   await expect(
-    page.getByText("credits estimated from returned rows").locator("..")
-  ).toContainText("0");
+    page.getByText(
+      /confirm the exact YouTube channel, compare reach-comparable channels/
+    )
+  ).toBeVisible();
+  await expect(page.getByText("Technical activity log")).toHaveCount(0);
 
   const savedRunId = await page.evaluate((key) => {
     return window.localStorage.getItem(key);
@@ -190,7 +258,7 @@ test("a lost create response reuses the persisted idempotency key", async ({
   await expect(page.locator(".form-error")).toBeVisible();
 
   await page.reload();
-  await expect(page.getByLabel("Target YouTube channel")).toHaveValue(
+  await expect(page.getByLabel(channelInputLabel)).toHaveValue(
     "@UrAvgConsumer"
   );
   await page.getByRole("button", { name: submitButtonName }).click();
@@ -221,11 +289,11 @@ test("a transient restore failure keeps the saved run reference", async ({
   await page.goto("/");
   await expect(
     page.getByText(
-      "We can’t complete this search because the demo service needs attention. Please contact the demo owner.",
+      "We couldn’t complete this research right now. Start a new search or try again later.",
       { exact: true }
     )
   ).toBeVisible();
-  await expect(page.getByLabel("Target YouTube channel")).not.toHaveAttribute(
+  await expect(page.getByLabel(channelInputLabel)).not.toHaveAttribute(
     "aria-invalid"
   );
   await expect(page.locator(".form-error")).not.toContainText("maximumUnits");
@@ -244,13 +312,13 @@ test("blank input is rejected accessibly without creating a run", async ({
   page
 }) => {
   await page.goto("/");
-  await page.getByLabel("Target YouTube channel").fill("   ");
+  await page.getByLabel(channelInputLabel).fill("   ");
   await page.getByRole("button", { name: submitButtonName }).click();
 
   await expect(page.locator(".form-error > p").first()).toHaveText(
-    "Enter one exact YouTube @handle or channel URL."
+    "Enter a YouTube channel handle or URL."
   );
-  await expect(page.getByLabel("Target YouTube channel")).toHaveAttribute(
+  await expect(page.getByLabel(channelInputLabel)).toHaveAttribute(
     "aria-invalid",
     "true"
   );
@@ -281,7 +349,7 @@ test("arbitrary exact channels enter the one-click workflow without a review scr
   });
 
   await page.goto("/");
-  await page.getByLabel("Target YouTube channel").fill("@MKBHD");
+  await page.getByLabel(channelInputLabel).fill("@MKBHD");
   await page.getByRole("button", { name: submitButtonName }).click();
 
   await expectFixtureReport(page);
@@ -426,7 +494,7 @@ test("the per-run research limit is friendly and never offers a paid retry", asy
       contentType: "application/json",
       body: JSON.stringify({
         error:
-          "This search reached the demo’s per-run research limit. No additional provider research was started.",
+          "This research reached its safety limit. Start a new search.",
         code: "run_credit_limit_reached",
         retryable: false
       })
@@ -442,7 +510,7 @@ test("the per-run research limit is friendly and never offers a paid retry", asy
     panel.getByRole("heading", { name: "We couldn’t continue this search" })
   ).toBeVisible();
   await expect(panel).toContainText(
-    "This search reached the demo’s per-run research limit. No additional provider research was started."
+    "This research reached its safety limit. Start a new search."
   );
   await expect(panel).toContainText(
     "No additional research was started after this issue."
@@ -487,7 +555,7 @@ test("a saved-capacity mismatch is safe, integrated, and not misleadingly retrya
   ).toBeVisible();
   await expect(panel.getByRole("alert")).toHaveCount(1);
   await expect(panel).toContainText(
-    "We can’t complete this search because the demo service needs attention. Please contact the demo owner."
+    "We couldn’t complete this research right now. Start a new search or try again later."
   );
   await expect(panel).toContainText(
     "No additional research was started after this issue."
@@ -505,7 +573,7 @@ test("a saved-capacity mismatch is safe, integrated, and not misleadingly retrya
   expect(planAttempts).toBe(1);
 
   await page.getByRole("button", { name: "Back to search" }).click();
-  await expect(page.getByLabel("Target YouTube channel")).toBeVisible();
+  await expect(page.getByLabel(channelInputLabel)).toBeVisible();
   await expect(page.locator(".workflow-panel")).toHaveCount(0);
 });
 
@@ -515,7 +583,7 @@ test("mobile layout stays within the viewport and stacks the primary form", asyn
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
 
-  const input = page.getByLabel("Target YouTube channel");
+  const input = page.getByLabel(channelInputLabel);
   await input.fill("@UrAvgConsumer");
   const createButton = page.getByRole("button", {
     name: submitButtonName
@@ -555,7 +623,7 @@ test("core workflow controls have semantic labels and work from the keyboard", a
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 
   await page.keyboard.press("Tab");
-  await expect(page.getByLabel("Target YouTube channel")).toBeFocused();
+  await expect(page.getByLabel(channelInputLabel)).toBeFocused();
   await page.keyboard.type("@UrAvgConsumer");
   await page.keyboard.press("Tab");
   await expect(
@@ -585,11 +653,12 @@ async function expectFixtureReport(page: Page): Promise<void> {
       exact: true
     })
   ).toBeVisible();
+  await expectPublicSurfaceSafe(page);
 }
 
 async function enterFixtureChannel(page: Page): Promise<void> {
   await page
-    .getByLabel("Target YouTube channel")
+    .getByLabel(channelInputLabel)
     .fill("@UrAvgConsumer");
 }
 
@@ -635,4 +704,23 @@ async function expectNoReviewUi(page: Page): Promise<void> {
   await expect(
     page.getByText("Sponsor research ceiling", { exact: true })
   ).toHaveCount(0);
+}
+
+async function expectPublicSurfaceSafe(page: Page): Promise<void> {
+  const publicText = (await page.getByRole("main").textContent()) ?? "";
+  const forbiddenPatterns = [
+    /\b(?:demo|pilot|fixture)\b/i,
+    /\bphase(?:[\s_-]?[1-5])\b/i,
+    /\bprovider\b/i,
+    /\bquota\b/i,
+    /\bconfiguration\b/i,
+    /\b(?:SPONSOR_RADAR|UPRIVER|OPENAI)_[A-Z0-9_]+\b/,
+    /\bmaximumUnits\b/i,
+    /\b[a-f0-9]{64}\b/i,
+    /(?:\/Users\/|\/private\/(?:tmp|var)\/|\.data\/|app\/api\/|src\/)/i
+  ];
+
+  for (const pattern of forbiddenPatterns) {
+    expect(publicText).not.toMatch(pattern);
+  }
 }

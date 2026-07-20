@@ -266,7 +266,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
     expect(fetch).not.toHaveBeenCalled();
     expect(await response.json()).toEqual({
       error:
-        "Research is unavailable because the demo service is not fully configured. Please contact the demo owner.",
+        "We couldn’t complete this research right now. Start a new search or try again later.",
       code: "research_unavailable",
       retryable: false
     });
@@ -310,7 +310,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
     const body = await response.json();
     expect(body).toEqual({
       error:
-        "Research is unavailable because the demo service is not fully configured. Please contact the demo owner.",
+        "We couldn’t complete this research right now. Start a new search or try again later.",
       code: "research_unavailable",
       retryable: false
     });

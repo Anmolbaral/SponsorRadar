@@ -4,12 +4,14 @@ Sponsor Winback Radar accepts one YouTube channel handle or URL and produces a
 small, evidence-backed list of sponsors worth reactivating. The production
 live path accepts any exact, public YouTube `@handle` or channel URL that
 Upriver can resolve. It does not silently substitute a fuzzy name-search
-result.
+result. The editable field is labeled **Channel handle or URL** and shows the
+canonical interpretation, such as `We’ll research: youtube.com/@dave2d`,
+before submission.
 
 For a live run, Upriver Similar Creators (Beta) supplies candidates within
 0.75–1.25 of the target's subscriber count. The application validates and
 deduplicates those results and freezes up to three YouTube peers. Entering the
-channel and selecting **Find winback opportunities** authorizes one bounded
+channel and selecting **Research channel** authorizes one bounded
 run under the server's published policy and credit ceiling. Plan, cohort, and
 credit claims remain persisted internal checkpoints; users are not asked to
 rubber-stamp peers or costs they cannot edit.
@@ -32,16 +34,23 @@ stopped sponsoring the creator.
 
 ## Current implementation gate
 
-**Phase 5 hardening is in progress.** A run begins when the user submits one
-exact channel, which is the authorization for that bounded run. The workflow
-then advances automatically through immutable planning, persisted internal
+**Immediate product UX reform is in progress.** A run begins when the user
+submits one exact channel, which is the authorization for that bounded run.
+The workflow then advances automatically through immutable planning, persisted internal
 plan authorization, a durable non-cancellable resolution claim, frozen cohort
 and per-run credit checkpoints, execution, verification, and a
 completed/partial/failed outcome. The UI shows compact progress and then the
 concise report; it does not expose the internal checkpoint sequence as
-separate review screens. Run snapshots, authorization records, quota
-reservations, append-only events, and TTL/schema-versioned evidence cache
+separate review screens. The completed result also omits implementation
+metrics and the internal activity log. Run snapshots, authorization records,
+quota reservations, append-only events, and TTL/schema-versioned evidence cache
 entries survive server restarts.
+
+This is the completed presentation slice, not the completed API or
+orchestration migration. The browser still advances hidden internal workflow
+actions, and `/api/runs` still returns the internal run resource. A public
+capability DTO and server-owned progression remain required before the UX
+reform gate can close.
 
 The deterministic pipeline alone owns exact target resolution, similarity
 filters, peer membership, qualification policy, result count, dates, evidence,
@@ -112,7 +121,7 @@ pnpm dev
 Open `http://localhost:3000`. In the default fixture mode, enter
 `@UrAvgConsumer` to replay the Dell/XPS golden case. In explicitly enabled live
 mode, enter any exact public YouTube `@handle` or channel URL and select
-**Find winback opportunities**. That single action starts the bounded run; the
+**Research channel**. That single action starts the bounded run; the
 page moves from compact research progress directly to the formatted result.
 Refreshing the page restores the persisted run.
 

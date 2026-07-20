@@ -22,7 +22,7 @@ describe("workflow HTTP error contract", () => {
   it("keeps request errors actionable and structured", async () => {
     const response = workflowErrorResponse(
       new RequestGuardError(
-        "Enter one exact YouTube @handle or channel URL",
+        "Enter a YouTube channel handle or URL",
         422
       )
     );
@@ -30,7 +30,7 @@ describe("workflow HTTP error contract", () => {
     expect(response.status).toBe(422);
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(await response.json()).toEqual({
-      error: "Enter one exact YouTube @handle or channel URL",
+      error: "Enter a YouTube channel handle or URL",
       code: "invalid_channel",
       retryable: false
     });
@@ -112,7 +112,7 @@ describe("workflow HTTP error contract", () => {
       status: 409,
       payload: {
         error:
-          "Research cannot start because the service needs attention. Please contact the demo owner.",
+          "We couldn’t complete this research right now. Start a new search or try again later.",
         code: "research_unavailable",
         retryable: false
       },
@@ -140,8 +140,7 @@ describe("workflow HTTP error contract", () => {
       error: new RunCreditLimitExceededError(),
       status: 409,
       payload: {
-        error:
-          "This search reached the demo’s per-run research limit. No additional provider research was started.",
+        error: "This research reached its safety limit. Start a new search.",
         code: "run_credit_limit_reached",
         retryable: false
       },
@@ -152,8 +151,7 @@ describe("workflow HTTP error contract", () => {
       error: new RunAccountingMigrationRequiredError(),
       status: 409,
       payload: {
-        error:
-          "This saved search uses an older accounting policy. Start a new search to continue safely.",
+        error: "This saved research can’t continue safely. Start a new search.",
         code: "run_restart_required",
         retryable: false
       },
@@ -167,7 +165,7 @@ describe("workflow HTTP error contract", () => {
       status: 503,
       payload: {
         error:
-          "Research is unavailable because the demo service is not fully configured. Please contact the demo owner.",
+          "We couldn’t complete this research right now. Start a new search or try again later.",
         code: "research_unavailable",
         retryable: false
       },
@@ -186,7 +184,7 @@ describe("workflow HTTP error contract", () => {
       status: 500,
       payload: {
         error:
-          "Research cannot continue because its saved data needs attention. Please contact the demo owner.",
+          "We couldn’t complete this research right now. Start a new search or try again later.",
         code: "research_unavailable",
         retryable: false
       },

@@ -50,7 +50,10 @@ describe("report HTTP boundary", () => {
     const payload = (await response.json()) as { error: string };
 
     expect(response.status).toBe(422);
-    expect(payload.error).toMatch(/supports only @UrAvgConsumer/);
+    expect(payload.error).toBe(
+      "This channel is not available for research. Try a different YouTube channel."
+    );
+    expect(JSON.stringify(payload)).not.toMatch(/demo|pilot|fixture|phase/i);
   });
 
   it("cannot enable live mode from the browser request", async () => {
@@ -67,9 +70,9 @@ describe("report HTTP boundary", () => {
     );
 
     expect(response.status).toBe(400);
-    expect(JSON.stringify(await response.json())).not.toContain(
-      "browser-secret"
-    );
+    const body = await response.json();
+    expect(JSON.stringify(body)).not.toContain("browser-secret");
+    expect(body).not.toHaveProperty("details");
   });
 
   it("keeps full paid live reports off the public route", async () => {

@@ -89,6 +89,7 @@ estimates, not provider invoices.
 | APP-006 | Browser-test provider isolation | Observed — mitigated | High | A local Playwright server inherited `UPRIVER_MODE=live` from `.env`, so a test documented as fixture-backed executed six paid Upriver calls. | Playwright now explicitly forces fixture evidence and fixture LLM modes for every managed local server; a fresh parallel browser matrix passed 14/14 with zero provider execution. | App engineering: keep provider modes explicit in test orchestration and treat inherited paid-mode configuration as a release-blocking test failure. |
 | APP-007 | Application cache boundary | Observed — mitigated | High | Resolved targets and downstream evidence cache keys were handle-only, so a reassigned handle could pair a new channel with old sponsor/peer evidence; the first execution check also reused the 24-hour creator cache and could not detect drift. | Cache schema v3 binds downstream keys to verified channel ID; workflow schema v4 binds the resolved cohort, proposal, and report; execution bypasses only the target cache for one forced-fresh identity check before sponsors. | App engineering: retain the production-shaped cached channel-ID A→B regression and reconcile the additional one-credit call in live usage. |
 | APP-008 | Application accounting | Observed — mitigated | High | Clean HTTP-200 identity rejections were settled at the full 11- or 145-credit stage ceiling even when immutable HTTP telemetry recorded the actual resolve usage. | Typed semantic failures settle completed resolve usage, cache hits settle zero, ambiguous HTTP/network failures retain full-ceiling settlement, and observed provider overages remain visible instead of being capped. | App engineering: preserve request/provider IDs and completed usage; compare result-based estimates with provider billing before calling them actual invoices. |
+| APP-009 | Live-validation egress | Observed — mitigated | Medium | The first manually authorized live smoke was blocked by the local execution sandbox as a network failure before an HTTP response or provider request ID was available. | Record the invocation as billing-ambiguous, make zero automatic retries, and require explicit network authority for a separately recorded operator invocation. | App engineering: keep sandbox/egress failures distinct from provider failures and conservatively reconcile the first request with Upriver usage. |
 
 ## Detailed issue notes
 
@@ -521,6 +522,29 @@ The standalone `/api/health` endpoint returned HTTP 200 with
 headers. An unauthenticated production root returned the intentional fail-closed
 503 because local reviewer credentials were not configured.
 
+APP-009 was observed during the explicitly authorized live contract smoke at
+`2026-07-20T22:28:19Z`. The first invocation was denied local network egress
+after 31 ms. It produced application request ID
+`b889529c-05e3-44a3-97bf-9f5759b2e01a`, no provider request ID, no response
+rows, and zero automatic retries. Because the client could not prove that the
+request was never accepted upstream, the register conservatively retains a
+one-credit ambiguous exposure.
+
+After explicit network authority was granted, a separately recorded operator
+invocation passed. It used live Upriver responses only; no fixture result and
+no live OpenAI call participated.
+
+| Operation | App request ID | Provider request ID | Latency | Rows | Provisional credits | Outcome |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| Exact target resolution | `5be5eb89-770e-4195-8926-829ea608c6e1` | `07c49bbed0624fc5a61de3babc016b3f` | 613 ms | 1 | 1 | Success |
+| One explicit-ad sponsor result | `ba043eda-d642-4152-88cc-8f4f4bc6216d` | `10e822cf4a28424e80e6f1cb97ac64a5` | 434 ms | 1 | 5 | Success |
+
+Both successful calls made one attempt and zero automatic retries. The passed
+invocation observed six result-based credits. Across both invocations, the
+conservative maximum exposure is seven credits until the first request is
+reconciled against provider usage; neither number is represented as an actual
+provider invoice.
+
 ### OAI-001 through OAI-004 — live model incidents and remediation
 
 The authoritative evidence is
@@ -575,6 +599,9 @@ report remains deterministic and falls back safely on any model failure.
 ## Deployment status
 
 Railway configuration is prepared, but Sponsor Winback Radar is not deployed.
-The dynamic live-evidence and synthetic model gates are green. Deployment
-remains the final gate after the one-click browser matrix,
-secret/redaction checks, and production smoke plan are green.
+The targeted six-credit live Upriver contract smoke is green, and the existing
+synthetic OpenAI matrix remains the latest model-boundary evidence. The current
+157-credit full live workflow and paid `/user` plus `/c` compatibility matrix
+have not yet run. Product reform, public-contract, browser, redaction, and
+production checks remain release blockers. Railway deployment is the final
+gate after those checks pass.

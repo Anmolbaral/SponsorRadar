@@ -47,14 +47,19 @@ export async function POST(request: Request) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
-          error: "Enter one exact YouTube @handle or channel URL",
-          details: z.flattenError(error)
+          error: "Enter one YouTube channel handle or URL"
         },
         { status: 400 }
       );
     }
     if (error instanceof UnsupportedFixtureChannelError) {
-      return NextResponse.json({ error: error.message }, { status: 422 });
+      return NextResponse.json(
+        {
+          error:
+            "This channel is not available for research. Try a different YouTube channel."
+        },
+        { status: 422 }
+      );
     }
     if (error instanceof LiveModeDisabledError) {
       return NextResponse.json({ error: error.message }, { status: 503 });
@@ -71,8 +76,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        error:
-          "The demo report could not be generated. Review the server audit trace."
+        error: "Something went wrong while researching this channel."
       },
       { status: 500 }
     );
@@ -93,7 +97,7 @@ function createGateway(): {
   const mode = process.env.UPRIVER_MODE ?? "fixture";
   if (mode !== "fixture") {
     throw new LiveModeDisabledError(
-      "Full paid Upriver reports are not exposed through the public demo route in Phase 2. Use the separately bounded manual smoke test."
+      "Research is unavailable through this endpoint. Start a new search from the main page."
     );
   }
   return {

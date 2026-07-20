@@ -83,9 +83,12 @@ create-response loss, transient restore failure, invalid input, no results,
 partial coverage, rate limits, mobile layout, and keyboard/accessibility
 behavior. It must assert that:
 
+- every currently accepted handle or channel-URL form can produce an editable,
+  accessible canonical interpretation before submission;
 - channel submission is the only user authorization;
 - the UI acknowledges the run with compact progress within one second;
 - no research-plan, peer-review, or credit-review screen or action is shown;
+- completed results do not render internal credit metrics or activity events;
 - repeated submit/poll/restore behavior cannot duplicate paid work;
 - an internal policy, cohort, or quota mismatch fails closed; and
 - the next substantive user content is the concise final result, including
@@ -105,6 +108,14 @@ and the optimized production build. Two additional schema-v1 migration checks
 were then added and verified with the focused integration gate. Railway
 deployment remains the final gate. See the
 [baseline record](baselines/WAVE_0_BASELINE_2026-07-20.md).
+
+The immediate UI slice now uses **Channel handle or URL**, shows the
+parser-backed `We’ll research: youtube.com/...` interpretation while the field
+remains editable, and uses **Research channel** as its one submit action.
+Focused parser, type, and lint checks validate the implementation. Browser
+verification, the broader public-API leakage gate, and server-owned progression
+remain release dependencies; this UI check does not mark those migrations
+complete.
 
 ## Evals
 

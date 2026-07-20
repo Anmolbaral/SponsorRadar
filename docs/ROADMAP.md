@@ -252,9 +252,14 @@ Implementation boundary:
 - Similar Beta billing remains an open provider question, provisionally quoted
   at one creator-result credit per returned result.
 
-Status: dynamic live-path and one-click presentation hardening are complete
-and verified.
-Railway configuration is prepared, but no Railway deployment has been
-performed. Deployment and the production smoke remain the final Phase 5 gate.
+Status: the dynamic live path exists, and the immediate presentation slice now
+uses one product-labeled input, editable canonical interpretation, concise
+progress, and a final result without implementation metrics or internal
+activity events. The full reform gate remains open: the public API still needs
+a capability DTO, browser-owned hidden progression still needs a durable
+server worker, and the complete browser contract still needs release
+verification. Railway configuration is prepared, but no Railway deployment
+has been performed. Deployment and the production smoke remain the final
+release gate.
 Provider issues and unresolved billing assumptions are tracked in
 [the external API issue register](./EXTERNAL_API_ISSUE_REGISTER.md).

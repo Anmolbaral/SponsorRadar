@@ -52,7 +52,7 @@ export function assertExactYouTubeChannel(channel: string): void {
     parseYouTubeChannelReference(channel);
   } catch {
     throw new RequestGuardError(
-      "Enter one exact YouTube channel handle or URL",
+      "Enter a YouTube channel handle or URL",
       422
     );
   }
