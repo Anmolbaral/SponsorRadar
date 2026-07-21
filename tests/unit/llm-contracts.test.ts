@@ -138,7 +138,7 @@ function sameBrandReactivationOutput(text: string) {
   };
 }
 
-describe("Phase 4 runtime output contracts", () => {
+describe("Wording-agent runtime output contracts", () => {
   it("constrains peer structured output to request-specific IDs", () => {
     expect(peerRationaleJsonSchema(peers)).toMatchObject({
       properties: {

@@ -24,6 +24,16 @@ import type {
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
 import {
+  auditToolName,
+  composeResolutionCredits,
+  composeRunCeilingCredits,
+  DEFAULT_OPERATION_RESULT_CAPS,
+  estimateOperationCredits,
+  MAX_PEER_COHORT,
+  SIMILAR_CREATOR_RESULT_CAP,
+  TOOL_REGISTRY
+} from "@/src/radar/application/tools/tool-registry";
+import {
   CreditBudget,
   UPRIVER_CREDIT_RATES,
   type CreditBudgetSnapshot
@@ -36,13 +46,9 @@ import {
   YouTubeTargetVerificationError
 } from "@/src/radar/domain/youtube";
 
-const MAX_PEER_COUNT = 3;
-const SIMILAR_CREATOR_RESULT_CAP = 10;
 const MINIMUM_REACH_RATIO = 0.75;
 const MAXIMUM_REACH_RATIO = 1.25;
 const DEFAULT_MAXIMUM_CREDITS = 200;
-const DEFAULT_TARGET_RESULT_CAP = 23;
-const DEFAULT_PEER_RESULT_CAP = 2;
 const MAX_SPONSOR_RESULT_CAP = 50;
 const TARGET_LOOKBACK_DAYS = 365;
 const PEER_LOOKBACK_DAYS = 90;
@@ -101,12 +107,13 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
       options.maximumCredits ?? DEFAULT_MAXIMUM_CREDITS
     );
     this.targetResultCap = boundedPositiveInteger(
-      options.targetResultCap ?? DEFAULT_TARGET_RESULT_CAP,
+      options.targetResultCap ??
+        DEFAULT_OPERATION_RESULT_CAPS.targetResultCap,
       "targetResultCap",
       MAX_SPONSOR_RESULT_CAP
     );
     this.peerResultCap = boundedPositiveInteger(
-      options.peerResultCap ?? DEFAULT_PEER_RESULT_CAP,
+      options.peerResultCap ?? DEFAULT_OPERATION_RESULT_CAPS.peerResultCap,
       "peerResultCap",
       MAX_SPONSOR_RESULT_CAP
     );
@@ -123,39 +130,21 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
   }
 
   estimateCredits(operation: EvidenceOperation): number {
-    switch (operation) {
-      case "resolve_target":
-        return UPRIVER_CREDIT_RATES.creatorResult;
-      case "list_target_sponsors":
-        return (
-          this.targetResultCap * UPRIVER_CREDIT_RATES.groupedSponsorResult
-        );
-      case "list_locked_peers":
-        return (
-          SIMILAR_CREATOR_RESULT_CAP * UPRIVER_CREDIT_RATES.creatorResult
-        );
-      case "list_peer_sponsors":
-        return (
-          this.peerResultCap * UPRIVER_CREDIT_RATES.groupedSponsorResult
-        );
-      case "load_verification_ledger":
-        return 0;
-    }
+    return estimateOperationCredits(operation, {
+      targetResultCap: this.targetResultCap,
+      peerResultCap: this.peerResultCap
+    });
   }
 
   estimateRunCredits(): number {
-    return (
-      this.estimateCredits("resolve_target") +
-      this.estimateCredits("list_target_sponsors") +
-      this.estimateCredits("list_locked_peers") +
-      MAX_PEER_COUNT * this.estimateCredits("list_peer_sponsors")
+    return composeRunCeilingCredits((operation) =>
+      this.estimateCredits(operation)
     );
   }
 
   estimateResolutionCredits(): number {
-    return (
-      this.estimateCredits("resolve_target") +
-      this.estimateCredits("list_locked_peers")
+    return composeResolutionCredits((operation) =>
+      this.estimateCredits(operation)
     );
   }
 
@@ -171,10 +160,10 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
     );
     const response = await this.client.request({
       method: "POST",
-      path: "/v1/creators/batch",
+      path: TOOL_REGISTRY.resolve_target.upriverEndpoint,
       body: { urls: [requested.lookupUrl] },
       audit: {
-        operation: "live.resolve_target",
+        operation: auditToolName("live", "resolve_target"),
         reason: "Confirm the exact requested YouTube channel before research",
         estimatedCredits: this.estimateCredits("resolve_target"),
         creditsPerResult: UPRIVER_CREDIT_RATES.creatorResult,
@@ -283,7 +272,7 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
     );
     const response = await this.client.request({
       method: "POST",
-      path: "/v1/creators/similar",
+      path: TOOL_REGISTRY.list_locked_peers.upriverEndpoint,
       body: {
         channel_url: target.canonicalUrl,
         limit: SIMILAR_CREATOR_RESULT_CAP,
@@ -300,7 +289,7 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
         )
       },
       audit: {
-        operation: "live.list_locked_peers",
+        operation: auditToolName("live", "list_locked_peers"),
         reason:
           "Discover and lock up to three reach-comparable YouTube peers before sponsor review",
         estimatedCredits: this.estimateCredits("list_locked_peers"),
@@ -323,7 +312,7 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
     const seenCreatorIds = new Set<string>();
     const seenChannelKeys = new Set<string>();
     for (const result of response.data.results) {
-      if (peers.length === MAX_PEER_COUNT) break;
+      if (peers.length === MAX_PEER_COHORT) break;
       if (
         result.creator_id === response.data.anchor.creator_id ||
         seenCreatorIds.has(result.creator_id)
@@ -404,7 +393,7 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
     const allocation = this.reserve(operation, reason);
     let trackingStatus: TrackingStatus | null = null;
     const response = await this.client.paginateCursor({
-      path: "/v1/sponsors",
+      path: TOOL_REGISTRY[operation].upriverEndpoint,
       query: {
         publication_url: publicationUrl,
         platforms: "youtube",
@@ -414,7 +403,7 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
         until: window.until
       },
       audit: {
-        operation: `live.${operation}`,
+        operation: auditToolName("live", operation),
         reason
       },
       validatePage: (input) => {

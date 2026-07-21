@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Captured Upriver pilot files used by the Phase 1 golden replay. Volatile signed profile-image query strings are removed; all other hash drift requires deliberate review.",
+  "description": "Captured Upriver pilot files used by the golden replay. Volatile signed profile-image query strings are removed; all other hash drift requires deliberate review.",
   "files": [
     {
       "path": "experiments/tech-product-reviewers-reach-matched-2026-07-19/config.json",

@@ -11,11 +11,14 @@ import {
   type UpriverErrorCode
 } from "@/src/radar/adapters/upriver/http-client";
 import type {
-  EvidenceCacheStatus,
-  EvidenceOperation,
   LockedPeer,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
+import {
+  EvidenceToolExecutor,
+  type ToolExecutionStage
+} from "@/src/radar/application/tools/tool-executor";
+import { composeResolutionCredits } from "@/src/radar/application/tools/tool-registry";
 import { coverageWarning } from "@/src/radar/domain/coverage";
 import {
   estimateUpriverCredits,
@@ -54,6 +57,13 @@ export interface RunWinbackReportOptions {
   now?: () => number;
   phase?: AuditPhase;
   allowPartialPeerFailure?: boolean;
+  /**
+   * Which registry stage authorizes this run's evidence operations. The
+   * workflow's execution checkpoint passes "execution"; a directly invoked
+   * report runs as "report", whose spend authorization is the credit
+   * preflight below.
+   */
+  executionStage?: Extract<ToolExecutionStage, "execution" | "report">;
   approvedCohort?: {
     target: TargetSummary;
     identity: VerifiedYouTubeIdentity;
@@ -103,7 +113,7 @@ export async function runWinbackReport(
   const mode = evidencePort.mode;
   const phase =
     options.phase ??
-    (mode === "live" ? ("phase_2_live" as const) : ("phase_1_fixture" as const));
+    (mode === "live" ? ("report_live" as const) : ("report_fixture" as const));
   const audit =
     options.audit ?? new AuditRecorder({ clock: now, mode, phase });
   const maximumCredits = input.maximumCredits ?? 150;
@@ -141,37 +151,18 @@ export async function runWinbackReport(
     );
   }
 
-  const resolvePolicy = useFreshApprovedTarget
-    ? {
-        cacheStatus: "miss" as const,
-        estimatedCredits: evidencePort.estimateCredits("resolve_target")
-      }
-    : await evidenceCallPolicy(
-        evidencePort,
-        "resolve_target",
-        input.channel
-      );
-  const resolved = await audit.tool(
+  const tools = new EvidenceToolExecutor({
+    port: evidencePort,
+    audit,
+    stage: options.executionStage ?? "report"
+  });
+  const resolved = await tools.execute(
+    "resolve_target",
+    { channel: input.channel, fresh: useFreshApprovedTarget },
     {
-      name: `${mode}.resolve_target`,
       reason: "Confirm the exact requested YouTube channel before research",
-      mode,
-      input: { channel: input.channel },
-      cacheStatus: resolvePolicy.cacheStatus,
-      estimatedCredits: resolvePolicy.estimatedCredits
-    },
-    () =>
-      useFreshApprovedTarget
-        ? evidencePort.resolveTargetFresh!(input.channel)
-        : evidencePort.resolveTarget(input.channel),
-    () => ({
-      rows: 1,
-      resultBasedCredits: resultBasedCreditsFor(
-        mode,
-        resolvePolicy.cacheStatus,
-        UPRIVER_CREDIT_RATES.creatorResult
-      )
-    })
+      auditInput: { channel: input.channel }
+    }
   );
   assertResolvedTargetContract(resolved);
   if (options.approvedCohort) {
@@ -185,24 +176,13 @@ export async function runWinbackReport(
 
   let ledger: VerificationLedger | null = null;
   if (qualificationPolicy === "verified_product_continuity") {
-    const ledgerPolicy = await evidenceCallPolicy(
-      evidencePort,
+    ledger = await tools.execute(
       "load_verification_ledger",
-      "reach-matched-pilot-2026-07-19"
-    );
-    ledger = await audit.tool(
+      { ledgerKey: "reach-matched-pilot-2026-07-19" },
       {
-        name: "local.load_verification_ledger",
         reason: "Load manual S3 and product-continuity verification",
-        mode: "fixture",
-        input: { pilot: "reach_matched_2026_07_19" },
-        cacheStatus: ledgerPolicy.cacheStatus,
-        estimatedCredits: ledgerPolicy.estimatedCredits
-      },
-      () => evidencePort.loadVerificationLedger(),
-      (value) => ({
-        rows: value.peer_inventory.length + value.overlaps.length
-      })
+        auditInput: { pilot: "reach_matched_2026_07_19" }
+      }
     );
   }
 
@@ -228,10 +208,10 @@ export async function runWinbackReport(
         (rows) => ({ rows: rows.length })
       )
     : await loadLockedPeers(
-        evidencePort,
+        tools,
+        mode,
         resolved.target.url,
-        resolved.target.subscriberCount,
-        audit
+        resolved.target.subscriberCount
       );
 
   // Validate the cheap creator responses and local verification before any
@@ -247,97 +227,107 @@ export async function runWinbackReport(
     }
   }
 
-  const targetSponsorsPolicy = await evidenceCallPolicy(
-    evidencePort,
-    "list_target_sponsors",
-    resolved.target.url
-  );
-  const targetSponsorResult = await audit.tool(
-    {
-      name: `${mode}.list_target_sponsors`,
-      reason:
-        mode === "live"
-          ? "Retrieve explicit sponsorships from the verified 365-day target window"
-          : "Load the captured 365-day target sponsor history",
-      mode,
-      input: {
-        publicationUrl: resolved.target.url,
-        window: resolved.config.target_window
-      },
-      cacheStatus: targetSponsorsPolicy.cacheStatus,
-      estimatedCredits: targetSponsorsPolicy.estimatedCredits
-    },
-    () => evidencePort.listTargetSponsors(resolved.target.url),
-    (result) => ({
-      rows: result.rows.length,
-      resultBasedCredits: resultBasedCreditsFor(
-        mode,
-        targetSponsorsPolicy.cacheStatus,
-        result.rows.length * UPRIVER_CREDIT_RATES.groupedSponsorResult
-      )
-    })
-  );
-
   const peerSponsorResults: NormalizedSponsorEvidenceResult[] = [];
   const failedPeers: string[] = [];
-  for (const peer of peers) {
-    // Paid peer searches are intentionally serial: after each response the
-    // gateway reconciles the result-based estimate before the next reservation.
-    const peerSponsorsPolicy = await evidenceCallPolicy(
-      evidencePort,
-      "list_peer_sponsors",
-      peer.url
-    );
-    try {
-      peerSponsorResults.push(
-        await audit.tool(
+
+  const researchTargetSponsors =
+    (): Promise<NormalizedSponsorEvidenceResult> =>
+      tools.execute(
+        "list_target_sponsors",
+        { targetUrl: resolved.target.url },
         {
-          name: `${mode}.list_peer_sponsors`,
-          reason: `${
-            mode === "live" ? "Retrieve" : "Load captured"
-          } recent explicit sponsorships for approved peer ${peer.name}`,
-          mode,
-          input: {
-            publicationUrl: peer.url,
-            window: resolved.config.peer_window,
-            sponsorTypes: resolved.config.sponsor_types
-          },
-          cacheStatus: peerSponsorsPolicy.cacheStatus,
-          estimatedCredits: peerSponsorsPolicy.estimatedCredits
-        },
-        () => evidencePort.listPeerSponsors(peer.url),
-        (result) => ({
-          rows: result.rows.length,
-          resultBasedCredits: resultBasedCreditsFor(
-            mode,
-            peerSponsorsPolicy.cacheStatus,
-            result.rows.length * UPRIVER_CREDIT_RATES.groupedSponsorResult
-          )
-        })
-        )
-      );
-    } catch (error) {
-      if (
-        !options.allowPartialPeerFailure ||
-        !canTreatPeerFailureAsPartial(mode, error)
-      ) {
-        throw error;
-      }
-      failedPeers.push(peer.name);
-      peerSponsorResults.push({
-        rows: [],
-        completeness: "partial",
-        trackingStatus: {
-          publicationUrl: peer.url,
-          channelName: peer.name,
-          status: "failed",
-          message:
-            "Peer sponsor research failed; successful peer evidence was preserved."
+          reason:
+            mode === "live"
+              ? "Retrieve explicit sponsorships from the verified 365-day target window"
+              : "Load the captured 365-day target sponsor history",
+          auditInput: {
+            publicationUrl: resolved.target.url,
+            window: resolved.config.target_window
+          }
         }
-      });
+      );
+
+  const researchPeerSponsors = async (): Promise<void> => {
+    for (const peer of peers) {
+      // Paid peer searches are intentionally serial: after each response the
+      // gateway reconciles the result-based estimate before the next reservation.
+      try {
+        peerSponsorResults.push(
+          await tools.execute(
+            "list_peer_sponsors",
+            { peerUrl: peer.url },
+            {
+              reason: `${
+                mode === "live" ? "Retrieve" : "Load captured"
+              } recent explicit sponsorships for approved peer ${peer.name}`,
+              auditInput: {
+                publicationUrl: peer.url,
+                window: resolved.config.peer_window,
+                sponsorTypes: resolved.config.sponsor_types
+              }
+            }
+          )
+        );
+      } catch (error) {
+        if (
+          !options.allowPartialPeerFailure ||
+          !canTreatPeerFailureAsPartial(mode, error)
+        ) {
+          throw error;
+        }
+        failedPeers.push(peer.name);
+        peerSponsorResults.push({
+          rows: [],
+          completeness: "partial",
+          trackingStatus: {
+            publicationUrl: peer.url,
+            channelName: peer.name,
+            status: "failed",
+            message:
+              "Peer sponsor research failed; successful peer evidence was preserved."
+          }
+        });
+      }
     }
+  };
+
+  // Research ordering by qualification policy:
+  // - verified_product_continuity keeps target-first: its strict gate joins the
+  //   target's stale sponsors against the manual verification ledger.
+  // - same_brand_reactivation researches peers first and exits before the paid
+  //   target-history search when no evidence-backed peer signal qualifies, so a
+  //   no-signal run settles only the work it actually performed.
+  let targetSponsorResult: NormalizedSponsorEvidenceResult | null;
+  let targetHistorySearched: boolean;
+  if (qualificationPolicy === "same_brand_reactivation") {
+    await researchPeerSponsors();
+    const qualifyingPeerSignal = joinPeerEvidence(
+      peers,
+      peerSponsorResults.map((result) => result.rows)
+    ).filter(
+      (row) =>
+        sponsorMatchesApprovedIdentity(row.sponsor, row.peer.url) &&
+        hasExplicitApiEvidence(row.sponsor) &&
+        isWithinWindow(
+          row.sponsor.publishedDate,
+          resolved.config.peer_window
+        ) &&
+        row.resolvedDomain !== null
+    );
+    if (qualifyingPeerSignal.length === 0) {
+      targetSponsorResult = null;
+      targetHistorySearched = false;
+    } else {
+      targetSponsorResult = await researchTargetSponsors();
+      targetHistorySearched = true;
+    }
+  } else {
+    targetSponsorResult = await researchTargetSponsors();
+    targetHistorySearched = true;
+    await researchPeerSponsors();
   }
-  const targetSponsors = targetSponsorResult.rows;
+
+  const targetSponsors = targetSponsorResult?.rows ?? [];
   const peerSponsorSets = peerSponsorResults.map((result) => result.rows);
 
   const qualificationTargetSponsors =
@@ -471,7 +461,8 @@ export async function runWinbackReport(
       label: peer.name,
       result: peerSponsorResults[index]
     })),
-    failedPeers
+    failedPeers,
+    targetHistorySearched
   );
   const projectedLiveCredits = estimateUpriverCredits({
     groupedSponsorResults:
@@ -569,68 +560,23 @@ export function approvedCohortHash(
   });
 }
 
-async function loadLockedPeers(
-  evidencePort: SponsorRadarEvidencePort,
+function loadLockedPeers(
+  tools: EvidenceToolExecutor,
+  mode: SponsorRadarEvidencePort["mode"],
   targetUrl: string,
-  targetSubscriberCount: number,
-  audit: AuditRecorder
+  targetSubscriberCount: number
 ): Promise<LockedPeer[]> {
-  const mode = evidencePort.mode;
-  const peersPolicy = await evidenceCallPolicy(
-    evidencePort,
+  return tools.execute(
     "list_locked_peers",
-    targetUrl,
-    targetSubscriberCount
-  );
-  return audit.tool(
+    { targetUrl, targetSubscriberCount },
     {
-      name: `${mode}.list_locked_peers`,
       reason:
         mode === "live"
           ? "Resolve the reach-matched peer cohort fixed before overlap review"
           : "Load the reach-matched peer cohort fixed before overlap review",
-      mode,
-      input: { publicationUrl: targetUrl },
-      cacheStatus: peersPolicy.cacheStatus,
-      estimatedCredits: peersPolicy.estimatedCredits
-    },
-    () =>
-      (
-        evidencePort as SponsorRadarEvidencePort & {
-          listLockedPeers(
-            requestedTargetUrl: string,
-            requestedTargetSubscriberCount?: number
-          ): Promise<LockedPeer[]>;
-        }
-      ).listLockedPeers(targetUrl, targetSubscriberCount),
-    (rows) => ({
-      rows: rows.length,
-      resultBasedCredits: resultBasedCreditsFor(
-        mode,
-        peersPolicy.cacheStatus,
-        observedHttpResultCredits(
-          audit,
-          "live.list_locked_peers",
-          peersPolicy.estimatedCredits
-        )
-      )
-    })
+      auditInput: { publicationUrl: targetUrl }
+    }
   );
-}
-
-function observedHttpResultCredits(
-  audit: AuditRecorder,
-  operation: string,
-  conservativeFallback: number
-): number {
-  const completed = [...audit.getEvents()]
-    .reverse()
-    .find(
-      (event) =>
-        event.eventType === "http.completed" &&
-        event.tool?.name === `upriver.http.${operation}`
-    );
-  return completed?.tool?.resultBasedCredits ?? conservativeFallback;
 }
 
 function assertApprovedTarget(
@@ -784,12 +730,6 @@ function canTreatPeerFailureAsPartial(
   );
 }
 
-function cacheStatusFor(
-  mode: SponsorRadarEvidencePort["mode"]
-): EvidenceCacheStatus {
-  return mode === "fixture" ? "hit" : "not_applicable";
-}
-
 function evidenceQualificationPolicy(
   evidencePort: SponsorRadarEvidencePort
 ): QualificationPolicy {
@@ -809,38 +749,6 @@ function evidenceQualificationPolicy(
     throw new Error(`Unsupported evidence qualification policy: ${policy}`);
   }
   return policy;
-}
-
-async function evidenceCallPolicy(
-  evidencePort: SponsorRadarEvidencePort,
-  operation: EvidenceOperation,
-  input: string,
-  targetSubscriberCount?: number
-): Promise<{
-  cacheStatus: EvidenceCacheStatus;
-  estimatedCredits: number;
-}> {
-  const cacheStatus =
-    (await evidencePort.inspectCache?.(
-      operation,
-      input,
-      targetSubscriberCount
-    )) ??
-    cacheStatusFor(evidencePort.mode);
-  return {
-    cacheStatus,
-    estimatedCredits:
-      cacheStatus === "hit" ? 0 : evidencePort.estimateCredits(operation)
-  };
-}
-
-function resultBasedCreditsFor(
-  mode: SponsorRadarEvidencePort["mode"],
-  cacheStatus: EvidenceCacheStatus,
-  uncachedCredits: number
-): number | null {
-  if (mode === "fixture") return null;
-  return cacheStatus === "hit" ? 0 : uncachedCredits;
 }
 
 function qualifySameBrandReactivations(input: {
@@ -969,9 +877,9 @@ function projectedCreatorResults(
   if (qualificationPolicy !== "same_brand_reactivation") {
     return selectedPeerCount + 1;
   }
-  const projectedCreatorCredits =
-    evidencePort.estimateCredits("resolve_target") +
-    evidencePort.estimateCredits("list_locked_peers");
+  const projectedCreatorCredits = composeResolutionCredits((operation) =>
+    evidencePort.estimateCredits(operation)
+  );
   if (
     !Number.isInteger(projectedCreatorCredits) ||
     projectedCreatorCredits < 0 ||
@@ -1274,38 +1182,48 @@ function buildCoverage(
   joinablePeers: number,
   verifiedPeers: number,
   peerCoverageSubject: string,
-  targetResult: NormalizedSponsorEvidenceResult,
+  targetResult: NormalizedSponsorEvidenceResult | null,
   peerResults: Array<{
     label: string;
     result: NormalizedSponsorEvidenceResult;
   }>,
-  failedPeers: readonly string[] = []
+  failedPeers: readonly string[] = [],
+  targetHistorySearched = true
 ): CoverageNotice[] {
   const resultCapReached =
-    targetResult.completeness === "partial" ||
+    targetResult?.completeness === "partial" ||
     peerResults.some(
       ({ label, result }) =>
         result.completeness === "partial" && !failedPeers.includes(label)
     );
 
   return [
-    coverageWarning({
-      code: "target_domain_coverage",
-      numerator: targetDomains,
-      denominator: targetRows,
-      subject: "Target sponsor rows with a usable domain"
-    }),
+    targetHistorySearched && targetResult
+      ? coverageWarning({
+          code: "target_domain_coverage",
+          numerator: targetDomains,
+          denominator: targetRows,
+          subject: "Target sponsor rows with a usable domain"
+        })
+      : ({
+          code: "target_history_not_searched",
+          severity: "info",
+          message:
+            "Target sponsor history was not searched because no evidence-backed peer sponsorship signal was found in the selected window."
+        } satisfies CoverageNotice),
     coverageWarning({
       code: "peer_domain_joinability",
       numerator: joinablePeers,
       denominator: verifiedPeers,
       subject: peerCoverageSubject
     }),
-    trackingCoverageWarning(
-      "target_tracking_status",
-      [{ label: "target channel", status: targetResult.trackingStatus }],
-      "target sponsorship response"
-    ),
+    targetHistorySearched && targetResult
+      ? trackingCoverageWarning(
+          "target_tracking_status",
+          [{ label: "target channel", status: targetResult.trackingStatus }],
+          "target sponsorship response"
+        )
+      : null,
     trackingCoverageWarning(
       "peer_tracking_status",
       peerResults.map(({ label, result }) => ({

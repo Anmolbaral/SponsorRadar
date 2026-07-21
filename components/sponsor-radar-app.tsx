@@ -7,7 +7,7 @@ import {
   useState,
   type FormEvent
 } from "react";
-import type { Phase3RunResource } from "@/src/radar/application/run-workflow";
+import type { WorkflowRunResource } from "@/src/radar/application/run-workflow";
 import type { WinbackReport } from "@/src/radar/domain/types";
 import { parseYouTubeChannelReference } from "@/src/radar/domain/youtube";
 
@@ -45,9 +45,9 @@ type RunActionBody =
 const SAVED_RUN_ID_KEY = "sponsor-radar-run-id";
 const PENDING_CREATE_KEY = "sponsor-radar-pending-create";
 
-export function SponsorRadarDemo() {
+export function SponsorRadarApp() {
   const [channel, setChannel] = useState("");
-  const [run, setRun] = useState<Phase3RunResource | null>(null);
+  const [run, setRun] = useState<WorkflowRunResource | null>(null);
   const [issue, setIssue] = useState<WorkflowIssue | null>(null);
   const [loading, setLoading] = useState(false);
   const createKey = useRef<string | null>(null);
@@ -55,7 +55,7 @@ export function SponsorRadarDemo() {
   const attemptedAutomaticActions = useRef(new Set<string>());
 
   const act = useCallback(
-    async (currentRun: Phase3RunResource, body: RunActionBody) => {
+    async (currentRun: WorkflowRunResource, body: RunActionBody) => {
       const idempotencyKey = runActionIdempotencyKey(currentRun, body);
       if (actionInFlight.current) return;
       actionInFlight.current = idempotencyKey;
@@ -389,7 +389,7 @@ function WorkflowPanel({
   onResume,
   onStartOver
 }: {
-  run: Phase3RunResource;
+  run: WorkflowRunResource;
   loading: boolean;
   issue: WorkflowIssue | null;
   onRetry: () => void;
@@ -584,7 +584,7 @@ function ReportView({
   onStartOver
 }: {
   report: WinbackReport;
-  status: Phase3RunResource["status"];
+  status: WorkflowRunResource["status"];
   onStartOver: () => void;
 }) {
   const opportunityCount = report.leads.length;
@@ -636,7 +636,7 @@ function ReportView({
           </div>
         ) : (
           report.leads.map((lead, leadIndex) => {
-            const generatedNarrative = report.phase4?.narratives.find(
+            const generatedNarrative = report.wordingAgent?.narratives.find(
               (narrative) => narrative.leadIndex === leadIndex
             );
             return (
@@ -745,7 +745,7 @@ function ReportView({
                 ) : (
                   <>
                     <p>{lead.outreachHypothesis}</p>
-                    {report.phase4?.status === "fallback" ? (
+                    {report.wordingAgent?.status === "fallback" ? (
                       <p className="form-note">
                         This result uses the verified evidence summary.
                       </p>
@@ -879,7 +879,7 @@ async function workflowRequest(
     idempotencyKey: string;
     body: unknown;
   }
-): Promise<Phase3RunResource> {
+): Promise<WorkflowRunResource> {
   const response = await fetch(path, {
     method: options ? "POST" : "GET",
     ...(options
@@ -893,7 +893,7 @@ async function workflowRequest(
       : {})
   });
   const payload = (await response.json()) as
-    | Phase3RunResource
+    | WorkflowRunResource
     | {
         error?: unknown;
         code?: unknown;
@@ -1056,7 +1056,7 @@ export function interpretChannelInput(input: string): string | null {
   }
 }
 
-function shouldPollRun(run: Phase3RunResource): boolean {
+function shouldPollRun(run: WorkflowRunResource): boolean {
   return (
     !run.availableActions.includes("resume") &&
     (run.state.state === "plan_approved" ||
@@ -1096,7 +1096,7 @@ function clearPendingCreateAttempt(): void {
 }
 
 function automaticActionFor(
-  run: Phase3RunResource
+  run: WorkflowRunResource
 ): RunActionBody | null {
   if (
     run.state.state === "planned" &&
@@ -1125,13 +1125,13 @@ function automaticActionFor(
 }
 
 function runActionIdempotencyKey(
-  run: Phase3RunResource,
+  run: WorkflowRunResource,
   action: RunActionBody
 ): string {
   return `${action.action}-${run.runId}-${run.version}`;
 }
 
-function workflowTitle(run: Phase3RunResource): string {
+function workflowTitle(run: WorkflowRunResource): string {
   switch (run.status) {
     case "awaiting_plan_approval":
     case "resolving_peers":
@@ -1149,7 +1149,7 @@ function workflowTitle(run: Phase3RunResource): string {
   }
 }
 
-function workflowStepTitle(run: Phase3RunResource): string {
+function workflowStepTitle(run: WorkflowRunResource): string {
   switch (run.state.state) {
     case "submitted":
     case "planned":
@@ -1175,7 +1175,7 @@ function workflowStepTitle(run: Phase3RunResource): string {
   }
 }
 
-function workflowStepCopy(run: Phase3RunResource): string {
+function workflowStepCopy(run: WorkflowRunResource): string {
   switch (run.state.state) {
     case "submitted":
     case "planned":
@@ -1202,7 +1202,7 @@ function workflowStepCopy(run: Phase3RunResource): string {
 }
 
 function workflowStatusLabel(
-  status: Phase3RunResource["status"]
+  status: WorkflowRunResource["status"]
 ): string {
   switch (status) {
     case "awaiting_plan_approval":

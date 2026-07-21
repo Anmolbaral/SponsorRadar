@@ -117,7 +117,7 @@ describe("audit recorder", () => {
     let time = Date.parse("2026-07-19T00:00:00.000Z");
     const audit = new AuditRecorder({
       runId: "live-run",
-      phase: "phase_2_live",
+      phase: "report_live",
       mode: "live",
       clock: () => (time += 10)
     });
@@ -150,7 +150,7 @@ describe("audit recorder", () => {
 
     const events = audit.getEvents();
     expect(events[1]).toMatchObject({
-      phase: "phase_2_live",
+      phase: "report_live",
       eventType: "policy.decided",
       reason: "The 25-credit estimate fits within the run budget",
       policy: {
@@ -184,7 +184,7 @@ describe("audit recorder", () => {
   it("records a denied live preflight without starting a tool", () => {
     const audit = new AuditRecorder({
       runId: "denied-live-run",
-      phase: "phase_2_live",
+      phase: "report_live",
       mode: "live"
     });
     audit.startRun({ channel: "@creator" });
@@ -198,7 +198,7 @@ describe("audit recorder", () => {
 
     expect(audit.getEvents().at(-1)).toMatchObject({
       eventType: "policy.decided",
-      phase: "phase_2_live",
+      phase: "report_live",
       policy: {
         decision: "deny",
         estimatedCredits: 25,
@@ -212,7 +212,7 @@ describe("audit recorder", () => {
   it("records safe per-request lifecycle metadata without query or body data", () => {
     const audit = new AuditRecorder({
       runId: "live-http",
-      phase: "phase_2_live",
+      phase: "report_live",
       mode: "live"
     });
     audit.recordHttpLifecycle({
@@ -249,7 +249,7 @@ describe("audit recorder", () => {
 
     expect(audit.getEvents()).toEqual([
       expect.objectContaining({
-        phase: "phase_2_live",
+        phase: "report_live",
         eventType: "http.started",
         reason: "Retrieve sponsors for locked peer Dave2D",
         tool: expect.objectContaining({
@@ -272,5 +272,72 @@ describe("audit recorder", () => {
       })
     ]);
     expect(JSON.stringify(audit.getEvents())).not.toContain("publication_url");
+  });
+
+  it("preserves the upstream HTTP status on a failed lifecycle event", () => {
+    const audit = new AuditRecorder({
+      runId: "live-http-failed",
+      phase: "report_live",
+      mode: "live"
+    });
+    audit.recordHttpLifecycle({
+      phase: "failed",
+      method: "POST",
+      path: "/v1/creators/similar",
+      requestId: "local-request",
+      code: "upstream_error",
+      status: 503,
+      audit: {
+        operation: "live.list_locked_peers",
+        reason: "Discover reach-comparable peers",
+        estimatedCredits: 10
+      },
+      meta: {
+        providerRequestId: "provider-request",
+        latencyMs: 434,
+        attempts: [{}]
+      }
+    });
+
+    expect(audit.getEvents()).toEqual([
+      expect.objectContaining({
+        eventType: "http.failed",
+        tool: expect.objectContaining({
+          outcome: "failure",
+          errorType: "upstream_error",
+          httpStatus: 503
+        })
+      })
+    ]);
+  });
+
+  it("omits httpStatus when the upstream status is absent or out of range", () => {
+    const audit = new AuditRecorder({
+      runId: "live-http-network",
+      phase: "report_live",
+      mode: "live"
+    });
+    audit.recordHttpLifecycle({
+      phase: "failed",
+      method: "POST",
+      path: "/v1/creators/similar",
+      requestId: "local-request",
+      code: "network_failure",
+      status: null,
+      audit: {
+        operation: "live.list_locked_peers",
+        reason: "Discover reach-comparable peers",
+        estimatedCredits: 10
+      },
+      meta: {
+        providerRequestId: null,
+        latencyMs: 12,
+        attempts: [{}]
+      }
+    });
+
+    const [event] = audit.getEvents();
+    expect(event.tool?.errorType).toBe("network_failure");
+    expect(event.tool).not.toHaveProperty("httpStatus");
   });
 });

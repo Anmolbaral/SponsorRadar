@@ -49,7 +49,7 @@ const PurposeBundleSchema = z
 const ManifestSchema = z
   .object({
     schema_version: z.literal(2),
-    manifest_id: z.literal("sponsor-radar-phase4-context-v1"),
+    manifest_id: z.literal("sponsor-radar-wording-context-v1"),
     hash_algorithm: z.literal("sha256"),
     review: z
       .object({

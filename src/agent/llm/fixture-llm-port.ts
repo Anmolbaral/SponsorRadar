@@ -39,7 +39,7 @@ const WordingFixtureInputSchema = z
 
 export class FixtureLlmPort implements LlmPort {
   readonly provider = "fixture";
-  readonly model = "phase4-fixture-v1";
+  readonly model = "wording-fixture-v1";
 
   async generateStructured(
     request: LlmProviderRequest

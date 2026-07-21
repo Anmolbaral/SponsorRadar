@@ -2,9 +2,9 @@ import path from "node:path";
 import { FixtureLlmPort } from "@/src/agent/llm/fixture-llm-port";
 import { OpenAiResponsesLlmPort } from "@/src/agent/llm/openai-responses-llm-port";
 import {
-  BoundedPhase4Agent,
-  type Phase4WorkflowAgent
-} from "@/src/agent/orchestrator/phase4-agent";
+  BoundedWordingAgent,
+  type WordingAgent
+} from "@/src/agent/orchestrator/wording-agent";
 import { CachedEvidenceGateway } from "@/src/radar/adapters/cache/cached-evidence-gateway";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
@@ -12,7 +12,7 @@ import { UpriverHttpClient } from "@/src/radar/adapters/upriver/http-client";
 import { LiveUpriverGateway } from "@/src/radar/adapters/upriver/live-evidence-gateway";
 import {
   MAXIMUM_RUN_CREDITS,
-  Phase3WorkflowService,
+  WorkflowService,
   type WorkflowGatewayFactory
 } from "@/src/radar/application/run-workflow";
 import type { EvidenceMode } from "@/src/radar/application/ports";
@@ -26,7 +26,7 @@ export class LiveWorkflowDisabledError extends Error {
   }
 }
 
-export function createPhase3WorkflowServiceFromEnvironment(): Phase3WorkflowService {
+export function createWorkflowServiceFromEnvironment(): WorkflowService {
   const repositoryRoot = process.cwd();
   const mode = workflowMode();
   const runCreditLimit = environmentInteger(
@@ -38,6 +38,13 @@ export function createPhase3WorkflowServiceFromEnvironment(): Phase3WorkflowServ
       `SPONSOR_RADAR_RUN_CREDIT_LIMIT must not exceed ${MAXIMUM_RUN_CREDITS}`
     );
   }
+  // Evidence older than this is treated as expired: the read-through cache
+  // reports a miss and re-fetches from the provider, so a run never serves a
+  // stale target/peer/sponsor result that could mask an upstream outage.
+  const cacheTtlMs = environmentInteger(
+    "SPONSOR_RADAR_CACHE_TTL_MS",
+    60 * 60 * 1_000
+  );
   const repository = new FileSystemWorkflowRepository({
     directory: workflowDataDirectory(repositoryRoot)
   });
@@ -56,15 +63,19 @@ export function createPhase3WorkflowServiceFromEnvironment(): Phase3WorkflowServ
       requestedMode === "fixture"
         ? new FixtureEvidenceGateway(repositoryRoot)
         : liveGateway(repositoryRoot, maximumCredits, audit);
-    return new CachedEvidenceGateway(underlying, repository);
+    return new CachedEvidenceGateway(underlying, repository, {
+      creatorTtlMs: cacheTtlMs,
+      sponsorTtlMs: cacheTtlMs,
+      verificationTtlMs: cacheTtlMs
+    });
   };
 
-  return new Phase3WorkflowService({
+  return new WorkflowService({
     repository,
     gatewayFactory,
     mode,
     runCreditLimit,
-    phase4Agent: phase4AgentFromEnvironment(repositoryRoot),
+    wordingAgent: wordingAgentFromEnvironment(repositoryRoot),
     quoteTtlMs: environmentInteger(
       "SPONSOR_RADAR_QUOTE_TTL_MS",
       60 * 60 * 1_000
@@ -72,15 +83,15 @@ export function createPhase3WorkflowServiceFromEnvironment(): Phase3WorkflowServ
   });
 }
 
-function phase4AgentFromEnvironment(
+function wordingAgentFromEnvironment(
   repositoryRoot: string
-): Phase4WorkflowAgent | undefined {
+): WordingAgent | undefined {
   const mode = process.env.SPONSOR_RADAR_LLM_MODE ?? "fixture";
   if (mode === "disabled") {
     return undefined;
   }
   if (mode === "fixture") {
-    return new BoundedPhase4Agent(repositoryRoot, new FixtureLlmPort());
+    return new BoundedWordingAgent(repositoryRoot, new FixtureLlmPort());
   }
   if (mode !== "openai") {
     throw new LiveWorkflowDisabledError(
@@ -89,16 +100,16 @@ function phase4AgentFromEnvironment(
   }
   if (process.env.SPONSOR_RADAR_LIVE_LLM !== "true") {
     throw new LiveWorkflowDisabledError(
-      "The paid Phase 4 LLM requires SPONSOR_RADAR_LIVE_LLM=true"
+      "The paid wording-agent LLM requires SPONSOR_RADAR_LIVE_LLM=true"
     );
   }
   const apiKey = process.env.OPENAI_API_KEY?.trim() ?? "";
   if (!apiKey) {
     throw new LiveWorkflowDisabledError(
-      "The paid Phase 4 LLM requires a server-only OpenAI API key"
+      "The paid wording-agent LLM requires a server-only OpenAI API key"
     );
   }
-  return new BoundedPhase4Agent(
+  return new BoundedWordingAgent(
     repositoryRoot,
     new OpenAiResponsesLlmPort({
       apiKey,
@@ -129,7 +140,7 @@ function workflowMode(): EvidenceMode {
     process.env.UPRIVER_LIVE_WORKFLOW !== "true"
   ) {
     throw new LiveWorkflowDisabledError(
-      "The Phase 3 live workflow requires UPRIVER_LIVE_WORKFLOW=true"
+      "The live workflow requires UPRIVER_LIVE_WORKFLOW=true"
     );
   }
   return mode;
@@ -145,7 +156,7 @@ function liveGateway(
   const apiKey = process.env.UPRIVER_API_KEY?.trim() ?? "";
   if (!apiKey) {
     throw new LiveWorkflowDisabledError(
-      "The Phase 3 live workflow requires a server-only Upriver API key"
+      "The live workflow requires a server-only Upriver API key"
     );
   }
   return new LiveUpriverGateway(

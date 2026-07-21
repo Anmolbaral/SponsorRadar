@@ -21,8 +21,7 @@ normalized sponsor domain. The live output is a same-brand reactivation
 candidate. It does not claim that the product, campaign, buyer, budget, or
 agency is the same.
 
-The payment case is saved research time and fewer false-positive pitches. The
-strict pilot found one Dell/XPS lead and rejected all five domain-only overlaps
+The strict pilot found one Dell/XPS lead and rejected all five domain-only overlaps
 from the broader pilot under the same final rubric. It also states what it
 cannot know: current buyer, agency, budget, and campaign status. That strict
 S3 + product-continuity A/B outcome remains a fixture/eval oracle. Dynamic live

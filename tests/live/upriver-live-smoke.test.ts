@@ -33,7 +33,7 @@ describe("manually approved six-credit Upriver smoke", () => {
       }
 
       const audit = new AuditRecorder({
-        phase: "phase_2_live",
+        phase: "report_live",
         mode: "live",
         sink: (event) => {
           process.stdout.write(

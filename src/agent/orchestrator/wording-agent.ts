@@ -22,44 +22,44 @@ import type {
   WinbackReport
 } from "@/src/radar/domain/types";
 
-const PROMPT_VERSION = "phase4-grounded-v1";
+const PROMPT_VERSION = "grounded-wording-v1";
 const PEER_SCHEMA_VERSION = "peer-rationale-v2";
 const WORDING_SCHEMA_VERSION = "grounded-wording-v2";
 
-export interface Phase4PeerExplanation {
+export interface PeerExplanation {
   peerUrl: string;
   rationale: string;
   evidenceIds: [string, string];
 }
 
-export interface Phase4PeerExplanationResult {
+export interface PeerExplanationResult {
   provider: string;
   model: string;
   promptVersion: string;
   schemaVersion: string;
-  explanations: Phase4PeerExplanation[];
+  explanations: PeerExplanation[];
 }
 
-export interface Phase4NarrativeSentence {
+export interface NarrativeSentence {
   text: string;
   claimIds: string[];
   evidenceIds: string[];
 }
 
-export interface Phase4ReportNarrative {
+export interface ReportNarrative {
   leadIndex: number;
-  sentences: Phase4NarrativeSentence[];
+  sentences: NarrativeSentence[];
 }
 
-export interface Phase4ReportNarrativeResult {
+export interface ReportNarrativeResult {
   provider: string;
   model: string;
   promptVersion: string;
   schemaVersion: string;
-  narratives: Phase4ReportNarrative[];
+  narratives: ReportNarrative[];
 }
 
-export interface Phase4WorkflowAgent {
+export interface WordingAgent {
   readonly provider: string;
   readonly model: string;
   explainLockedPeers(input: {
@@ -68,16 +68,16 @@ export interface Phase4WorkflowAgent {
     peers: readonly LockedPeer[];
     audit: AuditRecorder;
     priorAuditEvents: readonly AuditEvent[];
-  }): Promise<Phase4PeerExplanationResult>;
+  }): Promise<PeerExplanationResult>;
   wordQualifiedReport(input: {
     runId: string;
     report: WinbackReport;
     audit: AuditRecorder;
     priorAuditEvents: readonly AuditEvent[];
-  }): Promise<Phase4ReportNarrativeResult>;
+  }): Promise<ReportNarrativeResult>;
 }
 
-export class BoundedPhase4Agent implements Phase4WorkflowAgent {
+export class BoundedWordingAgent implements WordingAgent {
   readonly provider: string;
   readonly model: string;
 
@@ -95,9 +95,9 @@ export class BoundedPhase4Agent implements Phase4WorkflowAgent {
     peers: readonly LockedPeer[];
     audit: AuditRecorder;
     priorAuditEvents: readonly AuditEvent[];
-  }): Promise<Phase4PeerExplanationResult> {
+  }): Promise<PeerExplanationResult> {
     if (input.peers.length < 1 || input.peers.length > 3) {
-      throw new Phase4AgentError(
+      throw new WordingAgentError(
         "Peer rationale requires one to three locked peers"
       );
     }
@@ -178,7 +178,7 @@ export class BoundedPhase4Agent implements Phase4WorkflowAgent {
     report: WinbackReport;
     audit: AuditRecorder;
     priorAuditEvents: readonly AuditEvent[];
-  }): Promise<Phase4ReportNarrativeResult> {
+  }): Promise<ReportNarrativeResult> {
     const bundle = await this.loadContext(
       "grounded_report_wording",
       input.audit
@@ -320,10 +320,10 @@ export class BoundedPhase4Agent implements Phase4WorkflowAgent {
   }
 }
 
-export class Phase4AgentError extends Error {
+export class WordingAgentError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "Phase4AgentError";
+    this.name = "WordingAgentError";
   }
 }
 
@@ -335,7 +335,7 @@ function instructionsFor(
     (section) => section.authority === "system_policy"
   );
   if (!policy) {
-    throw new Phase4AgentError("Reviewed system policy context is missing");
+    throw new WordingAgentError("Reviewed system policy context is missing");
   }
   const taskPolicy =
     purpose === "peer_rationale"

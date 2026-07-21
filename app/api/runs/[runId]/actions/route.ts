@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createPhase3WorkflowServiceFromEnvironment } from "@/src/radar/adapters/workflow-runtime";
+import { createWorkflowServiceFromEnvironment } from "@/src/radar/adapters/workflow-runtime";
 import {
   enforceMutationRateLimit,
   readBoundedJson
@@ -53,7 +53,7 @@ export async function POST(
     enforceMutationRateLimit(request, "workflow_action");
     const input = ActionSchema.parse(await readBoundedJson(request));
     const key = idempotencyKey(request);
-    const service = createPhase3WorkflowServiceFromEnvironment();
+    const service = createWorkflowServiceFromEnvironment();
     const run =
       input.action === "approve_plan"
         ? await service.approvePlan(runId, {

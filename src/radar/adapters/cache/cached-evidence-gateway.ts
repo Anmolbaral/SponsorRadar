@@ -19,13 +19,16 @@ import type {
   WorkflowPersistenceRepository
 } from "@/src/radar/adapters/persistence";
 import {
+  composeResolutionCredits,
+  MAX_PEER_COHORT
+} from "@/src/radar/application/tools/tool-registry";
+import {
   parseYouTubeChannelReference,
   parseYouTubeIdentity
 } from "@/src/radar/domain/youtube";
 
 const CACHE_NAMESPACE = "sponsor-radar-upriver-evidence";
 const CACHE_SCHEMA_VERSION = 3;
-const MAX_DYNAMIC_PEERS = 3;
 
 const TargetSummarySchema = z
   .object({
@@ -214,8 +217,9 @@ export class CachedEvidenceGateway implements SponsorRadarEvidencePort {
     return (
       this.preparedResolutionCredits ??
       this.underlying.estimateResolutionCredits?.() ??
-      (this.underlying.estimateCredits("resolve_target") +
-        this.underlying.estimateCredits("list_locked_peers"))
+      composeResolutionCredits((operation) =>
+        this.underlying.estimateCredits(operation)
+      )
     );
   }
 
@@ -229,8 +233,9 @@ export class CachedEvidenceGateway implements SponsorRadarEvidencePort {
       this.preparedRunCredits = this.underlying.estimateRunCredits();
       this.preparedResolutionCredits =
         this.underlying.estimateResolutionCredits?.() ??
-        (this.underlying.estimateCredits("resolve_target") +
-          this.underlying.estimateCredits("list_locked_peers"));
+        composeResolutionCredits((operation) =>
+          this.underlying.estimateCredits(operation)
+        );
       return;
     }
 
@@ -279,7 +284,7 @@ export class CachedEvidenceGateway implements SponsorRadarEvidencePort {
       // A cached target no longer implies a fixed peer cohort. Until Similar
       // Creators is resolved, reserve enough for the maximum allowed cohort.
       estimate +=
-        MAX_DYNAMIC_PEERS *
+        MAX_PEER_COHORT *
         this.underlying.estimateCredits("list_peer_sponsors");
     }
     this.preparedRunCredits = estimate;

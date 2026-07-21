@@ -1,5 +1,30 @@
 import type { NextConfig } from "next";
 
+export function contentSecurityPolicy(
+  isDevelopment: boolean = process.env.NODE_ENV === "development"
+): string {
+  const scriptSrc = [
+    "'self'",
+    "'unsafe-inline'",
+    // The Next.js/Turbopack development overlay and fast refresh evaluate code
+    // at runtime, which requires 'unsafe-eval'. Production and test builds must
+    // never relax the policy this way.
+    ...(isDevelopment ? ["'unsafe-eval'"] : [])
+  ].join(" ");
+  return [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "connect-src 'self'",
+    "font-src 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "img-src 'self' data:",
+    "object-src 'none'",
+    `script-src ${scriptSrc}`,
+    "style-src 'self' 'unsafe-inline'"
+  ].join("; ");
+}
+
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
@@ -14,18 +39,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "base-uri 'self'",
-              "connect-src 'self'",
-              "font-src 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'none'",
-              "img-src 'self' data:",
-              "object-src 'none'",
-              "script-src 'self' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'"
-            ].join("; ")
+            value: contentSecurityPolicy()
           },
           {
             key: "Permissions-Policy",

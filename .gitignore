@@ -1,16 +1,62 @@
+# --- Secrets & environment ---
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
 
+# --- Dependencies ---
 node_modules/
 .pnpm-store/
+
+# --- Build & framework output ---
 .next/
-coverage/
-playwright-report/
-test-results/
+out/
+build/
 dist/
+*.tsbuildinfo
+
+# --- Deploy / tooling caches ---
+.vercel/
+.turbo/
+.cache/
+.eslintcache
+
+# --- Test & coverage output ---
+coverage/
+.nyc_output/
+playwright-report/
+playwright/.cache/
+test-results/
+
+# --- Runtime data (per-run ledgers, quota, cached evidence) ---
 .data/
 spike-results/raw/upriver-usage.json
-*.tsbuildinfo
+
+# --- Logs ---
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# --- Editor / OS cruft ---
 .DS_Store
+Thumbs.db
+ehthumbs.db
+*~
+*.swp
+*.swo
+.idea/
+
+# --- Temp / backup files ---
+*.tmp
+*.bak
+*.orig
+tmp/
+
+# --- Local agent/session state ---
 .claude/

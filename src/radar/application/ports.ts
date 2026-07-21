@@ -3,6 +3,7 @@ import type {
   VerificationLedger
 } from "@/src/radar/adapters/upriver/contracts";
 import type { NormalizedSponsorEvidenceResult } from "@/src/radar/adapters/upriver/normalize";
+import type { EvidenceOperation } from "@/src/radar/application/tools/tool-registry";
 import type { TargetSummary } from "@/src/radar/domain/types";
 import type { VerifiedYouTubeIdentity } from "@/src/radar/domain/youtube";
 
@@ -19,12 +20,11 @@ export type QualificationPolicy =
   | "verified_product_continuity"
   | "same_brand_reactivation";
 
-export type EvidenceOperation =
-  | "resolve_target"
-  | "list_target_sponsors"
-  | "list_locked_peers"
-  | "list_peer_sponsors"
-  | "load_verification_ledger";
+/**
+ * Derived from the authoritative tool registry (ADR 0004), so an operation
+ * that is not registered cannot be named against the evidence port.
+ */
+export type { EvidenceOperation };
 
 export interface ResolvedTarget {
   target: TargetSummary;

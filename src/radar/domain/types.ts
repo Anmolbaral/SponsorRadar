@@ -67,7 +67,8 @@ export interface CoverageNotice {
     | "peer_tracking_status"
     | "grouped_summary_limit"
     | "upriver_result_cap"
-    | "peer_research_partial";
+    | "peer_research_partial"
+    | "target_history_not_searched";
   severity: "warning" | "info";
   numerator?: number;
   denominator?: number;
@@ -107,13 +108,13 @@ export interface RunAuditSummary {
   totalDurationMs: number;
 }
 
-export interface Phase4NarrativeSentence {
+export interface NarrativeSentence {
   text: string;
   claimIds: string[];
   evidenceIds: string[];
 }
 
-export interface Phase4ReportAugmentation {
+export interface ReportAugmentation {
   status: "generated" | "fallback" | "not_needed";
   provider: string;
   model: string;
@@ -121,7 +122,7 @@ export interface Phase4ReportAugmentation {
   schemaVersion: string;
   narratives: Array<{
     leadIndex: number;
-    sentences: Phase4NarrativeSentence[];
+    sentences: NarrativeSentence[];
   }>;
   fallbackReason?: string;
 }
@@ -130,12 +131,12 @@ export interface WinbackReport {
   schemaVersion: 1;
   runId: string;
   phase:
-    | "phase_1_fixture"
-    | "phase_2_live"
-    | "phase_3_fixture"
-    | "phase_3_live"
-    | "phase_4_fixture"
-    | "phase_4_live";
+    | "report_fixture"
+    | "report_live"
+    | "workflow_fixture"
+    | "workflow_live"
+    | "workflow_wording_fixture"
+    | "workflow_wording_live";
   generatedAt: string;
   asOf: string;
   target: TargetSummary;
@@ -152,5 +153,5 @@ export interface WinbackReport {
   leads: QualifiedLead[];
   coverage: CoverageNotice[];
   audit: RunAuditSummary;
-  phase4?: Phase4ReportAugmentation;
+  wordingAgent?: ReportAugmentation;
 }

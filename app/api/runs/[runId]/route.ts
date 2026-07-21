@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createPhase3WorkflowServiceFromEnvironment } from "@/src/radar/adapters/workflow-runtime";
+import { createWorkflowServiceFromEnvironment } from "@/src/radar/adapters/workflow-runtime";
 import { workflowErrorResponse } from "../errors";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ export async function GET(
 ) {
   try {
     const { runId } = await context.params;
-    const service = createPhase3WorkflowServiceFromEnvironment();
+    const service = createWorkflowServiceFromEnvironment();
     const run = await service.getRun(RunIdSchema.parse(runId));
     return NextResponse.json(run, {
       headers: { "cache-control": "no-store" }

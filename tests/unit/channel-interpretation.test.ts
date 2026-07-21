@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { interpretChannelInput } from "@/components/sponsor-radar-demo";
+import { interpretChannelInput } from "@/components/sponsor-radar-app";
 
 describe("editable channel interpretation", () => {
   it.each([
@@ -19,6 +19,7 @@ describe("editable channel interpretation", () => {
     "",
     "   ",
     "https://youtube.com/watch?v=abc",
+    "https://youtube.com/results?search_query=abc",
     "https://youtube.com.evil.example/@dave2d",
     "/channel/not-a-channel-id"
   ])("shows no interpretation for invalid input %s", (input) => {

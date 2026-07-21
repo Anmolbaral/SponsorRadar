@@ -9,9 +9,12 @@ import {
 
 interface FrozenCase {
   id: string;
-  task: "peer" | "report";
+  task: "peer" | "report" | "reactivation";
   scenario: string;
   expectedAccepted: boolean;
+  // Required for rejected cases: the guard category that must fire, so a case
+  // proves the specific invariant it names rather than passing on any throw.
+  expectedReason?: string;
 }
 
 const expectedPeers = [
@@ -85,47 +88,141 @@ const validReportOutput = {
   ]
 };
 
-describe("Phase 4 frozen output-safety eval", () => {
-  it("passes every attribution, hallucination, injection, and inflation case", async () => {
+
+// Same-brand reactivation is the CURRENT shipping qualification policy. Its
+// wording rules (assertSameBrandReactivationWording) were previously untested
+// because no ledger claim ended in the same-brand suffix that activates them.
+
+const reactivationLedgers: GroundingLedger[] = [
+  {
+    leadId: "lead_ridge",
+    claims: [
+      {
+        claimId: "lead_ridge_target_observed",
+        evidenceIds: ["lead_ridge:target"]
+      },
+      {
+        claimId: "lead_ridge_peer_observed",
+        evidenceIds: ["lead_ridge:peer"]
+      },
+      {
+        claimId: "lead_ridge_same_brand_reactivation",
+        evidenceIds: ["lead_ridge:target", "lead_ridge:peer"]
+      }
+    ]
+  }
+];
+const validReactivationOutput = {
+  narratives: [
+    {
+      leadId: "lead_ridge",
+      sentences: [
+        {
+          text:
+            "The cited target evidence records an earlier observed paid placement for this brand.",
+          claimIds: ["lead_ridge_target_observed"],
+          evidenceIds: ["lead_ridge:target"]
+        },
+        {
+          text:
+            "The cited peer evidence records a more recent observed paid placement for this brand.",
+          claimIds: ["lead_ridge_peer_observed"],
+          evidenceIds: ["lead_ridge:peer"]
+        },
+        {
+          text:
+            "Both placements share the same sponsor domain, while the same product line, campaign, and buyer remain unverified.",
+          claimIds: ["lead_ridge_same_brand_reactivation"],
+          evidenceIds: ["lead_ridge:target", "lead_ridge:peer"]
+        }
+      ]
+    }
+  ]
+};
+
+describe("agent output-safety eval", () => {
+  it("passes every attribution, hallucination, injection, and inflation case for the exact guard that should fire", async () => {
     const cases = JSON.parse(
       await readFile(
         path.join(
           process.cwd(),
-          "evals/cases/phase4-output-safety.json"
+          "evals/cases/agent-output-safety.json"
         ),
         "utf8"
       )
     ) as FrozenCase[];
-    const results = cases.map((evalCase) => ({
-      id: evalCase.id,
-      expected: evalCase.expectedAccepted,
-      actual: accepts(evalCase)
-    }));
+
+    const mismatches = cases
+      .map((evalCase) => {
+        const { accepted, reason } = evaluate(evalCase);
+        const ok =
+          accepted === evalCase.expectedAccepted &&
+          (evalCase.expectedAccepted ||
+            reason === (evalCase.expectedReason ?? null));
+        return {
+          id: evalCase.id,
+          ok,
+          expected: {
+            accepted: evalCase.expectedAccepted,
+            reason: evalCase.expectedReason ?? null
+          },
+          actual: { accepted, reason }
+        };
+      })
+      .filter((result) => !result.ok);
 
     expect(cases.length).toBeGreaterThanOrEqual(25);
-    expect(
-      results.filter((result) => result.actual !== result.expected)
-    ).toEqual([]);
+    expect(mismatches).toEqual([]);
   });
 });
 
-function accepts(evalCase: FrozenCase): boolean {
+function evaluate(evalCase: FrozenCase): {
+  accepted: boolean;
+  reason: string | null;
+} {
   try {
     if (evalCase.task === "peer") {
-      parsePeerRationaleOutput(
-        mutatePeer(evalCase.scenario),
-        expectedPeers
-      );
+      parsePeerRationaleOutput(mutatePeer(evalCase.scenario), expectedPeers);
+    } else if (evalCase.task === "report") {
+      parseGroundedWordingOutput(mutateReport(evalCase.scenario), ledgers);
     } else {
       parseGroundedWordingOutput(
-        mutateReport(evalCase.scenario),
-        ledgers
+        mutateReactivation(evalCase.scenario),
+        reactivationLedgers
       );
     }
-    return true;
-  } catch {
-    return false;
+    return { accepted: true, reason: null };
+  } catch (error) {
+    return { accepted: false, reason: classifyRejection(error) };
   }
+}
+
+// Maps a rejection to the guard category responsible. This is what makes a
+// rejected case meaningful: it must be refused by the guard it targets, not by
+// an unrelated one (e.g. an injection payload must trip the safe-text guard,
+// not merely fail a schema check).
+function classifyRejection(error: unknown): string {
+  if (error && typeof error === "object" && "issues" in error) {
+    return "schema";
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  const rules: Array<[RegExp, string]> = [
+    [/contained duplicates/i, "duplicate"],
+    [/cohort size|qualified lead count/i, "cohort_size"],
+    [/cited unknown claim/i, "unknown_claim"],
+    [/order or identity|lead identity or order/i, "cohort_identity"],
+    [/did not exactly match/i, "exact_match"],
+    [/shared sponsor-domain relationship/i, "same_brand_relationship"],
+    [/preserve continuity uncertainty/i, "same_brand_uncertainty"],
+    [/may not assert product/i, "same_brand_overclaim"],
+    [/within the supplied reach/i, "reach"],
+    [/numeric or URL/i, "fabricated_value"],
+    [/unsupported or instruction-like/i, "unsafe_text"]
+  ];
+  for (const [pattern, category] of rules) {
+    if (pattern.test(message)) return category;
+  }
+  return "other";
 }
 
 function mutatePeer(scenario: string): unknown {
@@ -290,6 +387,38 @@ function mutateReport(scenario: string): unknown {
       break;
     default:
       throw new Error(`Unknown report scenario ${scenario}`);
+  }
+  return output;
+}
+
+function mutateReactivation(scenario: string): unknown {
+  const output = structuredClone(validReactivationOutput);
+  const narrative = output.narratives[0];
+  const sameBrand = narrative.sentences[2];
+  switch (scenario) {
+    case "valid":
+      return output;
+    case "valid_alt":
+      sameBrand.text =
+        "Both placements share a matching sponsor domain, but the product line, campaign, and buyer have not been verified.";
+      break;
+    case "omits_uncertainty":
+      sameBrand.text = "Both placements share the same sponsor domain.";
+      break;
+    case "missing_relationship":
+      sameBrand.text =
+        "The product line, campaign, and buyer all remain unverified for this lead.";
+      break;
+    case "asserts_product_continuity":
+      sameBrand.text =
+        "Both placements share the same sponsor domain, the buyer is unverified, and the same product family clearly continues.";
+      break;
+    case "asserts_buyer_continuity":
+      sameBrand.text =
+        "Both placements share the same sponsor domain, the product line is unverified, and the same buyer will place another order.";
+      break;
+    default:
+      throw new Error(`Unknown reactivation scenario ${scenario}`);
   }
   return output;
 }

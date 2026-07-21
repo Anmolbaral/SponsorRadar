@@ -104,6 +104,71 @@ describe("dynamic same-brand reactivation qualification", () => {
     );
   });
 
+  it("researches peers before the target and spends the target call only when a peer signal qualifies", async () => {
+    const gateway = new DynamicEvidencePort();
+    const { report, events } = await runWinbackReport(
+      { channel: "@DynamicTarget" },
+      gateway
+    );
+
+    const callOrder = events
+      .filter(
+        (event) =>
+          event.eventType === "tool.started" &&
+          (event.tool?.name === "live.list_peer_sponsors" ||
+            event.tool?.name === "live.list_target_sponsors")
+      )
+      .map((event) => event.tool!.name);
+
+    expect(callOrder).toContain("live.list_peer_sponsors");
+    expect(callOrder).toContain("live.list_target_sponsors");
+    // Every peer search precedes the target search.
+    expect(callOrder.indexOf("live.list_target_sponsors")).toBe(
+      callOrder.length - 1
+    );
+    expect(callOrder.lastIndexOf("live.list_peer_sponsors")).toBeLessThan(
+      callOrder.indexOf("live.list_target_sponsors")
+    );
+    expect(gateway.targetSponsorCalls).toBe(1);
+    expect(report.leads).toHaveLength(1);
+  });
+
+  it("skips the paid target-history search and reports honestly when no peer signal qualifies", async () => {
+    const gateway = new NoPeerSignalPort();
+    const { report, events } = await runWinbackReport(
+      { channel: "@DynamicTarget" },
+      gateway
+    );
+
+    expect(gateway.targetSponsorCalls).toBe(0);
+    expect(
+      events.some(
+        (event) => event.tool?.name === "live.list_target_sponsors"
+      )
+    ).toBe(false);
+    expect(report.leads).toEqual([]);
+    expect(report.funnel).toMatchObject({
+      targetApiRows: 0,
+      sameBrandReactivationPasses: 0
+    });
+    expect(report.coverage).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "target_history_not_searched",
+          severity: "info",
+          message:
+            "Target sponsor history was not searched because no evidence-backed peer sponsorship signal was found in the selected window."
+        })
+      ])
+    );
+    // Honest: never asserts the target has no sponsors — only that we did not look.
+    expect(
+      report.coverage.some(
+        (notice) => notice.code === "target_domain_coverage"
+      )
+    ).toBe(false);
+  });
+
   it("returns the same honest zero-result outcome when no stale target evidence exists", async () => {
     const firstGateway = new DynamicEvidencePort([]);
     const secondGateway = new DynamicEvidencePort([]);
@@ -243,6 +308,7 @@ class DynamicEvidencePort implements SponsorRadarEvidencePort {
   readonly mode = "live" as const;
   readonly qualificationPolicy = "same_brand_reactivation" as const;
   ledgerCalls = 0;
+  targetSponsorCalls = 0;
 
   constructor(
     private readonly targetRows: NormalizedSponsorEvidence[] =
@@ -305,6 +371,7 @@ class DynamicEvidencePort implements SponsorRadarEvidencePort {
   }
 
   async listTargetSponsors(): Promise<NormalizedSponsorEvidenceResult> {
+    this.targetSponsorCalls += 1;
     return result(this.targetRows);
   }
 
@@ -340,6 +407,12 @@ class DynamicEvidencePort implements SponsorRadarEvidencePort {
   async loadVerificationLedger(): Promise<never> {
     this.ledgerCalls += 1;
     throw new Error("Dynamic qualification must not load a manual ledger");
+  }
+}
+
+class NoPeerSignalPort extends DynamicEvidencePort {
+  override async listPeerSponsors(): Promise<NormalizedSponsorEvidenceResult> {
+    return result([]);
   }
 }
 

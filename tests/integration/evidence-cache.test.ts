@@ -32,7 +32,7 @@ describe("cached evidence gateway", () => {
     const cold = await runWinbackReport(
       { channel: "@UrAvgConsumer", maximumCredits: 1_000 },
       coldGateway,
-      { phase: "phase_3_live" }
+      { phase: "workflow_live" }
     );
 
     expect(cold.report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
@@ -49,7 +49,7 @@ describe("cached evidence gateway", () => {
     const warm = await runWinbackReport(
       { channel: "https://youtube.com/@UrAvgConsumer", maximumCredits: 0 },
       warmGateway,
-      { phase: "phase_3_live" }
+      { phase: "workflow_live" }
     );
 
     expect(warm.report.leads).toEqual(cold.report.leads);

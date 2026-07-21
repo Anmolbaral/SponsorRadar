@@ -7,7 +7,7 @@ import { POST as createRun } from "@/app/api/runs/route";
 import { GET as getRun } from "@/app/api/runs/[runId]/route";
 import { POST as mutateRun } from "@/app/api/runs/[runId]/actions/route";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
-import type { Phase3RunResource } from "@/src/radar/application/run-workflow";
+import type { WorkflowRunResource } from "@/src/radar/application/run-workflow";
 
 const temporaryDirectories: string[] = [];
 
@@ -21,7 +21,7 @@ afterEach(async () => {
   );
 });
 
-describe("Phase 3 workflow HTTP boundary", () => {
+describe("Workflow HTTP boundary", () => {
   it("runs the persisted fixture approval journey and resumes it by run ID", async () => {
     await configureFixtureDataDirectory();
     const createdResponse = await createRun(
@@ -29,7 +29,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
         channel: "@UrAvgConsumer"
       })
     );
-    const created = (await createdResponse.json()) as Phase3RunResource;
+    const created = (await createdResponse.json()) as WorkflowRunResource;
 
     expect(createdResponse.status).toBe(201);
     expect(created.status).toBe("awaiting_plan_approval");
@@ -47,11 +47,11 @@ describe("Phase 3 workflow HTTP boundary", () => {
         planId: created.plan.planId
       }
     );
-    const proposal = (await proposalResponse.json()) as Phase3RunResource;
+    const proposal = (await proposalResponse.json()) as WorkflowRunResource;
     expect(proposalResponse.status).toBe(200);
     expect(proposal.status).toBe("awaiting_execution_approval");
     expect(proposal.peerProposal?.peers).toHaveLength(3);
-    expect(proposal.peerProposal?.phase4?.status).toBe("generated");
+    expect(proposal.peerProposal?.wordingAgent?.status).toBe("generated");
     expect(
       proposal.peerProposal?.peers.every(
         (peer) => peer.rationale?.evidenceIds.length === 2
@@ -67,7 +67,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
       new Request(`http://localhost/api/runs/${created.runId}`),
       context(created.runId)
     );
-    const refreshed = (await refreshResponse.json()) as Phase3RunResource;
+    const refreshed = (await refreshResponse.json()) as WorkflowRunResource;
     expect(refreshResponse.status).toBe(200);
     expect(refreshed.version).toBe(proposal.version);
 
@@ -83,12 +83,12 @@ describe("Phase 3 workflow HTTP boundary", () => {
       "approve-execution-route",
       executionBody
     );
-    const completed = (await completedResponse.json()) as Phase3RunResource;
+    const completed = (await completedResponse.json()) as WorkflowRunResource;
     expect(completed.status).toBe("completed");
     expect(completed.report?.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
-    expect(completed.report?.phase).toBe("phase_4_fixture");
-    expect(completed.report?.phase4?.status).toBe("generated");
-    expect(completed.report?.phase4?.narratives).toHaveLength(1);
+    expect(completed.report?.phase).toBe("workflow_wording_fixture");
+    expect(completed.report?.wordingAgent?.status).toBe("generated");
+    expect(completed.report?.wordingAgent?.narratives).toHaveLength(1);
     expect(completed.report?.audit.llmCalls).toBe(2);
     expect(
       completed.auditEvents.filter(
@@ -106,7 +106,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
       "approve-execution-route",
       executionBody
     );
-    const replay = (await replayResponse.json()) as Phase3RunResource;
+    const replay = (await replayResponse.json()) as WorkflowRunResource;
     expect(replayResponse.status).toBe(200);
     expect(replay.version).toBe(completed.version);
     expect(replay.report).toEqual(completed.report);
@@ -116,21 +116,21 @@ describe("Phase 3 workflow HTTP boundary", () => {
     const directory = await configureFixtureDataDirectory();
     const repository = new FileSystemWorkflowRepository({ directory });
     const legacy = await repository.reserveQuota({
-      quotaKey: "upriver-phase3-shared-credits",
+      quotaKey: "upriver-shared-credits",
       runId: "run-before-per-run-accounting",
       idempotencyKey: "legacy-quota-reservation",
       requestedUnits: 200,
       maximumUnits: 200
     });
     await repository.finalizeQuotaReservation({
-      quotaKey: "upriver-phase3-shared-credits",
+      quotaKey: "upriver-shared-credits",
       reservationId: legacy.value.reservationId,
       idempotencyKey: "legacy-quota-settlement",
       outcome: "settled",
       actualUnits: 200
     });
     const legacyBefore = await repository.readQuota(
-      "upriver-phase3-shared-credits"
+      "upriver-shared-credits"
     );
     vi.stubEnv("SPONSOR_RADAR_RUN_CREDIT_LIMIT", "160");
 
@@ -139,7 +139,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
         channel: "@UrAvgConsumer"
       })
     );
-    const created = (await createdResponse.json()) as Phase3RunResource;
+    const created = (await createdResponse.json()) as WorkflowRunResource;
     const proposalResponse = await action(
       created,
       "migration-approve-plan",
@@ -152,16 +152,16 @@ describe("Phase 3 workflow HTTP boundary", () => {
 
     expect(proposalResponse.status).toBe(200);
     expect(
-      ((await proposalResponse.json()) as Phase3RunResource).status
+      ((await proposalResponse.json()) as WorkflowRunResource).status
     ).toBe("awaiting_execution_approval");
     expect(
       await repository.readQuota(
-        "upriver-phase3-shared-credits"
+        "upriver-shared-credits"
       )
     ).toEqual(legacyBefore);
     expect(
       await repository.readQuota(
-        `upriver-phase3-run-credits-v1:${created.runId}`
+        `upriver-run-credits-v1:${created.runId}`
       )
     ).toMatchObject({
       maximumUnits: 160,
@@ -170,7 +170,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
       reservedUnits: 0
     });
     const unchangedLegacy = await repository.readQuota(
-      "upriver-phase3-shared-credits"
+      "upriver-shared-credits"
     );
     expect(unchangedLegacy).toMatchObject({
       maximumUnits: 200,
@@ -276,7 +276,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
       }).readRunSnapshot(
         `run_${createHash("sha256")
           .update(
-            "sponsor-radar-phase3\u0000invalid-run-credit-limit"
+            "sponsor-radar-workflow\u0000invalid-run-credit-limit"
           )
           .digest("hex")
           .slice(0, 32)}`
@@ -291,7 +291,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
         channel: "@UrAvgConsumer"
       })
     );
-    const created = (await createdResponse.json()) as Phase3RunResource;
+    const created = (await createdResponse.json()) as WorkflowRunResource;
 
     vi.stubEnv("UPRIVER_MODE", "live");
     vi.stubEnv("UPRIVER_LIVE_WORKFLOW", "true");
@@ -326,7 +326,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
         channel: "@UrAvgConsumer"
       })
     );
-    const created = (await createdResponse.json()) as Phase3RunResource;
+    const created = (await createdResponse.json()) as WorkflowRunResource;
 
     const response = await action(created, "stale-route-action", {
       action: "approve_plan",
@@ -349,12 +349,12 @@ describe("Phase 3 workflow HTTP boundary", () => {
         channel: "@UrAvgConsumer"
       })
     );
-    const created = (await createdResponse.json()) as Phase3RunResource;
+    const created = (await createdResponse.json()) as WorkflowRunResource;
     const response = await action(created, "cancel-route-action", {
       action: "cancel",
       expectedVersion: created.version
     });
-    const cancelled = (await response.json()) as Phase3RunResource;
+    const cancelled = (await response.json()) as WorkflowRunResource;
 
     expect(cancelled.status).toBe("cancelled");
     expect(cancelled.report).toBeNull();
@@ -363,7 +363,7 @@ describe("Phase 3 workflow HTTP boundary", () => {
 });
 
 async function action(
-  run: Pick<Phase3RunResource, "runId">,
+  run: Pick<WorkflowRunResource, "runId">,
   key: string,
   body: unknown
 ) {
@@ -390,7 +390,7 @@ function context(runId: string) {
 
 async function configureFixtureDataDirectory(): Promise<string> {
   const directory = await mkdtemp(
-    path.join(tmpdir(), "sponsor-radar-phase3-route-")
+    path.join(tmpdir(), "sponsor-radar-workflow-route-")
   );
   temporaryDirectories.push(directory);
   vi.stubEnv("SPONSOR_RADAR_DATA_DIR", directory);

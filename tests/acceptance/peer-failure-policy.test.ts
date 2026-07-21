@@ -53,7 +53,7 @@ describe("peer failure policy", () => {
         runWinbackReport(
           { channel: "@UrAvgConsumer", maximumCredits: 150 },
           gateway,
-          { allowPartialPeerFailure: true, phase: "phase_3_live" }
+          { allowPartialPeerFailure: true, phase: "workflow_live" }
         )
       ).rejects.toBe(failure);
     }
@@ -67,7 +67,7 @@ describe("peer failure policy", () => {
       runWinbackReport(
         { channel: "@UrAvgConsumer", maximumCredits: 150 },
         gateway,
-        { allowPartialPeerFailure: true, phase: "phase_3_live" }
+        { allowPartialPeerFailure: true, phase: "workflow_live" }
       )
     ).rejects.toBe(failure);
   });
@@ -86,7 +86,7 @@ describe("peer failure policy", () => {
       const { report } = await runWinbackReport(
         { channel: "@UrAvgConsumer", maximumCredits: 150 },
         gateway,
-        { allowPartialPeerFailure: true, phase: "phase_3_live" }
+        { allowPartialPeerFailure: true, phase: "workflow_live" }
       );
 
       expect(report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);

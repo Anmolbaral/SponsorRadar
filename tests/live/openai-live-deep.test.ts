@@ -98,7 +98,7 @@ const CASES: readonly DeepLiveCase[] = [
 ] as const;
 
 describe.skipIf(!enabled)(
-  "paid OpenAI Phase 4 deep synthetic matrix",
+  "paid OpenAI wording deep synthetic matrix",
   () => {
     it(
       "passes the sequential schema, grounding, injection, attribution, and continuity-U cases",
@@ -125,7 +125,7 @@ describe.skipIf(!enabled)(
         for (const liveCase of CASES) {
           const audit = new AuditRecorder({
             runId: `run_deep_${liveCase.id}`,
-            phase: "phase_4_live",
+            phase: "workflow_wording_live",
             mode: "live"
           });
           const session = new BoundedLlmSession(port, audit, {

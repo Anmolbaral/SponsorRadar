@@ -14,11 +14,11 @@ interface BoundaryCase {
   scenario: string;
 }
 
-describe("Phase 4 frozen policy and budget boundary eval", () => {
+describe("bounded LLM session policy and budget boundary eval", () => {
   it("passes every call, tool, validation, and budget invariant", async () => {
     const cases = JSON.parse(
       await readFile(
-        path.join(process.cwd(), "evals/cases/phase4-boundary.json"),
+        path.join(process.cwd(), "evals/cases/llm-session-boundary.json"),
         "utf8"
       )
     ) as BoundaryCase[];
@@ -30,6 +30,7 @@ describe("Phase 4 frozen policy and budget boundary eval", () => {
       });
     }
 
+    expect(cases.length).toBe(10);
     expect(
       results.filter((result) => !result.compliant)
     ).toEqual([]);
@@ -39,8 +40,8 @@ describe("Phase 4 frozen policy and budget boundary eval", () => {
 async function runScenario(scenario: string): Promise<boolean> {
   const port = new EvalPort();
   const audit = new AuditRecorder({
-    runId: "run_phase4_eval",
-    phase: "phase_4_fixture",
+    runId: "run_agent_eval",
+    phase: "workflow_wording_fixture",
     mode: "fixture"
   });
   let session = new BoundedLlmSession(port, audit);
@@ -56,11 +57,14 @@ async function runScenario(scenario: string): Promise<boolean> {
       await session.execute(task("peer_rationale", input));
       break;
     case "call_cap":
+      // Isolate the call-limit guard: use a fresh purpose (so the
+      // duplicate-purpose guard cannot fire first) against an exhausted call
+      // budget. Previously this pre-attempted BOTH purposes, so it actually
+      // tripped the duplicate-purpose guard and never exercised the call cap.
+      purpose = "grounded_report_wording";
       session = new BoundedLlmSession(port, audit, {
-        alreadyAttemptedPurposes: [
-          "peer_rationale",
-          "grounded_report_wording"
-        ]
+        alreadyAttemptedPurposes: ["peer_rationale"],
+        maxCalls: 1
       });
       break;
     case "token_reservation":
@@ -93,11 +97,13 @@ async function runScenario(scenario: string): Promise<boolean> {
   }
 
   let succeeded = false;
+  let caughtMessage = "";
   try {
     await session.execute(task(purpose, input));
     succeeded = true;
-  } catch {
+  } catch (error) {
     succeeded = false;
+    caughtMessage = error instanceof Error ? error.message : String(error);
   }
   const events = audit.getEvents();
   const attempts = events.filter(
@@ -117,18 +123,27 @@ async function runScenario(scenario: string): Promise<boolean> {
       terminalEvents === 1
     );
   }
-  if (
-    scenario === "duplicate_purpose"
-  ) {
-    return !succeeded && port.calls === 1 && attempts === 1;
+
+  // Pre-flight denials never reach the provider. Assert the specific guard
+  // fired via its message so each case proves the invariant it names, rather
+  // than passing on any incidental rejection.
+  const preflightDenials: Record<string, RegExp> = {
+    duplicate_purpose: /already been attempted/i,
+    call_cap: /call limit/i,
+    token_reservation: /output-token reservation/i,
+    input_overflow: /byte limit/i
+  };
+  if (scenario in preflightDenials) {
+    const reachedProvider = scenario === "duplicate_purpose";
+    return (
+      !succeeded &&
+      port.calls === (reachedProvider ? 1 : 0) &&
+      attempts === (reachedProvider ? 1 : 0) &&
+      preflightDenials[scenario].test(caughtMessage)
+    );
   }
-  if (
-    scenario === "call_cap" ||
-    scenario === "token_reservation" ||
-    scenario === "input_overflow"
-  ) {
-    return !succeeded && port.calls === 0 && attempts === 0;
-  }
+
+  // Post-call denials do reach the provider once and must fail closed.
   return (
     !succeeded &&
     port.calls === 1 &&

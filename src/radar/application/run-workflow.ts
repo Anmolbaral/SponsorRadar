@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import type {
-  Phase4PeerExplanationResult,
-  Phase4WorkflowAgent
-} from "@/src/agent/orchestrator/phase4-agent";
+  PeerExplanationResult,
+  WordingAgent
+} from "@/src/agent/orchestrator/wording-agent";
 import type { AuditEvent, AuditPhase } from "@/src/observability/audit";
 import { AuditRecorder, fingerprint } from "@/src/observability/audit";
 import type {
@@ -16,9 +16,7 @@ import {
   PersistenceCorruptionError
 } from "@/src/radar/adapters/persistence";
 import type {
-  EvidenceCacheStatus,
   EvidenceMode,
-  EvidenceOperation,
   LockedPeer,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
@@ -26,6 +24,12 @@ import {
   approvedCohortHash,
   runWinbackReport
 } from "@/src/radar/application/run-winback-report";
+import { EvidenceToolExecutor } from "@/src/radar/application/tools/tool-executor";
+import {
+  auditToolName,
+  composeResolutionCredits,
+  MAX_PEER_COHORT
+} from "@/src/radar/application/tools/tool-registry";
 import {
   createRunState,
   isRunCancellable,
@@ -40,7 +44,6 @@ import type {
   WinbackReport
 } from "@/src/radar/domain/types";
 import { isReachComparable } from "@/src/radar/domain/reach";
-import { UPRIVER_CREDIT_RATES } from "@/src/radar/domain/credits";
 import {
   parseYouTubeChannelReference,
   sameVerifiedYouTubeIdentity,
@@ -50,18 +53,18 @@ import {
 
 const RUN_SCHEMA_VERSION = 4;
 const EVENT_SCHEMA_VERSION = 1;
-const LEGACY_SHARED_QUOTA_KEY = "upriver-phase3-shared-credits";
-const PER_RUN_QUOTA_KEY_PREFIX = "upriver-phase3-run-credits-v1";
-const MAX_PEERS = 3;
+const LEGACY_SHARED_QUOTA_KEY = "upriver-shared-credits";
+const PER_RUN_QUOTA_KEY_PREFIX = "upriver-run-credits-v1";
+const MAX_PEERS = MAX_PEER_COHORT;
 export const MAXIMUM_RUN_CREDITS = 160;
 
-export type Phase3RunAction =
+export type WorkflowRunAction =
   | "approve_plan"
   | "approve_execution"
   | "cancel"
   | "resume";
 
-export interface Phase3RunPlan {
+export interface WorkflowRunPlan {
   planId: string;
   resolutionCreditCeiling: number;
   executionCreditCeiling: number;
@@ -72,7 +75,7 @@ export interface Phase3RunPlan {
   operations: readonly string[];
 }
 
-export interface Phase3PeerProposal {
+export interface WorkflowPeerProposal {
   proposalId: string;
   target: TargetSummary;
   identity: VerifiedYouTubeIdentity | null;
@@ -86,7 +89,7 @@ export interface Phase3PeerProposal {
     }
   >;
   cohortHash: string;
-  phase4?: {
+  wordingAgent?: {
     status: "generated" | "fallback";
     provider: string;
     model: string;
@@ -102,39 +105,39 @@ export interface Phase3PeerProposal {
   };
 }
 
-export interface Phase3ApprovalSummary {
+export interface WorkflowApprovalSummary {
   approvalId: string;
   decidedAt: string;
 }
 
-export interface Phase3RunError {
+export interface WorkflowRunError {
   code: string;
   message: string;
   retryable: boolean;
 }
 
-export interface Phase3RunAccountingPolicy {
+export interface WorkflowRunAccountingPolicy {
   policy: "per_run_v1" | "legacy_shared_v1";
   maximumCredits: number;
 }
 
-export interface Phase3RunRecord {
+export interface WorkflowRunRecord {
   schemaVersion: 4;
   runId: string;
   requestedChannel: string;
   mode: EvidenceMode;
   state: RunStateSnapshot;
-  plan: Phase3RunPlan;
-  accounting: Phase3RunAccountingPolicy;
+  plan: WorkflowRunPlan;
+  accounting: WorkflowRunAccountingPolicy;
   resolvedCohort: {
     target: TargetSummary;
     identity: VerifiedYouTubeIdentity | null;
     peers: LockedPeer[];
   } | null;
-  peerProposal: Phase3PeerProposal | null;
+  peerProposal: WorkflowPeerProposal | null;
   approvals: {
-    plan: Phase3ApprovalSummary | null;
-    execution: Phase3ApprovalSummary | null;
+    plan: WorkflowApprovalSummary | null;
+    execution: WorkflowApprovalSummary | null;
   };
   quota: {
     resolutionReservationId: string | null;
@@ -142,19 +145,19 @@ export interface Phase3RunRecord {
     resolutionCreditsUsed: number;
     executionCreditsUsed: number;
   };
-  phase4: {
+  wordingAgent: {
     enabled: boolean;
     provider: string;
     model: string;
-    peerRationale: Phase4InvocationCheckpoint;
-    reportWording: Phase4InvocationCheckpoint;
+    peerRationale: WordingInvocationCheckpoint;
+    reportWording: WordingInvocationCheckpoint;
   };
   report: WinbackReport | null;
-  error: Phase3RunError | null;
+  error: WorkflowRunError | null;
   auditEvents: AuditEvent[];
 }
 
-export interface Phase4InvocationCheckpoint {
+export interface WordingInvocationCheckpoint {
   status:
     | "not_started"
     | "claimed"
@@ -164,21 +167,21 @@ export interface Phase4InvocationCheckpoint {
   inputFingerprint: string | null;
 }
 
-export interface Phase3WorkflowEvent {
+export interface WorkflowEvent {
   type: "run.created" | "run.transitioned" | "audit.persisted";
   state: RunState;
   stateVersion: number;
   reason: string;
 }
 
-export type Phase3RunOutcome =
+export type WorkflowRunOutcome =
   | "no_eligible_peers"
   | "no_qualified_opportunities"
   | "opportunities_found";
 
-export interface Phase3RunResource extends Phase3RunRecord {
+export interface WorkflowRunResource extends WorkflowRunRecord {
   version: number;
-  outcome: Phase3RunOutcome | null;
+  outcome: WorkflowRunOutcome | null;
   status:
     | "awaiting_plan_approval"
     | "resolving_peers"
@@ -188,11 +191,11 @@ export interface Phase3RunResource extends Phase3RunRecord {
     | "partial"
     | "failed"
     | "cancelled";
-  availableActions: Phase3RunAction[];
+  availableActions: WorkflowRunAction[];
   workflowEvents: Array<{
     sequence: number;
     occurredAt: string;
-    event: Phase3WorkflowEvent;
+    event: WorkflowEvent;
   }>;
 }
 
@@ -207,7 +210,7 @@ export type WorkflowGatewayFactory = (
   input: WorkflowGatewayFactoryInput
 ) => SponsorRadarEvidencePort;
 
-export interface Phase3WorkflowServiceOptions {
+export interface WorkflowServiceOptions {
   repository: WorkflowPersistenceRepository;
   gatewayFactory: WorkflowGatewayFactory;
   mode?: EvidenceMode;
@@ -215,7 +218,7 @@ export interface Phase3WorkflowServiceOptions {
   runCreditLimit?: number;
   quoteTtlMs?: number;
   operationLeaseMs?: number;
-  phase4Agent?: Phase4WorkflowAgent;
+  wordingAgent?: WordingAgent;
 }
 
 export interface ApprovePlanInput {
@@ -238,7 +241,7 @@ export interface MutateRunInput {
 }
 
 interface LoadedRun {
-  record: Phase3RunRecord;
+  record: WorkflowRunRecord;
   revision: number;
 }
 
@@ -278,7 +281,7 @@ export class RunAccountingMigrationRequiredError extends Error {
   }
 }
 
-export class Phase3WorkflowService {
+export class WorkflowService {
   private readonly repository: WorkflowPersistenceRepository;
   private readonly gatewayFactory: WorkflowGatewayFactory;
   private readonly mode: EvidenceMode;
@@ -286,9 +289,9 @@ export class Phase3WorkflowService {
   private readonly runCreditLimit: number;
   private readonly quoteTtlMs: number;
   private readonly operationLeaseMs: number;
-  private readonly phase4Agent?: Phase4WorkflowAgent;
+  private readonly wordingAgent?: WordingAgent;
 
-  constructor(options: Phase3WorkflowServiceOptions) {
+  constructor(options: WorkflowServiceOptions) {
     this.repository = options.repository;
     this.gatewayFactory = options.gatewayFactory;
     this.mode = options.mode ?? "fixture";
@@ -310,13 +313,13 @@ export class Phase3WorkflowService {
       options.operationLeaseMs ?? 2 * 60 * 1_000,
       "operationLeaseMs"
     );
-    this.phase4Agent = options.phase4Agent;
+    this.wordingAgent = options.wordingAgent;
   }
 
   async createRun(
     requestedChannel: string,
     idempotencyKey: string
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const channel = requestedChannel.trim();
     if (!channel) {
       throw new TypeError("requestedChannel must not be empty");
@@ -355,9 +358,9 @@ export class Phase3WorkflowService {
     if (totalCreditCeiling > this.runCreditLimit) {
       throw new RunCreditLimitExceededError();
     }
-    const baseResolutionCeiling =
-      gateway.estimateCredits("resolve_target") +
-      gateway.estimateCredits("list_locked_peers");
+    const baseResolutionCeiling = composeResolutionCredits((operation) =>
+      gateway.estimateCredits(operation)
+    );
     const resolutionCreditCeiling =
       totalCreditCeiling === 0
         ? 0
@@ -385,24 +388,24 @@ export class Phase3WorkflowService {
       executionCreditCeiling,
       totalCreditCeiling,
       maxPeers: MAX_PEERS,
-      llmCallCeiling: this.phase4Agent ? 2 : 0,
-      llmOutputTokenCeiling: this.phase4Agent ? 1_200 : 0,
-      llmProvider: this.phase4Agent?.provider ?? "disabled",
-      llmModel: this.phase4Agent?.model ?? "disabled",
-      policyVersion: this.phase4Agent ? "phase4-v1" : "phase3-v1"
+      llmCallCeiling: this.wordingAgent ? 2 : 0,
+      llmOutputTokenCeiling: this.wordingAgent ? 1_200 : 0,
+      llmProvider: this.wordingAgent?.provider ?? "disabled",
+      llmModel: this.wordingAgent?.model ?? "disabled",
+      policyVersion: this.wordingAgent ? "wording-agent-v1" : "deterministic-v1"
     };
-    const plan: Phase3RunPlan = {
+    const plan: WorkflowRunPlan = {
       planId: `plan_${fingerprint(planInput).slice(0, 32)}`,
       resolutionCreditCeiling,
       executionCreditCeiling,
       totalCreditCeiling,
       maxPeers: MAX_PEERS,
-      llmCallCeiling: this.phase4Agent ? 2 : 0,
-      llmOutputTokenCeiling: this.phase4Agent ? 1_200 : 0,
+      llmCallCeiling: this.wordingAgent ? 2 : 0,
+      llmOutputTokenCeiling: this.wordingAgent ? 1_200 : 0,
       operations: [
         "Resolve the requested YouTube channel",
         "Discover and lock up to three reach-comparable peers",
-        ...(this.phase4Agent
+        ...(this.wordingAgent
           ? [
               "Generate a bounded rationale for the locked peers",
               "Generate cited wording for already-qualified leads"
@@ -412,7 +415,7 @@ export class Phase3WorkflowService {
         "Find evidence-backed same-brand reactivation candidates"
       ]
     };
-    const record: Phase3RunRecord = {
+    const record: WorkflowRunRecord = {
       schemaVersion: RUN_SCHEMA_VERSION,
       runId,
       requestedChannel: channel,
@@ -435,10 +438,10 @@ export class Phase3WorkflowService {
         resolutionCreditsUsed: 0,
         executionCreditsUsed: 0
       },
-      phase4: {
-        enabled: this.phase4Agent !== undefined,
-        provider: this.phase4Agent?.provider ?? "disabled",
-        model: this.phase4Agent?.model ?? "disabled",
+      wordingAgent: {
+        enabled: this.wordingAgent !== undefined,
+        provider: this.wordingAgent?.provider ?? "disabled",
+        model: this.wordingAgent?.model ?? "disabled",
         peerRationale: {
           status: "not_started",
           inputFingerprint: null
@@ -482,14 +485,14 @@ export class Phase3WorkflowService {
     });
   }
 
-  async getRun(runId: string): Promise<Phase3RunResource> {
+  async getRun(runId: string): Promise<WorkflowRunResource> {
     return this.resource(await this.loadRun(runId));
   }
 
   async approvePlan(
     runId: string,
     input: ApprovePlanInput
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     assertIdempotencyKey(input.idempotencyKey);
     let loaded = await this.loadRun(runId);
     if (loaded.record.plan.planId !== input.planId) {
@@ -588,7 +591,7 @@ export class Phase3WorkflowService {
   async approveExecution(
     runId: string,
     input: ApproveExecutionInput
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     assertIdempotencyKey(input.idempotencyKey);
     nonNegativeInteger(
       input.approvedCreditCeiling,
@@ -739,7 +742,7 @@ export class Phase3WorkflowService {
   async cancelRun(
     runId: string,
     input: MutateRunInput
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     assertIdempotencyKey(input.idempotencyKey);
     let loaded = await this.loadRun(runId);
     const priorApproval = await this.repository.readApproval(
@@ -749,14 +752,9 @@ export class Phase3WorkflowService {
     if (!priorApproval) {
       assertExpectedVersion(loaded.revision, input.expectedVersion);
     }
-    await this.repository.recordApproval({
-      runId,
-      idempotencyKey: input.idempotencyKey,
-      action: "cancel",
-      decision: "approved",
-      decidedBy: "local-user",
-      details: toJson({ expectedVersion: input.expectedVersion })
-    });
+    // Only a cancel that legally changes state records an approval. Running the
+    // no-op (already-cancelled) and illegal-transition checks first prevents a
+    // rejected 409 or a terminal no-op from leaving a ghost approval behind.
     if (loaded.record.state.state === "cancelled") {
       await this.releaseCancelledReservations(
         loaded.record,
@@ -770,6 +768,14 @@ export class Phase3WorkflowService {
       );
     }
 
+    await this.repository.recordApproval({
+      runId,
+      idempotencyKey: input.idempotencyKey,
+      action: "cancel",
+      decision: "approved",
+      decidedBy: "local-user",
+      details: toJson({ expectedVersion: input.expectedVersion })
+    });
     const recordBeforeCancellation = loaded.record;
     loaded = await this.transitionAndSave(
       loaded,
@@ -787,7 +793,7 @@ export class Phase3WorkflowService {
   async resumeRun(
     runId: string,
     input: MutateRunInput
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     assertIdempotencyKey(input.idempotencyKey);
     let loaded = await this.loadRun(runId);
     const priorApproval = await this.repository.readApproval(
@@ -797,15 +803,6 @@ export class Phase3WorkflowService {
     if (!priorApproval) {
       assertExpectedVersion(loaded.revision, input.expectedVersion);
     }
-    await this.repository.recordApproval({
-      runId,
-      idempotencyKey: input.idempotencyKey,
-      action: "resume",
-      decision: "approved",
-      decidedBy: "local-user",
-      details: toJson({ expectedVersion: input.expectedVersion })
-    });
-
     if (
       loaded.record.state.state === "planned" ||
       loaded.record.state.state === "peers_proposed" ||
@@ -825,6 +822,19 @@ export class Phase3WorkflowService {
         "The workflow operation is still within its active lease"
       );
     }
+
+    // Record the approval only once we know the resume will reclaim or advance
+    // real work. No-op resumes (terminal/planned/peers_proposed) and resumes
+    // rejected because an operation is still leased return above without
+    // leaving a ghost approval behind.
+    await this.repository.recordApproval({
+      runId,
+      idempotencyKey: input.idempotencyKey,
+      action: "resume",
+      decision: "approved",
+      decidedBy: "local-user",
+      details: toJson({ expectedVersion: input.expectedVersion })
+    });
 
     if (
       loaded.record.state.state === "plan_approved" &&
@@ -926,7 +936,7 @@ export class Phase3WorkflowService {
     loaded: LoadedRun,
     reservation: StoredQuotaReservation,
     idempotencyKey: string
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const record = loaded.record;
     const phase = phaseFor(record.mode);
     const audit = new AuditRecorder({
@@ -964,65 +974,32 @@ export class Phase3WorkflowService {
           "Cached resolution evidence expired after approval; no paid call was made"
         );
       }
-      const resolvePolicy = await evidenceCallPolicy(
-        gateway,
+      const tools = new EvidenceToolExecutor({
+        port: gateway,
+        audit,
+        stage: "resolution"
+      });
+      const resolved = await tools.execute(
         "resolve_target",
-        record.requestedChannel
-      );
-      const resolved = await audit.tool(
+        { channel: record.requestedChannel },
         {
-          name: `${record.mode}.resolve_target`,
           reason: "Confirm the exact requested YouTube channel",
-          mode: record.mode,
-          input: { channel: record.requestedChannel },
-          cacheStatus: resolvePolicy.cacheStatus,
-          estimatedCredits: resolvePolicy.estimatedCredits
-        },
-        () => gateway.resolveTarget(record.requestedChannel),
-        () => ({
-          rows: 1,
-          resultBasedCredits: liveCredits(
-            record.mode,
-            resolvePolicy.cacheStatus,
-            UPRIVER_CREDIT_RATES.creatorResult
-          )
-        })
+          auditInput: { channel: record.requestedChannel }
+        }
       );
-      const peersPolicy = await evidenceCallPolicy(
-        gateway,
+      const peers = await tools.execute(
         "list_locked_peers",
-        resolved.target.url,
-        resolved.target.subscriberCount
-      );
-      const peers = await audit.tool(
         {
-          name: `${record.mode}.list_locked_peers`,
+          targetUrl: resolved.target.url,
+          targetSubscriberCount: resolved.target.subscriberCount
+        },
+        {
           reason: "Discover up to three reach-comparable peers",
-          mode: record.mode,
-          input: {
+          auditInput: {
             publicationUrl: resolved.target.url,
             targetSubscriberCount: resolved.target.subscriberCount
-          },
-          cacheStatus: peersPolicy.cacheStatus,
-          estimatedCredits: peersPolicy.estimatedCredits
-        },
-        () =>
-          gateway.listLockedPeers(
-            resolved.target.url,
-            resolved.target.subscriberCount
-          ),
-        (rows) => ({
-          rows: rows.length,
-          resultBasedCredits: liveCredits(
-            record.mode,
-            peersPolicy.cacheStatus,
-            observedHttpResultCredits(
-              audit,
-              "live.list_locked_peers",
-              peersPolicy.estimatedCredits
-            )
-          )
-        })
+          }
+        }
       );
       if (peers.length > MAX_PEERS) {
         throw new Error(
@@ -1066,8 +1043,8 @@ export class Phase3WorkflowService {
               identity: resolved.identity,
               peers: []
             },
-            phase4: {
-              ...record.phase4,
+            wordingAgent: {
+              ...record.wordingAgent,
               peerRationale: {
                 status: "not_needed",
                 inputFingerprint: null
@@ -1140,7 +1117,7 @@ export class Phase3WorkflowService {
 
   private async continuePeerProposal(
     loaded: LoadedRun
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const record = loaded.record;
     const cohort = record.resolvedCohort;
     if (!cohort) {
@@ -1195,14 +1172,14 @@ export class Phase3WorkflowService {
         cohort.peers,
         cohort.identity
       );
-      let generated: Phase4PeerExplanationResult | null = null;
+      let generated: PeerExplanationResult | null = null;
       let fallbackReason: string | null = null;
-      let phase4AuditEvents: readonly AuditEvent[] = [];
-      if (record.phase4.enabled) {
-        const checkpoint = record.phase4.peerRationale;
-        const agent = this.compatiblePhase4Agent(record);
+      let wordingAuditEvents: readonly AuditEvent[] = [];
+      if (record.wordingAgent.enabled) {
+        const checkpoint = record.wordingAgent.peerRationale;
+        const agent = this.compatibleWordingAgent(record);
         if (!agent) {
-          fallbackReason = "configured_phase4_agent_unavailable";
+          fallbackReason = "configured_wording_agent_unavailable";
         } else if (checkpoint.status === "claimed") {
           fallbackReason = "ambiguous_prior_llm_attempt";
         } else if (
@@ -1211,8 +1188,8 @@ export class Phase3WorkflowService {
           loaded = await this.saveCheckpoint(
             loaded,
             {
-              phase4: {
-                ...loaded.record.phase4,
+              wordingAgent: {
+                ...loaded.record.wordingAgent,
                 peerRationale: {
                   status: "claimed",
                   inputFingerprint: cohortHash
@@ -1239,9 +1216,9 @@ export class Phase3WorkflowService {
             fallbackReason =
               error instanceof Error ? error.name : "UnknownError";
           }
-          phase4AuditEvents = audit.getEvents();
+          wordingAuditEvents = audit.getEvents();
         } else if (checkpoint.status !== "completed") {
-          fallbackReason = "prior_phase4_fallback";
+          fallbackReason = "prior_wording_fallback";
         }
       }
 
@@ -1265,7 +1242,7 @@ export class Phase3WorkflowService {
             : {})
         };
       });
-      const phase4Presentation = record.phase4.enabled
+      const wordingPresentation = record.wordingAgent.enabled
         ? generated
           ? {
               status: "generated" as const,
@@ -1276,9 +1253,9 @@ export class Phase3WorkflowService {
             }
           : {
               status: "fallback" as const,
-              provider: record.phase4.provider,
-              model: record.phase4.model,
-              promptVersion: "phase4-grounded-v1",
+              provider: record.wordingAgent.provider,
+              model: record.wordingAgent.model,
+              promptVersion: "grounded-wording-v1",
               schemaVersion: "peer-rationale-v2",
               fallbackReason:
                 fallbackReason ?? "bounded_generation_unavailable"
@@ -1289,10 +1266,10 @@ export class Phase3WorkflowService {
         identity: cohort.identity,
         peers: proposalPeers,
         cohortHash,
-        phase4: phase4Presentation ?? null,
-        policyVersion: record.phase4.enabled
-          ? "phase4-v1"
-          : "phase3-v1"
+        wordingAgent: wordingPresentation ?? null,
+        policyVersion: record.wordingAgent.enabled
+          ? "wording-agent-v1"
+          : "deterministic-v1"
       };
       const proposalId = `proposal_${fingerprint(proposalInput).slice(0, 32)}`;
       const quoteId = `quote_${fingerprint({
@@ -1300,13 +1277,13 @@ export class Phase3WorkflowService {
         executionCreditCeiling,
         runCreditLimit: record.accounting.maximumCredits
       }).slice(0, 32)}`;
-      const peerProposal: Phase3PeerProposal = {
+      const peerProposal: WorkflowPeerProposal = {
         proposalId,
         target: cohort.target,
         identity: cohort.identity,
         peers: proposalPeers,
         cohortHash,
-        ...(phase4Presentation ? { phase4: phase4Presentation } : {}),
+        ...(wordingPresentation ? { wordingAgent: wordingPresentation } : {}),
         quote: {
           quoteId,
           creditCeiling: executionCreditCeiling,
@@ -1321,18 +1298,18 @@ export class Phase3WorkflowService {
         "Persisted the exact peer proposal and bounded execution quote",
         {
           peerProposal,
-          phase4: {
-            ...loaded.record.phase4,
+          wordingAgent: {
+            ...loaded.record.wordingAgent,
             peerRationale: {
-              status: generated ? "completed" : record.phase4.enabled
+              status: generated ? "completed" : record.wordingAgent.enabled
                 ? "fallback"
                 : "not_needed",
-              inputFingerprint: record.phase4.enabled ? cohortHash : null
+              inputFingerprint: record.wordingAgent.enabled ? cohortHash : null
             }
           },
           auditEvents: appendAuditEvents(
             loaded.record.auditEvents,
-            phase4AuditEvents
+            wordingAuditEvents
           )
         }
       );
@@ -1359,7 +1336,7 @@ export class Phase3WorkflowService {
     reservation: StoredQuotaReservation,
     idempotencyKey: string,
     approvedCreditCeiling: number
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     if (loaded.record.peerProposal?.identity === null) {
       await this
         .finalizeReservation(
@@ -1425,7 +1402,7 @@ export class Phase3WorkflowService {
     reservation: StoredQuotaReservation,
     idempotencyKey: string,
     approvedCreditCeiling: number
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const record = loaded.record;
     const proposal = record.peerProposal;
     if (!proposal?.identity) {
@@ -1455,7 +1432,7 @@ export class Phase3WorkflowService {
     }
     const audit = new AuditRecorder({
       runId: record.runId,
-      phase: phaseFor(record.mode, record.phase4.enabled),
+      phase: phaseFor(record.mode, record.wordingAgent.enabled),
       mode: record.mode
     });
     const gateway = this.gatewayFactory({
@@ -1475,8 +1452,9 @@ export class Phase3WorkflowService {
         gateway,
         {
           audit,
-          phase: phaseFor(record.mode, record.phase4.enabled),
+          phase: phaseFor(record.mode, record.wordingAgent.enabled),
           allowPartialPeerFailure: true,
+          executionStage: "execution",
           approvedCohort: {
             target: proposal.target,
             identity: proposal.identity,
@@ -1556,7 +1534,7 @@ export class Phase3WorkflowService {
 
   private async continueReportWording(
     loaded: LoadedRun
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const record = loaded.record;
     const report = record.report;
     if (
@@ -1574,10 +1552,10 @@ export class Phase3WorkflowService {
       );
       return this.resource(loaded);
     }
-    if (!report || !record.phase4.enabled) {
+    if (!report || !record.wordingAgent.enabled) {
       return this.finishVerification(loaded);
     }
-    const checkpoint = record.phase4.reportWording;
+    const checkpoint = record.wordingAgent.reportWording;
     if (
       checkpoint.status === "completed" ||
       checkpoint.status === "fallback" ||
@@ -1588,11 +1566,11 @@ export class Phase3WorkflowService {
     if (report.leads.length === 0) {
       const nextReport: WinbackReport = {
         ...report,
-        phase4: {
+        wordingAgent: {
           status: "not_needed",
-          provider: record.phase4.provider,
-          model: record.phase4.model,
-          promptVersion: "phase4-grounded-v1",
+          provider: record.wordingAgent.provider,
+          model: record.wordingAgent.model,
+          promptVersion: "grounded-wording-v1",
           schemaVersion: "grounded-wording-v2",
           narratives: []
         }
@@ -1601,8 +1579,8 @@ export class Phase3WorkflowService {
         loaded,
         {
           report: nextReport,
-          phase4: {
-            ...record.phase4,
+          wordingAgent: {
+            ...record.wordingAgent,
             reportWording: {
               status: "not_needed",
               inputFingerprint: fingerprint({
@@ -1628,7 +1606,7 @@ export class Phase3WorkflowService {
       }))
     });
     if (checkpoint.status === "claimed") {
-      const fallbackReport = withPhase4Fallback(
+      const fallbackReport = withWordingFallback(
         report,
         record,
         "ambiguous_prior_llm_attempt"
@@ -1637,8 +1615,8 @@ export class Phase3WorkflowService {
         loaded,
         {
           report: fallbackReport,
-          phase4: {
-            ...record.phase4,
+          wordingAgent: {
+            ...record.wordingAgent,
             reportWording: {
               status: "fallback",
               inputFingerprint
@@ -1650,19 +1628,19 @@ export class Phase3WorkflowService {
       return this.finishVerification(loaded);
     }
 
-    const agent = this.compatiblePhase4Agent(record);
+    const agent = this.compatibleWordingAgent(record);
     if (!agent) {
-      const fallbackReport = withPhase4Fallback(
+      const fallbackReport = withWordingFallback(
         report,
         record,
-        "configured_phase4_agent_unavailable"
+        "configured_wording_agent_unavailable"
       );
       loaded = await this.saveCheckpoint(
         loaded,
         {
           report: fallbackReport,
-          phase4: {
-            ...record.phase4,
+          wordingAgent: {
+            ...record.wordingAgent,
             reportWording: {
               status: "fallback",
               inputFingerprint
@@ -1677,8 +1655,8 @@ export class Phase3WorkflowService {
     loaded = await this.saveCheckpoint(
       loaded,
       {
-        phase4: {
-          ...record.phase4,
+        wordingAgent: {
+          ...record.wordingAgent,
           reportWording: {
             status: "claimed",
             inputFingerprint
@@ -1693,7 +1671,7 @@ export class Phase3WorkflowService {
       mode: record.mode
     });
     let nextReport: WinbackReport;
-    let status: Phase4InvocationCheckpoint["status"];
+    let status: WordingInvocationCheckpoint["status"];
     try {
       const generated = await agent.wordQualifiedReport({
         runId: record.runId,
@@ -1704,7 +1682,7 @@ export class Phase3WorkflowService {
       assertReportNarratives(report, generated.narratives);
       nextReport = {
         ...report,
-        phase4: {
+        wordingAgent: {
           status:
             generated.narratives.length === 0
               ? "not_needed"
@@ -1719,7 +1697,7 @@ export class Phase3WorkflowService {
       status =
         generated.narratives.length === 0 ? "not_needed" : "completed";
     } catch (error) {
-      nextReport = withPhase4Fallback(
+      nextReport = withWordingFallback(
         report,
         record,
         error instanceof Error ? error.name : "UnknownError"
@@ -1738,8 +1716,8 @@ export class Phase3WorkflowService {
       loaded,
       {
         report: nextReport,
-        phase4: {
-          ...loaded.record.phase4,
+        wordingAgent: {
+          ...loaded.record.wordingAgent,
           reportWording: {
             status,
             inputFingerprint
@@ -1756,7 +1734,7 @@ export class Phase3WorkflowService {
 
   private async finishVerification(
     loaded: LoadedRun
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     const report = loaded.record.report;
     if (!report) {
       loaded = await this.transitionAndSave(
@@ -1804,7 +1782,7 @@ export class Phase3WorkflowService {
     loaded: LoadedRun,
     reservation: StoredQuotaReservation,
     stage: "resolution" | "execution"
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     if (reservation.status === "released") {
       throw new WorkflowConflictError(
         `The interrupted ${stage} reservation was already released`
@@ -1856,7 +1834,7 @@ export class Phase3WorkflowService {
   }
 
   private async assertPlanStillCoversCurrentMisses(
-    record: Phase3RunRecord
+    record: WorkflowRunRecord
   ): Promise<void> {
     const gateway = this.gatewayFactory({
       mode: record.mode,
@@ -1880,7 +1858,7 @@ export class Phase3WorkflowService {
   }
 
   private async assertQuoteStillCoversCurrentMisses(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     approvedCreditCeiling: number
   ): Promise<void> {
     const gateway = this.gatewayFactory({
@@ -1907,7 +1885,7 @@ export class Phase3WorkflowService {
     stage: "resolution" | "execution",
     idempotencyKey: string,
     error: unknown
-  ): Promise<Phase3RunResource> {
+  ): Promise<WorkflowRunResource> {
     if (!(error instanceof PersistenceConflictError)) {
       throw error;
     }
@@ -1935,7 +1913,7 @@ export class Phase3WorkflowService {
   }
 
   private async releaseCancelledReservations(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     idempotencyKey: string
   ): Promise<void> {
     const quota = await this.repository.readQuota(quotaKeyForRun(record));
@@ -1955,7 +1933,7 @@ export class Phase3WorkflowService {
   }
 
   private async releaseReservationIfActive(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     reservationId: string,
     idempotencyKey: string
   ): Promise<void> {
@@ -1974,22 +1952,22 @@ export class Phase3WorkflowService {
     });
   }
 
-  private operationLeaseExpired(record: Phase3RunRecord): boolean {
+  private operationLeaseExpired(record: WorkflowRunRecord): boolean {
     return (
       this.clock() - Date.parse(record.state.updatedAt) >=
       this.operationLeaseMs
     );
   }
 
-  private compatiblePhase4Agent(
-    record: Phase3RunRecord
-  ): Phase4WorkflowAgent | undefined {
-    const agent = this.phase4Agent;
+  private compatibleWordingAgent(
+    record: WorkflowRunRecord
+  ): WordingAgent | undefined {
+    const agent = this.wordingAgent;
     if (
-      !record.phase4.enabled ||
+      !record.wordingAgent.enabled ||
       !agent ||
-      agent.provider !== record.phase4.provider ||
-      agent.model !== record.phase4.model
+      agent.provider !== record.wordingAgent.provider ||
+      agent.model !== record.wordingAgent.model
     ) {
       return undefined;
     }
@@ -1998,10 +1976,10 @@ export class Phase3WorkflowService {
 
   private async saveCheckpoint(
     loaded: LoadedRun,
-    patch: Partial<Phase3RunRecord>,
+    patch: Partial<WorkflowRunRecord>,
     reason: string
   ): Promise<LoadedRun> {
-    const record: Phase3RunRecord = {
+    const record: WorkflowRunRecord = {
       ...loaded.record,
       ...patch
     };
@@ -2020,7 +1998,7 @@ export class Phase3WorkflowService {
     to: RunState,
     actor: RunTransitionActor,
     reason: string,
-    patch: Partial<Phase3RunRecord> = {}
+    patch: Partial<WorkflowRunRecord> = {}
   ): Promise<LoadedRun> {
     const state = transitionRun(loaded.record.state, {
       to,
@@ -2028,7 +2006,7 @@ export class Phase3WorkflowService {
       actor,
       reason
     });
-    const record: Phase3RunRecord = {
+    const record: WorkflowRunRecord = {
       ...loaded.record,
       ...patch,
       state
@@ -2048,8 +2026,8 @@ export class Phase3WorkflowService {
   }
 
   private async appendWorkflowEvent(
-    record: Phase3RunRecord,
-    type: Phase3WorkflowEvent["type"],
+    record: WorkflowRunRecord,
+    type: WorkflowEvent["type"],
     reason: string
   ): Promise<void> {
     await this.repository.appendRunEvent({
@@ -2065,7 +2043,7 @@ export class Phase3WorkflowService {
   }
 
   private async reserveQuota(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     idempotencyKey: string,
     requestedUnits: number
   ): Promise<StoredQuotaReservation> {
@@ -2085,14 +2063,14 @@ export class Phase3WorkflowService {
     return reservation.value;
   }
 
-  private assertCanCreateReservation(record: Phase3RunRecord): void {
+  private assertCanCreateReservation(record: WorkflowRunRecord): void {
     if (record.accounting.policy !== "per_run_v1") {
       throw new RunAccountingMigrationRequiredError();
     }
   }
 
   private async findReservation(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     reservationId: string
   ): Promise<StoredQuotaReservation> {
     return (await this.findReservationLocation(record, reservationId))
@@ -2100,7 +2078,7 @@ export class Phase3WorkflowService {
   }
 
   private async findReservationLocation(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     reservationId: string
   ): Promise<{
     quotaKey: string;
@@ -2118,7 +2096,7 @@ export class Phase3WorkflowService {
   }
 
   private async finalizeReservation(
-    record: Phase3RunRecord,
+    record: WorkflowRunRecord,
     reservationId: string,
     idempotencyKey: string,
     outcome: "settled" | "released",
@@ -2150,7 +2128,7 @@ export class Phase3WorkflowService {
     );
   }
 
-  private async resource(loaded: LoadedRun): Promise<Phase3RunResource> {
+  private async resource(loaded: LoadedRun): Promise<WorkflowRunResource> {
     const events = await this.repository.readRunEvents(
       loaded.record.runId
     );
@@ -2166,7 +2144,7 @@ export class Phase3WorkflowService {
       workflowEvents: events.map((event) => ({
         sequence: event.sequence,
         occurredAt: event.occurredAt,
-        event: event.event as unknown as Phase3WorkflowEvent
+        event: event.event as unknown as WorkflowEvent
       }))
     };
   }
@@ -2174,29 +2152,6 @@ export class Phase3WorkflowService {
   private nowIso(): string {
     return new Date(this.clock()).toISOString();
   }
-}
-
-async function evidenceCallPolicy(
-  gateway: SponsorRadarEvidencePort,
-  operation: EvidenceOperation,
-  input: string,
-  targetSubscriberCount?: number
-): Promise<{
-  cacheStatus: EvidenceCacheStatus;
-  estimatedCredits: number;
-}> {
-  const cacheStatus =
-    (await gateway.inspectCache?.(
-      operation,
-      input,
-      targetSubscriberCount
-    )) ??
-    (gateway.mode === "fixture" ? "hit" : "not_applicable");
-  return {
-    cacheStatus,
-    estimatedCredits:
-      cacheStatus === "hit" ? 0 : gateway.estimateCredits(operation)
-  };
 }
 
 function assertGatewayMode(
@@ -2220,8 +2175,9 @@ function resolutionCeilingFor(
   return Math.min(
     totalCreditCeiling,
     gateway.estimateResolutionCredits?.() ??
-      (gateway.estimateCredits("resolve_target") +
-        gateway.estimateCredits("list_locked_peers"))
+      composeResolutionCredits((operation) =>
+        gateway.estimateCredits(operation)
+      )
   );
 }
 
@@ -2239,30 +2195,6 @@ function isPaidOperationCheckpoint(state: RunState): boolean {
     state === "resolving" ||
     state === "executing"
   );
-}
-
-function liveCredits(
-  mode: EvidenceMode,
-  cacheStatus: EvidenceCacheStatus,
-  credits: number
-): number | null {
-  if (mode === "fixture") return null;
-  return cacheStatus === "hit" ? 0 : credits;
-}
-
-function observedHttpResultCredits(
-  audit: AuditRecorder,
-  operation: string,
-  conservativeFallback: number
-): number {
-  const completed = [...audit.getEvents()]
-    .reverse()
-    .find(
-      (event) =>
-        event.eventType === "http.completed" &&
-        event.tool?.name === `upriver.http.${operation}`
-    );
-  return completed?.tool?.resultBasedCredits ?? conservativeFallback;
 }
 
 function failedStageCredits(
@@ -2287,7 +2219,7 @@ function observedVerifiedResolutionCredits(
   audit: AuditRecorder
 ): number | null {
   const events = audit.getEvents();
-  const innerName = "upriver.http.live.resolve_target";
+  const innerName = `upriver.http.${auditToolName("live", "resolve_target")}`;
   const matchingHttpEvents = events.filter(
     (event) =>
       (event.eventType === "http.completed" ||
@@ -2327,7 +2259,7 @@ function observedVerifiedResolutionCredits(
     .find(
       (event) =>
         event.eventType === "tool.completed" &&
-        event.tool?.name === "live.resolve_target"
+        event.tool?.name === auditToolName("live", "resolve_target")
     );
   const amount = completedTool?.tool?.resultBasedCredits;
   return typeof amount === "number" &&
@@ -2339,12 +2271,12 @@ function observedVerifiedResolutionCredits(
 
 function phaseFor(
   mode: EvidenceMode,
-  phase4Enabled = false
+  wordingAgentEnabled = false
 ): AuditPhase {
-  if (phase4Enabled) {
-    return mode === "live" ? "phase_4_live" : "phase_4_fixture";
+  if (wordingAgentEnabled) {
+    return mode === "live" ? "workflow_wording_live" : "workflow_wording_fixture";
   }
-  return mode === "live" ? "phase_3_live" : "phase_3_fixture";
+  return mode === "live" ? "workflow_live" : "workflow_fixture";
 }
 
 function appendAuditEvents(
@@ -2360,21 +2292,21 @@ function appendAuditEvents(
   ];
 }
 
-function quotaKeyForRun(record: Phase3RunRecord): string {
+function quotaKeyForRun(record: WorkflowRunRecord): string {
   return record.accounting.policy === "legacy_shared_v1"
     ? LEGACY_SHARED_QUOTA_KEY
     : `${PER_RUN_QUOTA_KEY_PREFIX}:${record.runId}`;
 }
 
 function verifyCompletedReport(
-  record: Phase3RunRecord,
+  record: WorkflowRunRecord,
   report: WinbackReport
 ): void {
   const proposal = record.peerProposal;
   if (
     report.runId !== record.runId ||
     report.leads.length > 3 ||
-    report.phase !== phaseFor(record.mode, record.phase4.enabled) ||
+    report.phase !== phaseFor(record.mode, record.wordingAgent.enabled) ||
     !proposal ||
     !completedTargetMatchesProposal(report, proposal)
   ) {
@@ -2393,7 +2325,7 @@ function verifyCompletedReport(
 
 function completedTargetMatchesProposal(
   report: WinbackReport,
-  proposal: Phase3PeerProposal
+  proposal: WorkflowPeerProposal
 ): boolean {
   if (
     report.targetIdentity === null ||
@@ -2419,7 +2351,7 @@ function completedTargetMatchesProposal(
 
 function assertPeerExplanations(
   peers: readonly LockedPeer[],
-  generated: Phase4PeerExplanationResult
+  generated: PeerExplanationResult
 ): void {
   if (
     generated.explanations.length !== peers.length ||
@@ -2472,18 +2404,18 @@ function assertReportNarratives(
   }
 }
 
-function withPhase4Fallback(
+function withWordingFallback(
   report: WinbackReport,
-  record: Phase3RunRecord,
+  record: WorkflowRunRecord,
   fallbackReason: string
 ): WinbackReport {
   return {
     ...report,
-    phase4: {
+    wordingAgent: {
       status: "fallback",
-      provider: record.phase4.provider,
-      model: record.phase4.model,
-      promptVersion: "phase4-grounded-v1",
+      provider: record.wordingAgent.provider,
+      model: record.wordingAgent.model,
+      promptVersion: "grounded-wording-v1",
       schemaVersion: "grounded-wording-v2",
       narratives: [],
       fallbackReason
@@ -2510,7 +2442,7 @@ function summarizeReportAudit(
   };
 }
 
-function safeWorkflowError(error: unknown): Phase3RunError {
+function safeWorkflowError(error: unknown): WorkflowRunError {
   if (error instanceof YouTubeTargetVerificationError) {
     return {
       code: error.code,
@@ -2519,19 +2451,36 @@ function safeWorkflowError(error: unknown): Phase3RunError {
       retryable: false
     };
   }
-  const known =
-    error instanceof Error &&
-    /unsupported|supports only|youtube|reach window/i.test(error.message);
+  // Never echo a raw internal error message into persisted, publicly readable
+  // run state. Internal messages can embed provider-derived names, URLs, or
+  // configuration details, and this value is served verbatim by the read API.
+  // Classify the failure category from the message but always return a fixed,
+  // reviewed message — never the original text.
+  const message = error instanceof Error ? error.message : "";
+  if (/falls outside the locked reach window/i.test(message)) {
+    return {
+      code: "peer_reach_window",
+      message:
+        "A comparable channel fell outside the approved reach window. Start a new search.",
+      retryable: false
+    };
+  }
+  if (/unsupported|supports only/i.test(message)) {
+    return {
+      code: "unsupported_channel_input",
+      message:
+        "This channel is not supported for research. Enter one YouTube channel and start a new search.",
+      retryable: false
+    };
+  }
   return {
-    code: error instanceof Error ? error.name : "UnknownError",
-    message: known
-      ? (error as Error).message
-      : "The run failed safely. Review the persisted audit trace.",
+    code: "unknown_failure",
+    message: "The run failed safely. Start a new search.",
     retryable: false
   };
 }
 
-function legacyIdentityRestartError(): Phase3RunError {
+function legacyIdentityRestartError(): WorkflowRunError {
   return {
     code: "target_not_verified",
     message:
@@ -2569,10 +2518,15 @@ function parseLoadedRun(
   const persistedSchemaVersion = isJsonRecord(value)
     ? value.schemaVersion
     : null;
-  const phase4 =
-    isJsonRecord(value) && isJsonRecord(value.phase4)
-      ? value.phase4
-      : null;
+  // Backward reader: pre-rename schema-4 snapshots stored the wording block
+  // (structurally identical) under the historical top-level `phase4` key. Read
+  // it as `wordingAgent` so those runs restore instead of failing closed.
+  const wordingAgent =
+    isJsonRecord(value) && isJsonRecord(value.wordingAgent)
+      ? value.wordingAgent
+      : isJsonRecord(value) && isJsonRecord(value.phase4)
+        ? value.phase4
+        : null;
   if (
     !isJsonRecord(value) ||
     outerSchemaVersion !== persistedSchemaVersion ||
@@ -2619,7 +2573,7 @@ function parseLoadedRun(
     !validReportIdentity(value.report, persistedSchemaVersion)
   ) {
     throw new PersistenceCorruptionError(
-      `Persisted Phase 3 run ${expectedRunId} is invalid`
+      `Persisted workflow run ${expectedRunId} is invalid`
     );
   }
   if (
@@ -2628,15 +2582,15 @@ function parseLoadedRun(
       persistedSchemaVersion === RUN_SCHEMA_VERSION) &&
     (!Number.isInteger(plan.llmCallCeiling) ||
       !Number.isInteger(plan.llmOutputTokenCeiling) ||
-      !phase4 ||
-      typeof phase4.enabled !== "boolean" ||
-      typeof phase4.provider !== "string" ||
-      typeof phase4.model !== "string" ||
-      !isJsonRecord(phase4.peerRationale) ||
-      !isJsonRecord(phase4.reportWording))
+      !wordingAgent ||
+      typeof wordingAgent.enabled !== "boolean" ||
+      typeof wordingAgent.provider !== "string" ||
+      typeof wordingAgent.model !== "string" ||
+      !isJsonRecord(wordingAgent.peerRationale) ||
+      !isJsonRecord(wordingAgent.reportWording))
   ) {
     throw new PersistenceCorruptionError(
-      `Persisted Phase 4 run ${expectedRunId} is invalid`
+      `Persisted wording-augmented run ${expectedRunId} is invalid`
     );
   }
   if (
@@ -2671,11 +2625,21 @@ function parseLoadedRun(
 
   const record = structuredClone(
     value
-  ) as unknown as Phase3RunRecord;
+  ) as unknown as WorkflowRunRecord;
+  // Normalize a historical top-level `phase4` wording block to the
+  // capability-named `wordingAgent` field before any consumer reads it.
+  const wordingCarrier = record as unknown as {
+    wordingAgent?: WorkflowRunRecord["wordingAgent"];
+    phase4?: WorkflowRunRecord["wordingAgent"];
+  };
+  if (!wordingCarrier.wordingAgent && wordingCarrier.phase4) {
+    wordingCarrier.wordingAgent = wordingCarrier.phase4;
+    delete wordingCarrier.phase4;
+  }
   if (persistedSchemaVersion === 1) {
     record.plan.llmCallCeiling = 0;
     record.plan.llmOutputTokenCeiling = 0;
-    record.phase4 = {
+    record.wordingAgent = {
       enabled: false,
       provider: "disabled",
       model: "disabled",
@@ -2942,7 +2906,7 @@ function validReportIdentity(
 }
 
 function assertConsistentPersistedIdentityCopies(
-  record: Phase3RunRecord,
+  record: WorkflowRunRecord,
   expectedRunId: string
 ): void {
   const identities = [
@@ -2969,7 +2933,7 @@ function assertConsistentPersistedIdentityCopies(
 }
 
 function assertNativeIdentityForState(
-  record: Phase3RunRecord,
+  record: WorkflowRunRecord,
   expectedRunId: string
 ): void {
   const state = record.state.state;
@@ -3023,14 +2987,14 @@ function toJson(value: unknown): JsonValue {
 
 function runIdFor(idempotencyKey: string): string {
   return `run_${createHash("sha256")
-    .update(`sponsor-radar-phase3\0${idempotencyKey}`)
+    .update(`sponsor-radar-workflow\0${idempotencyKey}`)
     .digest("hex")
     .slice(0, 32)}`;
 }
 
 function resourceStatus(
   state: RunState
-): Phase3RunResource["status"] {
+): WorkflowRunResource["status"] {
   switch (state) {
     case "submitted":
     case "planned":
@@ -3061,7 +3025,7 @@ function resourceStatus(
 function availableActions(
   state: RunState,
   operationLeaseExpired: boolean
-): Phase3RunAction[] {
+): WorkflowRunAction[] {
   switch (state) {
     case "planned":
       return ["approve_plan", "cancel"];
@@ -3099,7 +3063,7 @@ function isTerminalState(state: RunState): boolean {
   );
 }
 
-function resourceOutcome(record: Phase3RunRecord): Phase3RunOutcome | null {
+function resourceOutcome(record: WorkflowRunRecord): WorkflowRunOutcome | null {
   if (record.state.state === "no_eligible_peers") {
     return "no_eligible_peers";
   }

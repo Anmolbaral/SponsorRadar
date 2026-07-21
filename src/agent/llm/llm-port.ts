@@ -254,7 +254,7 @@ export class DisabledLlmPort implements LlmPort {
 
   async generateStructured(): Promise<never> {
     throw new LlmDisabledError(
-      "LLM calls are disabled until the Phase 4 runtime flag is enabled"
+      "LLM calls are disabled until the wording-agent runtime flag is enabled"
     );
   }
 }

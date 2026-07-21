@@ -1,4 +1,4 @@
-import { SponsorRadarDemo } from "@/components/sponsor-radar-demo";
+import { SponsorRadarApp } from "@/components/sponsor-radar-app";
 
 export default function HomePage() {
   return (
@@ -12,7 +12,7 @@ export default function HomePage() {
           discovery, sponsor research, and verification in the background.
         </p>
       </header>
-      <SponsorRadarDemo />
+      <SponsorRadarApp />
     </main>
   );
 }

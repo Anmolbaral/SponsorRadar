@@ -4,7 +4,7 @@ import path from "node:path";
 import { loadEnvFile } from "node:process";
 import { describe, expect, it } from "vitest";
 import { FixtureLlmPort } from "@/src/agent/llm/fixture-llm-port";
-import { BoundedPhase4Agent } from "@/src/agent/orchestrator/phase4-agent";
+import { BoundedWordingAgent } from "@/src/agent/orchestrator/wording-agent";
 import { CachedEvidenceGateway } from "@/src/radar/adapters/cache/cached-evidence-gateway";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
 import {
@@ -12,7 +12,7 @@ import {
   type UpriverLifecycleEvent
 } from "@/src/radar/adapters/upriver/http-client";
 import { LiveUpriverGateway } from "@/src/radar/adapters/upriver/live-evidence-gateway";
-import { Phase3WorkflowService } from "@/src/radar/application/run-workflow";
+import { WorkflowService } from "@/src/radar/application/run-workflow";
 
 const enabled =
   process.env.SPONSOR_RADAR_LIVE_FULL_WORKFLOW === "true";
@@ -58,11 +58,11 @@ describe("manually approved live-evidence dynamic product workflow", () => {
           directory
         });
         const llm = new FixtureLlmPort();
-        const service = new Phase3WorkflowService({
+        const service = new WorkflowService({
           repository,
           mode: "live",
           runCreditLimit: RUN_CREDIT_LIMIT,
-          phase4Agent: new BoundedPhase4Agent(process.cwd(), llm),
+          wordingAgent: new BoundedWordingAgent(process.cwd(), llm),
           gatewayFactory: ({ audit, maximumCredits }) => {
             const live = new LiveUpriverGateway(
               process.cwd(),

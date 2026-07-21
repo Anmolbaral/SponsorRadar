@@ -8,7 +8,7 @@ import type {
   LlmProviderRequest,
   LlmProviderResponse
 } from "@/src/agent/llm/llm-port";
-import { BoundedPhase4Agent } from "@/src/agent/orchestrator/phase4-agent";
+import { BoundedWordingAgent } from "@/src/agent/orchestrator/wording-agent";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import {
   FileSystemWorkflowRepository,
@@ -20,7 +20,7 @@ import type {
   EvidenceOperation,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
-import { Phase3WorkflowService } from "@/src/radar/application/run-workflow";
+import { WorkflowService } from "@/src/radar/application/run-workflow";
 import { transitionRun } from "@/src/radar/domain/run-state";
 
 const temporaryDirectories: string[] = [];
@@ -33,16 +33,16 @@ afterEach(async () => {
   );
 });
 
-describe("Phase 4 controlled workflow", () => {
+describe("Wording-augmented workflow", () => {
   it("falls back without mutating canonical leads when generated wording is invalid", async () => {
     const directory = await temporaryDirectory();
     const repository = new FileSystemWorkflowRepository({ directory });
     const llm = new InvalidReportLlmPort();
     let lockedPeerCalls = 0;
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "fixture",
-      phase4Agent: new BoundedPhase4Agent(process.cwd(), llm),
+      wordingAgent: new BoundedWordingAgent(process.cwd(), llm),
       gatewayFactory: () =>
         new CountingFixtureGateway(() => {
           lockedPeerCalls += 1;
@@ -51,25 +51,25 @@ describe("Phase 4 controlled workflow", () => {
 
     const created = await service.createRun(
       "@UrAvgConsumer",
-      "phase4-invalid-report"
+      "wordingAgent-invalid-report"
     );
     const proposed = await service.approvePlan(created.runId, {
       expectedVersion: created.version,
       planId: created.plan.planId,
-      idempotencyKey: "phase4-approve-plan"
+      idempotencyKey: "wordingAgent-approve-plan"
     });
     const completed = await service.approveExecution(proposed.runId, {
       expectedVersion: proposed.version,
       proposalId: proposed.peerProposal!.proposalId,
       quoteId: proposed.peerProposal!.quote.quoteId,
       approvedCreditCeiling: 0,
-      idempotencyKey: "phase4-approve-execution"
+      idempotencyKey: "wordingAgent-approve-execution"
     });
 
-    expect(proposed.peerProposal?.phase4?.status).toBe("generated");
+    expect(proposed.peerProposal?.wordingAgent?.status).toBe("generated");
     expect(proposed.peerProposal?.cohortHash).toMatch(/^[a-f0-9]{64}$/);
     expect(completed.status).toBe("completed");
-    expect(completed.report?.phase4).toMatchObject({
+    expect(completed.report?.wordingAgent).toMatchObject({
       status: "fallback",
       fallbackReason: "LlmGroundingError",
       narratives: []
@@ -107,15 +107,15 @@ describe("Phase 4 controlled workflow", () => {
     expect(lockedPeerCalls).toBe(1);
   });
 
-  it("blocks a schema-v3 resolved cohort before any Phase 4 or evidence call", async () => {
+  it("blocks a schema-v3 resolved cohort before any wording-agent or evidence call", async () => {
     const directory = await temporaryDirectory();
     const repository = new FileSystemWorkflowRepository({ directory });
     const llm = new InvalidReportLlmPort();
     let lockedPeerCalls = 0;
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "fixture",
-      phase4Agent: new BoundedPhase4Agent(process.cwd(), llm),
+      wordingAgent: new BoundedWordingAgent(process.cwd(), llm),
       gatewayFactory: () =>
         new CountingFixtureGateway(() => {
           lockedPeerCalls += 1;
@@ -123,7 +123,7 @@ describe("Phase 4 controlled workflow", () => {
     });
     const created = await service.createRun(
       "@UrAvgConsumer",
-      "phase4-legacy-resolved"
+      "wordingAgent-legacy-resolved"
     );
     const fixture = new FixtureEvidenceGateway(process.cwd());
     const resolved = await fixture.resolveTarget("@UrAvgConsumer");
@@ -170,7 +170,7 @@ describe("Phase 4 controlled workflow", () => {
 
     const failed = await service.resumeRun(created.runId, {
       expectedVersion: stored.revision,
-      idempotencyKey: "resume-phase4-legacy-resolved"
+      idempotencyKey: "resume-wordingAgent-legacy-resolved"
     });
 
     expect(failed.status).toBe("failed");
@@ -180,15 +180,15 @@ describe("Phase 4 controlled workflow", () => {
     expect(failed.auditEvents).toEqual([]);
   });
 
-  it("blocks a migrated verifying checkpoint before another Phase 4 call", async () => {
+  it("blocks a migrated verifying checkpoint before another wording-agent call", async () => {
     const directory = await temporaryDirectory();
     const repository = new FileSystemWorkflowRepository({ directory });
     const llm = new InvalidReportLlmPort();
     let lockedPeerCalls = 0;
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "fixture",
-      phase4Agent: new BoundedPhase4Agent(process.cwd(), llm),
+      wordingAgent: new BoundedWordingAgent(process.cwd(), llm),
       gatewayFactory: () =>
         new CountingFixtureGateway(() => {
           lockedPeerCalls += 1;
@@ -196,19 +196,19 @@ describe("Phase 4 controlled workflow", () => {
     });
     const created = await service.createRun(
       "@UrAvgConsumer",
-      "phase4-legacy-verifying"
+      "wordingAgent-legacy-verifying"
     );
     const proposed = await service.approvePlan(created.runId, {
       expectedVersion: created.version,
       planId: created.plan.planId,
-      idempotencyKey: "phase4-legacy-verifying-plan"
+      idempotencyKey: "wordingAgent-legacy-verifying-plan"
     });
     await service.approveExecution(created.runId, {
       expectedVersion: proposed.version,
       proposalId: proposed.peerProposal!.proposalId,
       quoteId: proposed.peerProposal!.quote.quoteId,
       approvedCreditCeiling: 0,
-      idempotencyKey: "phase4-legacy-verifying-execution"
+      idempotencyKey: "wordingAgent-legacy-verifying-execution"
     });
     const snapshot = await repository.readRunSnapshot(created.runId);
     if (!snapshot) throw new Error("Expected a persisted run");
@@ -229,7 +229,7 @@ describe("Phase 4 controlled workflow", () => {
     }
     const report = legacyValue.report;
     const state = legacyValue.state;
-    const phase4 = legacyValue.phase4;
+    const wordingAgent = legacyValue.wordingAgent;
     if (
       report === null ||
       Array.isArray(report) ||
@@ -237,12 +237,12 @@ describe("Phase 4 controlled workflow", () => {
       state === null ||
       Array.isArray(state) ||
       typeof state !== "object" ||
-      phase4 === null ||
-      Array.isArray(phase4) ||
-      typeof phase4 !== "object" ||
+      wordingAgent === null ||
+      Array.isArray(wordingAgent) ||
+      typeof wordingAgent !== "object" ||
       !Array.isArray(state.history)
     ) {
-      throw new Error("Expected persisted report, state, and Phase 4 data");
+      throw new Error("Expected persisted report, state, and wording data");
     }
     delete report.targetIdentity;
     state.history.pop();
@@ -260,7 +260,7 @@ describe("Phase 4 controlled workflow", () => {
     state.state = "verifying";
     state.version = latest.sequence;
     state.updatedAt = latest.occurredAt;
-    phase4.reportWording = {
+    wordingAgent.reportWording = {
       status: "not_started",
       inputFingerprint: null
     };
@@ -275,7 +275,7 @@ describe("Phase 4 controlled workflow", () => {
 
     const failed = await service.resumeRun(created.runId, {
       expectedVersion: stored.revision,
-      idempotencyKey: "resume-phase4-legacy-verifying"
+      idempotencyKey: "resume-wordingAgent-legacy-verifying"
     });
 
     expect(failed.status).toBe("failed");
@@ -375,7 +375,7 @@ class CountingFixtureGateway implements SponsorRadarEvidencePort {
 
 async function temporaryDirectory(): Promise<string> {
   const directory = await mkdtemp(
-    path.join(tmpdir(), "sponsor-radar-phase4-")
+    path.join(tmpdir(), "sponsor-radar-wordingAgent-")
   );
   temporaryDirectories.push(directory);
   return directory;

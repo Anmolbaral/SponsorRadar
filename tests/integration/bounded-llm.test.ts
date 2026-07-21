@@ -355,7 +355,7 @@ function auditRecorder(): AuditRecorder {
   let now = 0;
   return new AuditRecorder({
     runId: "run_test",
-    phase: "phase_4_fixture",
+    phase: "workflow_wording_fixture",
     mode: "fixture",
     clock: () => ++now
   });

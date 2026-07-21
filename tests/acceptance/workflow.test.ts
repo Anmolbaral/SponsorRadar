@@ -5,7 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { FixtureLlmPort } from "@/src/agent/llm/fixture-llm-port";
 import type { LlmProviderRequest } from "@/src/agent/llm/llm-port";
-import { BoundedPhase4Agent } from "@/src/agent/orchestrator/phase4-agent";
+import { BoundedWordingAgent } from "@/src/agent/orchestrator/wording-agent";
 import type { AuditRecorder } from "@/src/observability/audit";
 import { CachedEvidenceGateway } from "@/src/radar/adapters/cache/cached-evidence-gateway";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
@@ -22,7 +22,7 @@ import type {
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
 import {
-  Phase3WorkflowService,
+  WorkflowService,
   RunAccountingMigrationRequiredError,
   RunCreditLimitExceededError,
   WorkflowConflictError
@@ -46,7 +46,7 @@ afterEach(async () => {
   );
 });
 
-describe("Phase 3 controlled workflow", () => {
+describe("Controlled workflow", () => {
   it("preserves the legacy cohort hash and binds channel ID into v2 hashes", () => {
     const target = {
       name: "Target",
@@ -124,7 +124,7 @@ describe("Phase 3 controlled workflow", () => {
     expect(completed.outcome).toBe("opportunities_found");
     expect(completed.state.state).toBe("completed");
     expect(completed.report?.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
-    expect(completed.report?.phase).toBe("phase_3_fixture");
+    expect(completed.report?.phase).toBe("workflow_fixture");
     expect(completed.report?.targetIdentity).toEqual(
       proposed.peerProposal?.identity
     );
@@ -178,6 +178,54 @@ describe("Phase 3 controlled workflow", () => {
     expect(harness.calls.total()).toBe(0);
   });
 
+  it("does not record ghost approvals for no-op or rejected cancel/resume actions", async () => {
+    const directory = await temporaryDirectory();
+    const calls = callCounter();
+    const repository = new FileSystemWorkflowRepository({
+      directory,
+      clock: () => fixedNow
+    });
+    const service = new WorkflowService({
+      repository,
+      mode: "fixture",
+      clock: () => fixedNow,
+      gatewayFactory: () =>
+        new CachedEvidenceGateway(
+          new CountingFixtureGateway(process.cwd(), calls, false),
+          repository
+        )
+    });
+    const created = await service.createRun(
+      "@UrAvgConsumer",
+      "ghost-approval-run"
+    );
+
+    // A no-op resume of a still-planned run must not persist an approval.
+    const resumed = await service.resumeRun(created.runId, {
+      expectedVersion: created.version,
+      idempotencyKey: "resume-noop-planned"
+    });
+    expect(resumed.status).toBe("awaiting_plan_approval");
+    expect(await repository.listApprovals(created.runId)).toHaveLength(0);
+
+    // The legal cancel records exactly one approval.
+    const cancelled = await service.cancelRun(created.runId, {
+      expectedVersion: resumed.version,
+      idempotencyKey: "cancel-legal"
+    });
+    expect(cancelled.status).toBe("cancelled");
+    expect(await repository.listApprovals(created.runId)).toHaveLength(1);
+
+    // A second cancel with a fresh key is a terminal no-op and must not add
+    // another approval.
+    const cancelledAgain = await service.cancelRun(created.runId, {
+      expectedVersion: cancelled.version,
+      idempotencyKey: "cancel-noop-second"
+    });
+    expect(cancelledAgain.status).toBe("cancelled");
+    expect(await repository.listApprovals(created.runId)).toHaveLength(1);
+  });
+
   it("completes cleanly with no eligible peers and never enters sponsor execution", async () => {
     const directory = await temporaryDirectory();
     const calls = callCounter();
@@ -185,7 +233,7 @@ describe("Phase 3 controlled workflow", () => {
       directory,
       clock: () => fixedNow
     });
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "fixture",
       clock: () => fixedNow,
@@ -240,7 +288,7 @@ describe("Phase 3 controlled workflow", () => {
       directory,
       clock: () => fixedNow
     });
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -279,7 +327,7 @@ describe("Phase 3 controlled workflow", () => {
         clock: () => fixedNow
       });
       const calls = callCounter();
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         mode: "live",
         clock: () => fixedNow,
@@ -329,24 +377,24 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const legacy = await repository.reserveQuota({
-      quotaKey: "upriver-phase3-shared-credits",
+      quotaKey: "upriver-shared-credits",
       runId: "historical-live-run",
       idempotencyKey: "historical-live-reservation",
       requestedUnits: 200,
       maximumUnits: 200
     });
     await repository.finalizeQuotaReservation({
-      quotaKey: "upriver-phase3-shared-credits",
+      quotaKey: "upriver-shared-credits",
       reservationId: legacy.value.reservationId,
       idempotencyKey: "historical-live-settlement",
       outcome: "settled",
       actualUnits: 200
     });
     const legacyBefore = await repository.readQuota(
-      "upriver-phase3-shared-credits"
+      "upriver-shared-credits"
     );
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -392,7 +440,7 @@ describe("Phase 3 controlled workflow", () => {
     }
 
     expect(
-      await repository.readQuota("upriver-phase3-shared-credits")
+      await repository.readQuota("upriver-shared-credits")
     ).toEqual(legacyBefore);
     for (const { runId, settledCredits } of completedRuns) {
       expect(
@@ -424,7 +472,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -498,7 +546,7 @@ describe("Phase 3 controlled workflow", () => {
         calls,
         maximumCredits ?? 160
       );
-    const firstService = new Phase3WorkflowService({
+    const firstService = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -510,7 +558,7 @@ describe("Phase 3 controlled workflow", () => {
       "persisted-run-limit-create"
     );
 
-    const restartedService = new Phase3WorkflowService({
+    const restartedService = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -552,7 +600,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       clock: () => fixedNow,
       gatewayFactory: () =>
@@ -596,8 +644,52 @@ describe("Phase 3 controlled workflow", () => {
       await repository.readQuota(runCreditLedgerKey(created.runId))
     ).toBeNull();
     expect(
-      await repository.readQuota("upriver-phase3-shared-credits")
+      await repository.readQuota("upriver-shared-credits")
     ).toBeNull();
+  });
+
+  it("restores a schema-4 run that persisted the wording block under the historical phase4 key", async () => {
+    const directory = await temporaryDirectory();
+    const repository = new FileSystemWorkflowRepository({
+      directory,
+      clock: () => fixedNow
+    });
+    const calls = callCounter();
+    const service = new WorkflowService({
+      repository,
+      clock: () => fixedNow,
+      gatewayFactory: () =>
+        new CountingFixtureGateway(process.cwd(), calls, false)
+    });
+    const created = await service.createRun(
+      "@UrAvgConsumer",
+      "phase4-legacy-shape"
+    );
+
+    // Rewrite the current schema-4 snapshot into the pre-rename shape: the
+    // structurally identical wording block stored under a top-level `phase4`.
+    const snapshot = await repository.readRunSnapshot(created.runId);
+    if (!snapshot) throw new Error("Expected a persisted run");
+    const legacyValue = structuredClone(snapshot.value) as {
+      [key: string]: JsonValue;
+    };
+    const wordingBlock = legacyValue.wordingAgent;
+    delete legacyValue.wordingAgent;
+    legacyValue.phase4 = wordingBlock;
+    await repository.saveRunSnapshot({
+      runId: created.runId,
+      valueSchemaVersion: 4,
+      value: legacyValue,
+      expectedRevision: snapshot.revision
+    });
+
+    const restored = await service.getRun(created.runId);
+    expect(restored.schemaVersion).toBe(4);
+    expect(restored.status).toBe("awaiting_plan_approval");
+    expect(restored.wordingAgent).toEqual(wordingBlock);
+    expect(
+      (restored as unknown as { phase4?: unknown }).phase4
+    ).toBeUndefined();
   });
 
   it("migrates a schema-v3 proposal without inventing identity and blocks execution before approval or research", async () => {
@@ -607,7 +699,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       clock: () => fixedNow,
       gatewayFactory: () =>
@@ -723,12 +815,12 @@ describe("Phase 3 controlled workflow", () => {
       });
       const calls = callCounter();
       const llm = new CountingFixtureLlmPort();
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         mode: "live",
         clock: () => now,
         operationLeaseMs: 1,
-        phase4Agent: new BoundedPhase4Agent(process.cwd(), llm),
+        wordingAgent: new BoundedWordingAgent(process.cwd(), llm),
         gatewayFactory: ({ maximumCredits }) =>
           new StageBoundedLiveGateway(
             process.cwd(),
@@ -902,7 +994,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       clock: () => fixedNow,
       gatewayFactory: () =>
@@ -992,7 +1084,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       clock: () => fixedNow,
       gatewayFactory: () =>
@@ -1229,7 +1321,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => now
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => now,
@@ -1246,7 +1338,7 @@ describe("Phase 3 controlled workflow", () => {
       "legacy-active-claim-create"
     );
     const legacyReservation = await repository.reserveQuota({
-      quotaKey: "upriver-phase3-shared-credits",
+      quotaKey: "upriver-shared-credits",
       runId: created.runId,
       idempotencyKey: "legacy-active-resolution-reservation",
       requestedUnits: 11,
@@ -1323,7 +1415,7 @@ describe("Phase 3 controlled workflow", () => {
     expect(failed.quota.resolutionCreditsUsed).toBe(11);
     expect(calls.total()).toBe(0);
     expect(
-      await repository.readQuota("upriver-phase3-shared-credits")
+      await repository.readQuota("upriver-shared-credits")
     ).toMatchObject({
       activeUnits: 0,
       consumedUnits: 11,
@@ -1377,7 +1469,7 @@ describe("Phase 3 controlled workflow", () => {
     expect(calls.total()).toBe(6);
 
     now += 11;
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock,
@@ -1420,7 +1512,7 @@ describe("Phase 3 controlled workflow", () => {
         clock: () => fixedNow
       });
       const calls = callCounter();
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         mode: "live",
         clock: () => fixedNow,
@@ -1486,7 +1578,7 @@ describe("Phase 3 controlled workflow", () => {
         clock: () => fixedNow
       });
       const calls = callCounter();
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         mode: "live",
         clock: () => fixedNow,
@@ -1577,6 +1669,57 @@ describe("Phase 3 controlled workflow", () => {
     }
   );
 
+  it("never persists a raw internal error message in a failed run", async () => {
+    const directory = await temporaryDirectory();
+    const repository = new FileSystemWorkflowRepository({
+      directory,
+      clock: () => fixedNow
+    });
+    const calls = callCounter();
+    const service = new WorkflowService({
+      repository,
+      mode: "live",
+      clock: () => fixedNow,
+      gatewayFactory: ({ audit, maximumCredits }) =>
+        new LeakyResolutionGateway(
+          process.cwd(),
+          calls,
+          maximumCredits ?? 160,
+          audit
+        )
+    });
+    const created = await service.createRun(
+      "@UrAvgConsumer",
+      "leaky-resolution-failure"
+    );
+
+    const failed = await service.approvePlan(created.runId, {
+      expectedVersion: created.version,
+      planId: created.plan.planId,
+      idempotencyKey: "approve-leaky-resolution"
+    });
+
+    expect(failed.status).toBe("failed");
+    // The read API serialises run.error verbatim, so the persisted value must
+    // never carry provider text, secrets, URLs, or other internal detail.
+    const serialized = JSON.stringify(failed.error);
+    for (const forbidden of [
+      "sk-live-SECRET-9f83",
+      "token=",
+      "api.upriver.test",
+      "youtube",
+      "upstream",
+      "500"
+    ]) {
+      expect(serialized).not.toContain(forbidden);
+    }
+    expect(failed.error).toEqual({
+      code: "unknown_failure",
+      message: "The run failed safely. Start a new search.",
+      retryable: false
+    });
+  });
+
   it("keeps the full resolution reservation for an ambiguous network failure", async () => {
     const directory = await temporaryDirectory();
     const repository = new FileSystemWorkflowRepository({
@@ -1584,7 +1727,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -1639,7 +1782,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -1689,7 +1832,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -1779,7 +1922,7 @@ describe("Phase 3 controlled workflow", () => {
         clock: () => fixedNow
       });
       const calls = callCounter();
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         mode: "live",
         clock: () => fixedNow,
@@ -1878,7 +2021,7 @@ describe("Phase 3 controlled workflow", () => {
       clock: () => fixedNow
     });
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock: () => fixedNow,
@@ -2081,7 +2224,7 @@ describe("Phase 3 controlled workflow", () => {
     expect(calls.total()).toBe(6);
 
     const stageCaps: number[] = [];
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock,
@@ -2127,7 +2270,7 @@ describe("Phase 3 controlled workflow", () => {
     });
     const calls = callCounter();
     const stageCaps: number[] = [];
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository,
       mode: "live",
       clock,
@@ -2189,7 +2332,7 @@ describe("Phase 3 controlled workflow", () => {
       "resolving"
     );
     const calls = callCounter();
-    const service = new Phase3WorkflowService({
+    const service = new WorkflowService({
       repository: checkpoint.repository,
       mode: "fixture",
       clock: () => fixedNow,
@@ -2289,12 +2432,12 @@ function serviceFor(
   calls: CallCounter,
   failHaylsWorld = false,
   clock: () => number = () => fixedNow
-): Phase3WorkflowService {
+): WorkflowService {
   const repository = new FileSystemWorkflowRepository({
     directory,
     clock
   });
-  return new Phase3WorkflowService({
+  return new WorkflowService({
     repository,
     mode: "fixture",
     clock,
@@ -2522,6 +2665,15 @@ class VerificationFailureLiveGateway extends MeteredLiveGateway {
   }
 }
 
+class LeakyResolutionGateway extends MeteredLiveGateway {
+  override async resolveTarget(): Promise<never> {
+    this.counter.values.resolve_target += 1;
+    throw new Error(
+      "youtube upstream 500 from https://api.upriver.test/v1/creators?token=sk-live-SECRET-9f83 within the reach window"
+    );
+  }
+}
+
 class NetworkFailureLiveGateway extends MeteredLiveGateway {
   override async resolveTarget(): Promise<never> {
     this.counter.values.resolve_target += 1;
@@ -2741,26 +2893,26 @@ function callCounter(): CallCounter {
 }
 
 function runCreditLedgerKey(runId: string): string {
-  return `upriver-phase3-run-credits-v1:${runId}`;
+  return `upriver-run-credits-v1:${runId}`;
 }
 
 function testRunId(idempotencyKey: string): string {
   return `run_${createHash("sha256")
-    .update(`sponsor-radar-phase3\0${idempotencyKey}`)
+    .update(`sponsor-radar-workflow\0${idempotencyKey}`)
     .digest("hex")
     .slice(0, 32)}`;
 }
 
 async function temporaryDirectory(): Promise<string> {
   const directory = await mkdtemp(
-    path.join(tmpdir(), "sponsor-radar-phase3-")
+    path.join(tmpdir(), "sponsor-radar-workflow-")
   );
   temporaryDirectories.push(directory);
   return directory;
 }
 
 async function waitForState(
-  service: Phase3WorkflowService,
+  service: WorkflowService,
   runId: string,
   state: string
 ) {

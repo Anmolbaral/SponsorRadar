@@ -21,7 +21,7 @@ if (enabled && !process.env.OPENAI_API_KEY?.trim()) {
   }
 }
 
-describe.skipIf(!enabled)("paid OpenAI Phase 4 smoke", () => {
+describe.skipIf(!enabled)("paid OpenAI wording smoke", () => {
   it("returns one strict, tool-free peer rationale within the fixed cap", async () => {
     const apiKey = process.env.OPENAI_API_KEY?.trim() ?? "";
     if (!apiKey) {
@@ -31,7 +31,7 @@ describe.skipIf(!enabled)("paid OpenAI Phase 4 smoke", () => {
     }
     const audit = new AuditRecorder({
       runId: "run_paid_openai_smoke",
-      phase: "phase_4_live",
+      phase: "workflow_wording_live",
       mode: "live"
     });
     const session = new BoundedLlmSession(

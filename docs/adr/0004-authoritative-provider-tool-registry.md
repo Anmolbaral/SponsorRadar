@@ -1,6 +1,6 @@
 # ADR 0004: Authoritative provider tool registry
 
-- Status: Accepted; migration pending
+- Status: Accepted; implemented July 20, 2026
 - Date: July 20, 2026
 
 ## Decision

@@ -25,12 +25,10 @@
     "test:live-llm": "vitest run tests/live/openai-live-smoke.test.ts",
     "test:live-llm-deep": "vitest run tests/live/openai-live-deep.test.ts",
     "eval": "vitest run evals",
-    "test:phase1": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
-    "test:phase2": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
-    "test:phase3": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
-    "test:phase4": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:all": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
+    "test:phase4": "pnpm test:all",
     "test:e2e": "playwright test",
-    "verify": "pnpm lint && pnpm test:phase4 && pnpm build"
+    "verify": "pnpm lint && pnpm test:all && pnpm build"
   },
   "dependencies": {
     "next": "^16.2.10",

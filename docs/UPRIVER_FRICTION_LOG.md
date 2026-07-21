@@ -1,61 +1,160 @@
 # Upriver Consumer Friction Log
 
-Observed July 19–20, 2026 while building Sponsor Winback Radar. “Observed”
-means retained responses, code, or a reproducible saved analysis exists in this
-repository. Proposed fixes are consumer requests, not claims about Upriver's
-internal implementation. “Open/unconfirmed” marks a documentation or billing
-question that has not been verified against provider-side records.
+Observed July 19–20, 2026 while building Sponsor Winback Radar. Every item is
+backed by saved responses, code, or a reproducible analysis in this repo.
+Suggestions are consumer requests, not claims about how Upriver works
+internally. "Open/unconfirmed" marks a billing or documentation question not
+yet checked against provider-side records.
 
-## Where the API helped
+## What worked
 
-| What helped | Concrete evidence | Product effect |
-| --- | --- | --- |
-| Publication-scoped sponsorship queries with date, platform, type, and evidence filters | The saved reach-matched run reused 89 target sponsor summaries and returned three recent `explicit_ad` peer summaries from three exact YouTube URLs ([analysis](../experiments/tech-product-reviewers-reach-matched-2026-07-19/derived/analysis.json)). | One endpoint shape supported both stale-history and recent-peer sides of the join. |
-| Placement evidence is attached to the result | Saved rows include content URL, publication, published date, sponsor type, description excerpt, source, and confidence; Dell's row named XPS and linked its creator campaign ([Dave2D response](../experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/peer-dave2d-strict-90.json)). | The UI can show why a lead exists instead of returning an unexplained score. |
-| Creator batch responses expose exact channels and subscriber counts | The target and three peers resolved at 3.45M, 3.69M, 3.71M, and 2.66M subscribers. | Reach comparability could be enforced in code rather than inferred from names. |
-| Similar Creators (Beta) makes dynamic peer discovery possible | The [documented beta](https://docs.upriver.ai/api-reference/creators/find-similar-creators-beta) accepts an exact `channel_url`, platform, follower bounds, optional language matching, and a bounded result limit. A July 20 live regression resolved `@DwarkeshPatel` and returned ten candidates in one Similar call after the optional language dependency was removed. | The product no longer needs a hard-coded peer cohort. The user can review a fresh, reach-comparable proposal before sponsor spend. |
-| Cursor pagination and structured `detail` errors are predictable | Invalid publication URL, malformed `limit`, and missing-key probes returned 400/400/401 with actionable JSON messages ([saved probes](../spike-results/raw/)). | Typed validation, terminal-error handling, and bounded paging were straightforward to implement and test. |
-| Tracking and coverage metadata exists | Sponsor responses can include `tracking_status`, `has_more`, `next_cursor`, and `total_count`; the adapter preserves partial and unknown coverage. | The product can distinguish “no observed row” from complete negative evidence and show warnings. |
-| Brand Research gives usable broad context cheaply | The Dell report added positioning, audience, and tone; the pilot rated it 4/10 alone and 8/10 with placement evidence. | It is helpful enrichment after qualification, though not the qualification signal. |
-| The narrow live contract was stable enough to verify | A six-credit live smoke returned one creator and one sponsor result with matching request IDs and zero retries ([testing record](TESTING.md#live-tests)). | The production adapter could be verified without paying for a full report. |
-| The dynamic workflow fails honestly instead of padding output | The July 20 `@DwarkeshPatel` run completed six one-attempt calls, settled 81 provisional credits, and returned zero qualified opportunities. It preserved a partial report because coverage was incomplete rather than manufacturing the Dell fixture or a weak overlap ([full trace](EXTERNAL_API_ISSUE_REGISTER.md#july-20-full-live-evidence-product-validation)). | The live product boundary is real: a valid outcome can be no lead, and every paid stage remains auditable. |
+- **Sponsor queries fit the product.** One endpoint, filtered by publication,
+  date, platform, type, and evidence, served both the target-history and
+  recent-peer sides of the comparison
+  ([analysis](../experiments/tech-product-reviewers-reach-matched-2026-07-19/derived/analysis.json)).
+- **Evidence comes attached.** Rows include content URL, publish date, excerpt,
+  source, and confidence; Dell's row named XPS and linked its campaign
+  ([Dave2D response](../experiments/tech-product-reviewers-reach-matched-2026-07-19/raw/peer-dave2d-strict-90.json)).
+  The UI can show why a lead exists.
+- **Creator batch returns exact channels and subscriber counts** (3.45M, 3.69M,
+  3.71M, 2.66M), so reach comparability is enforced in code, not guessed.
+- **Similar Creators (Beta) enables dynamic peer discovery.** A July 20 live
+  run resolved `@DwarkeshPatel` and returned ten candidates in one call
+  ([docs](https://docs.upriver.ai/api-reference/creators/find-similar-creators-beta)).
+  No hard-coded peer list needed.
+- **Errors and pagination are predictable.** Bad inputs returned 400/401 with
+  clear JSON messages ([saved probes](../spike-results/raw/)); typed validation
+  and bounded paging were easy to build.
+- **Coverage metadata exists** (`tracking_status`, `has_more`, `total_count`),
+  so "no rows" can be shown as unknown instead of as proof.
+- **Brand Research is cheap, useful context** — rated 4/10 alone, 8/10 next to
+  placement evidence. Enrichment, not qualification.
+- **A six-credit smoke test verified the live adapter** without paying for a
+  full report ([testing record](TESTING.md#live-tests)).
+- **The live workflow fails honestly.** The July 20 run spent 81 provisional
+  credits, returned zero qualified opportunities, and kept a partial report
+  instead of inventing a lead
+  ([full trace](EXTERNAL_API_ISSUE_REGISTER.md#july-20-full-live-evidence-product-validation)).
 
-## Where the API fought the use case
+## Issues and suggestions
 
-| Friction | Concrete evidence | Consequence / request |
-| --- | --- | --- |
-| Sponsor identity is often not joinable | In the broad pilot, 40 of 89 target rows had no usable domain. In the July 20 dynamic run, only 8/11 target rows had a usable domain and only 2/3 observed peer sponsor rows were joinable. In the strict peer set, Wispr Flow and Bitdefender both had `sponsor_domain: null`; one was recovered by manually resolving a link and one remained excluded ([verification](../experiments/tech-product-reviewers-reach-matched-2026-07-19/verification.json)). | Missing domains silently reduce recall. Return a canonical `brand_id`, domain aliases, redirect-derived attribution, and an explicit identity-confidence/evidence field. |
-| Similar Creators is a beta contract with undocumented billing | The API reference documents request/response fields and labels the endpoint beta, but does not document a credit rate. The product currently asks for at most ten results and provisionally quotes one creator-result credit per returned result. **Status: open/unconfirmed.** | A quote can be structurally safe yet financially wrong. Publish the rate, billable-event semantics, beta version, and change policy. Until confirmed, keep the 160-credit per-run maximum, show the provisional assumption, and reconcile against the provider dashboard. |
-| Optional language matching can make a valid anchor unusable | For `@DwarkeshPatel`, a minimally filtered Similar call returned HTTP 200, while the production-shaped call with `match_content_language=true` returned HTTP 409 `anchor_language_not_ready` after one attempt. Removing only that optional filter produced ten rows and three reach-valid candidates with zero retries. Provider request IDs and the full sequence are retained in the [issue register](EXTERNAL_API_ISSUE_REGISTER.md#upr-009--optional-language-matching-can-reject-a-valid-anchor). | A dynamic product cannot depend on an opaque, asynchronously prepared profile. Expose readiness before execution, document 409 billing/retry semantics, and define the supported fallback. Sponsor Radar now omits language matching while retaining exact anchor, platform, reach, cap, and approval controls. |
-| Similar response shape can drift | The beta response is useful but not a stable production promise. Anchor identity, first-channel qualification, subscriber count, similarity reasons, and labels are material to peer selection. **Status: open risk, not an observed break.** | A silent shape change could select the wrong cohort. Version the beta schema. The adapter currently runtime-validates the complete shape, confirms the anchor, and fails closed instead of falling back to fuzzy search. |
-| Batch success uses HTTP 200 even when individual items fail | Creator batch exposes `successful_count`, `failed_count`, per-result `error`, and results under an HTTP-success envelope. A transport-level success is therefore not a creator-resolution success. | Naive consumers can proceed with a partial or wrong identity. Return 207-style semantics or an explicit top-level outcome. Sponsor Radar requires exactly one requested creator, one success, zero failures, and exact channel identity before research. |
-| A placement label is not enough to establish paid sponsorship | The first pilot produced five raw domain overlaps and four inclusive commercial matches, but all five failed the later S3 + product-continuity rubric. Affiliate links and promotions were the recurring failure modes. | Expose compensation/disclosure evidence separately from placement format: `confirmed_paid`, `brand_promotion`, `affiliate`, `organic`, or `unknown`, with provenance and confidence. |
-| Root-domain identity is too coarse for conglomerates | `samsung.com` joined a target home-appliance partnership to a peer enterprise-laptop showcase; the strict review rejected continuity. | Add canonical business-unit and product-line identities. A brand-level match should not imply the same budget or buyer. |
-| Grouped sponsor rows expose only the latest example | `/v1/sponsors` provides `total_ads_found` plus `most_recent_ad`. Sponsor Radar needed relationship history and exact product continuity, so it retained a local ledger and opened public pages. | Offer an evidence-complete activation resource or an include/expand that returns bounded placement history, product line, disclosure, and coverage in one contract. `/v1/sponsorships` supplies placement rows, but consumers still have to build the identity and continuity layer. |
-| Coverage semantics require defensive interpretation | An HTTP-200 empty result may carry active tracking, but the code correctly treats zero rows as unknown rather than proof of no sponsorship. One-page live caps also make non-terminal pagination partial. | Return a first-class coverage object: observed window, last checked time, sources/platforms covered, completeness, truncation reason, and known gaps. |
-| Tracking and empty-result semantics are ambiguous for a decision product | `tracking_status` can be present while `results` is empty, and a bounded one-page request can stop before terminal pagination. In the July 20 dynamic run, tracking status was absent for the target and all three peer responses; one peer returned zero rows; a bounded page was non-terminal. None of those states proves “this creator had no sponsors.” | A sales user could interpret a clean-looking zero as negative evidence. Sponsor Radar labels empty/non-terminal coverage unknown or partial and never converts it into a no-sponsorship claim. The API should return explicit observed-window completeness and truncation semantics. |
-| Brand Research stops before the sales handoff | For Dell it did not identify the XPS campaign, current product priority, geography, buyer, agency, creator brief, or budget ([assessment](../experiments/tech-product-reviewers-reach-matched-2026-07-19/verification.json)). | This is not necessarily a Brand Research bug, but the product needs a separate, sourced campaign/activation resource. Unknown must remain unknown; do not synthesize contact or campaign status. |
-| Creator identity behavior was rough outside the YouTube slice | July 19 probes for Acquired, Joe Rogan, and Oprah returned Pydantic “Unsupported platform: podcast” validation details; a Spotify Acquired URL resolved, while a website URL did not. A `GET /v1/creators?url=...` probe returned “Unknown query parameter,” although the pinned reference later described that lookup. | Normalize public errors, make supported platform/URL types machine-readable, and version endpoint behavior. **Owner confirmation needed:** retest against the current API before treating these time-stamped probes as current defects. |
-| Fuzzy name search can be ambiguous and irrelevant | Searching “Acquired” returned fashion and unrelated social accounts, while exact URL resolution was more reliable. | Keep exact URL/handle lookup primary. For ambiguity, return typed candidates and require confirmation rather than silently selecting one. |
-| Account usage was not reliable enough for exact feature billing | The broad pilot's end-of-session account total was 2,883 credits, while feature counters did not update reliably; its 983-credit clean-run figure is rate-based. The locked run's 21-credit figure is also a result-rate estimate. | Add per-request billed credits and a reconciliation ID in every response. Until then, label product totals “result-based estimates,” not invoices. **Owner confirmation needed:** compare with provider-dashboard billing. |
-| Paid timeouts create an unresolvable retry decision | A client timeout cannot prove whether Upriver completed or billed the request. No duplicate charge was observed, but the ambiguity is inherent without an idempotency or billing-reconciliation contract. **Status: open risk.** | Automatic retries can duplicate spend and evidence. Sponsor Radar uses zero retries for every paid gateway, persists a non-cancellable claim before the call, and settles an interrupted reservation conservatively. Add provider idempotency keys plus a lookupable request/billing status. |
+**1. Sponsor identity often can't be joined.**
+Seen: 40 of 89 target rows in the broad pilot had no usable domain; the July 20
+run had only 8/11 target rows and 2/3 peer rows joinable. Wispr Flow and
+Bitdefender both returned `sponsor_domain: null`
+([verification](../experiments/tech-product-reviewers-reach-matched-2026-07-19/verification.json)).
+Suggest: return a canonical `brand_id`, domain aliases, redirect-based
+attribution, and an identity-confidence field. Missing domains silently reduce
+recall.
 
-## Performance observations, not an SLA
+**2. Similar Creators billing is undocumented.**
+Seen: the beta reference documents fields but no credit rate. We provisionally
+assume one credit per returned result. **Open/unconfirmed.**
+Suggest: publish the rate, what counts as a billable event, and a change
+policy.
 
-- Three valid sponsor probes completed in 0.206–0.480 seconds.
-- One creator-resolution diagnostic completed in 3.45 seconds.
-- These are tiny samples from one environment, not p95 measurements. The
-  Phase 5 target of sponsors under two seconds and creator resolution under
-  five seconds remains provisional.
+**3. Optional language matching can reject a valid channel.**
+Seen: with `match_content_language=true`, the Similar call returned HTTP 409
+`anchor_language_not_ready` for `@DwarkeshPatel`; removing that one filter
+returned ten rows and three reach-valid candidates
+([issue register](EXTERNAL_API_ISSUE_REGISTER.md#upr-009--optional-language-matching-can-reject-a-valid-anchor)).
+Suggest: expose readiness before execution, document 409 billing/retry rules,
+and define the fallback. We now omit language matching.
 
-## The highest-leverage API change
+**4. The beta response shape could change silently.**
+Seen: no break observed, but anchor identity, first-channel qualification,
+subscriber counts, and similarity reasons all drive peer selection. **Open
+risk.**
+Suggest: version the beta schema. Our adapter validates the full shape,
+confirms the anchor, and fails closed rather than falling back to fuzzy search.
 
-Return a canonical, evidenced **sponsorship activation** rather than requiring
-each consumer to reconstruct brand identity, paid-status, product line,
-business unit, and coverage from a grouped result plus public-page review. The
-proposed contract and producer pipeline are in [WISH_API.md](WISH_API.md).
+**5. Batch returns HTTP 200 even when items fail.**
+Seen: failures only appear in `successful_count`, `failed_count`, and
+per-result `error` fields under a success status.
+Suggest: 207-style semantics or an explicit top-level outcome. We require
+exactly one requested creator, one success, zero failures, and exact channel
+identity before spending.
 
-For manager-facing status, ownership, and the separation between observed
-incidents and open assumptions, see the
+**6. A placement label doesn't prove a paid deal.**
+Seen: all five pilot domain overlaps failed the paid + product-continuity
+review; affiliate links and promotions were the recurring false positives.
+Suggest: report paid status separately from placement format —
+`confirmed_paid`, `brand_promotion`, `affiliate`, `organic`, or `unknown` —
+with evidence and confidence.
+
+**7. Root domains are too coarse for large companies.**
+Seen: `samsung.com` joined a target home-appliance deal to a peer
+enterprise-laptop showcase; strict review rejected it.
+Suggest: add business-unit and product-line identities. A brand-level match
+doesn't mean the same budget or buyer.
+
+**8. Grouped sponsor rows only include the latest ad.**
+Seen: `/v1/sponsors` returns `total_ads_found` plus `most_recent_ad`. We needed
+relationship history, so we kept a local ledger and opened public pages.
+`/v1/sponsorships` has placement rows but still leaves identity and continuity
+to the consumer.
+Suggest: an activation resource (or expand option) returning bounded placement
+history, product line, disclosure, and coverage in one response.
+
+**9. Empty results and coverage are ambiguous.**
+Seen: HTTP 200 with zero rows may or may not mean "no sponsors." In the July 20
+run, tracking status was absent for the target and all three peers, one peer
+returned zero rows, and one bounded page stopped before the end. None of that
+proves a creator had no sponsors.
+Suggest: a first-class coverage object — window checked, last-checked time,
+completeness, truncation reason, known gaps. We label these states unknown or
+partial and never present them as negative evidence.
+
+**10. Brand Research stops before the sales handoff.**
+Seen: for Dell it did not identify the XPS campaign, product priority,
+geography, buyer, agency, or budget
+([assessment](../experiments/tech-product-reviewers-reach-matched-2026-07-19/verification.json)).
+Suggest: not necessarily a bug — but the product needs a separately sourced
+campaign resource. Unknowns must stay unknown, not be synthesized.
+
+**11. Creator lookup was rough outside YouTube.**
+Seen: July 19 probes for podcasts (Acquired, Joe Rogan, Oprah) returned raw
+Pydantic "Unsupported platform: podcast" errors; a Spotify URL resolved while a
+website URL did not; a documented `GET /v1/creators?url=...` lookup returned
+"Unknown query parameter." **Retest before treating as current defects.**
+Suggest: normalize public errors, publish supported platforms/URL types in
+machine-readable form, and version endpoint behavior.
+
+**12. Fuzzy name search is unreliable.**
+Seen: searching "Acquired" returned fashion and unrelated social accounts;
+exact URL lookup was dependable.
+Suggest: keep exact URL/handle lookup primary. For ambiguous names, return
+typed candidates and require confirmation instead of silently picking one.
+
+**13. Usage reporting can't support exact billing.**
+Seen: the pilot's end-of-session account total was 2,883 credits, but feature
+counters didn't update reliably. Our 983-credit and 21-credit figures are
+result-rate estimates. **Needs comparison with the provider dashboard.**
+Suggest: per-request billed credits plus a reconciliation ID in every response.
+Until then we label totals as estimates, not invoices.
+
+**14. A timed-out paid request can't be resolved.**
+Seen: a client timeout cannot prove whether Upriver completed or billed the
+request. No duplicate charge was observed, but the ambiguity is inherent.
+**Open risk.**
+Suggest: idempotency keys and a lookupable request/billing status. We run zero
+retries on every paid call, persist a claim before calling, and settle
+interrupted reservations conservatively.
+
+## Performance notes (not an SLA)
+
+- Three valid sponsor probes: 0.206–0.480 seconds. One creator resolution:
+  3.45 seconds.
+- Tiny samples from one environment. The Phase 5 targets (sponsors under two
+  seconds, resolution under five) remain provisional.
+
+## The one change with the most leverage
+
+Return a canonical, evidenced **sponsorship activation** instead of making
+every consumer rebuild brand identity, paid status, product line, and coverage
+from a grouped row plus manual page checks. The proposed contract is in
+[WISH_API.md](WISH_API.md).
+
+For manager-facing status and ownership, see the
 [external API issue register](EXTERNAL_API_ISSUE_REGISTER.md). OpenAI events
-are cross-referenced there rather than mixed into this Upriver-specific log.
+are tracked there, not in this Upriver-specific log.

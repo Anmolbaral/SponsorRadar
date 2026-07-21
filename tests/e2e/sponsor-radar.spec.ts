@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import type { Phase3RunResource } from "@/src/radar/application/run-workflow";
+import type { WorkflowRunResource } from "@/src/radar/application/run-workflow";
 
 const savedRunIdKey = "sponsor-radar-run-id";
 const channelInputLabel = "Channel handle or URL";
@@ -68,7 +68,7 @@ test("rendered failures hide implementation vocabulary and diagnostics", async (
       contentType: "application/json",
       body: JSON.stringify({
         error:
-          `Phase 4 fixture provider payload at /Users/operator/.data/sponsor-radar: ` +
+          `Wording fixture provider payload at /Users/operator/.data/sponsor-radar: ` +
           `Quota quota_${internalHash} has maximumUnits 150; ` +
           "UPRIVER_API_KEY configuration failed.",
         code: "research_unavailable",
@@ -221,10 +221,10 @@ test("an interrupted automatic step can be cancelled without sponsor research", 
   await page.getByRole("button", { name: "Cancel research" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Run cancelled" })
+    page.getByRole("heading", { name: "Research cancelled" })
   ).toBeVisible();
   await expect(
-    page.getByText("Research was cancelled at the last safe checkpoint.")
+    page.getByText("Research was cancelled before more work started.")
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Dell", exact: true })
@@ -664,7 +664,7 @@ async function enterFixtureChannel(page: Page): Promise<void> {
 
 async function rewriteExecutionResponse(
   page: Page,
-  rewrite: (completed: Phase3RunResource) => Phase3RunResource
+  rewrite: (completed: WorkflowRunResource) => WorkflowRunResource
 ): Promise<void> {
   await page.route("**/api/runs/*/actions", async (route) => {
     const body = route.request().postDataJSON() as { action?: string };
@@ -678,7 +678,7 @@ async function rewriteExecutionResponse(
         `Fixture execution failed with HTTP ${response.status()}`
       );
     }
-    const completed = (await response.json()) as Phase3RunResource;
+    const completed = (await response.json()) as WorkflowRunResource;
     await route.fulfill({
       response,
       json: rewrite(completed)

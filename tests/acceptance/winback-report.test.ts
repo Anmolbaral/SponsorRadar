@@ -5,7 +5,7 @@ import {
 } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import { runWinbackReport } from "@/src/radar/application/run-winback-report";
 
-describe("Phase 1 sponsor winback acceptance", () => {
+describe("Sponsor winback acceptance", () => {
   it("turns one channel handle into exactly one verified Dell/XPS lead", async () => {
     const gateway = new FixtureEvidenceGateway(process.cwd());
     const { report, events } = await runWinbackReport(
@@ -13,7 +13,7 @@ describe("Phase 1 sponsor winback acceptance", () => {
       gateway
     );
 
-    expect(report.phase).toBe("phase_1_fixture");
+    expect(report.phase).toBe("report_fixture");
     expect(report.target.name).toBe("UrAvgConsumer");
     expect(report.funnel).toEqual({
       targetApiRows: 89,

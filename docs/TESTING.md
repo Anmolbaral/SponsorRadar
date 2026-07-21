@@ -16,13 +16,15 @@ tests prove optional fields, zero confidence, missing domains, multi-channel
 creator selection, usage-counter inconsistency, and fixture-tool audit events.
 They never call the network.
 
-Phase 2 adds recorded HTTP tests for exact requests, paging, retry, timeout,
-error mapping, credit limits, and headers. Phase 3 adds cache hit, miss, expiry,
-schema/corruption, restart persistence, and warm-run tests. The paid gateway
+Recorded live-HTTP tests cover exact requests, paging, retry, timeout,
+error mapping, credit limits, and headers. Cache-and-persistence tests cover
+cache hit, miss, expiry, schema/corruption, restart persistence, and warm-run
+behavior. The paid gateway
 itself accepts only a zero-retry client and uses one bounded page per sponsor
 operation; retry behavior is tested independently without a network.
 
-Phase 5 recorded-HTTP tests exercise the real dynamic product boundary:
+Live product-boundary recorded-HTTP tests exercise the real dynamic product
+boundary:
 
 - arbitrary exact public YouTube handles/URLs resolve to the same canonical
   identity returned by Upriver;
@@ -39,7 +41,7 @@ Phase 5 recorded-HTTP tests exercise the real dynamic product boundary:
 - dynamic leads preserve `same_brand_reactivation` wording and keep product,
   campaign, and buyer continuity unverified.
 
-Phase 4 integration tests verify the purpose-bound context manifest, raw-byte
+Bounded-wording integration tests verify the purpose-bound context manifest, raw-byte
 and section hashes, UTF-8/size checks, symlink rejection, runtime output
 validation, paired LLM audit events, call/token reservations, tool-call
 rejection, refusals, and the exact zero-retry OpenAI request shape.
@@ -52,24 +54,33 @@ real child-process lock contention/dead-owner recovery.
 ## Acceptance tests
 
 Acceptance tests begin at the user-facing use case: supply one YouTube handle
-or URL and inspect the report. The Phase 1 fixture journey must produce only
+or URL and inspect the report. The fixture golden-replay journey must produce only
 Dell/XPS, show evidence and coverage warnings, and expose a complete
 zero-credit trace. That fixed output is the golden oracle only. In live mode,
 an arbitrary exact public YouTube identity enters dynamic resolution; invalid
 or unresolvable input must fail honestly instead of returning the Dell fixture
 or a fuzzy substitute.
 
-Phase 3 acceptance tests directly exercise the full create → internal plan
+Workflow acceptance tests directly exercise the full create → internal plan
 checkpoint → internal cohort/credit checkpoints → execute → verify journey,
 stale revisions, repeated idempotency keys, restart/refresh restore, warm-cache
 zero-call behavior, interruption before a paid claim,
 cancellation-versus-resolution races, stale warm-plan repricing, ambiguous
 live-resolution recovery, live-mode server guards, and conservative partial
 peer failure. These workflow-level checkpoints remain testable APIs and
-persisted records even though Phase 5 no longer presents them as user review
-screens.
+persisted records even though the live product no longer presents them as user
+review screens.
 
-Phase 4 acceptance tests prove the workflow generates rationale only for the
+Dynamic-qualification acceptance tests additionally assert peer-first
+cost control for `same_brand_reactivation`: peer sponsor histories are
+researched before the target, the paid target-history search runs only when a
+peer row carries evidence-backed, in-window, domain-resolvable `explicit_ad`
+evidence, and a run with no qualifying peer signal skips that search and emits
+the honest `target_history_not_searched` coverage notice with an empty lead
+set. Persisted failed runs are also asserted never to carry a raw internal
+error message, and no-op or rejected cancel/resume actions record no approval.
+
+Bounded-wording acceptance tests prove the workflow generates rationale only for the
 exact locked cohort, binds that cohort hash into the internal checkpoint, uses
 it directly during execution instead of re-fetching peers, and emits grounded
 wording only after deterministic qualification. A malicious report response
@@ -77,7 +88,7 @@ fails closed: the canonical lead, qualification policy, evidence, count,
 coverage, and deterministic fallback wording remain unchanged. The strict
 Dell fixture also asserts its exact historical result.
 
-The Phase 5 Playwright matrix covers the one-click persisted fixture report,
+The browser (Playwright) matrix covers the one-click persisted fixture report,
 automatic internal advancement, refresh restore during progress,
 create-response loss, transient restore failure, invalid input, no results,
 partial coverage, rate limits, mobile layout, and keyboard/accessibility
@@ -130,13 +141,18 @@ Evals answer product-quality questions ordinary code tests miss:
 
 Safety-critical eval cases require 100%, not an average score.
 
-The Phase 4 eval corpus is hash-pinned by `evals/phase4-manifest.json`. It
-contains 31 labeled eligibility cases for macro-F1 and 46 output/boundary cases
-covering hallucination, attribution, prompt injection, result inflation, tool
-attempts, refusals, provider errors, input size, duplicate purposes, call caps,
-and token caps. The gate requires 100% compliance, zero known false
-positives/inflation, exact material-claim attribution, and macro-F1 of at least
-0.90 after 25 cases.
+The frozen offline eval corpus is byte-for-byte pinned by the single manifest
+`evals/frozen-eval-manifest.json` under the ID
+`sponsor-radar-agent-safety-frozen-v1`. It contains 31 labeled eligibility
+cases for macro-F1 (`strict-gate`), 42 agent output-safety cases, and 10
+bounded-LLM-session boundary cases — 52 adversarial output/boundary cases in
+total, covering exact rejection reasons and same-brand-reactivation
+uncertainty. The manifest verifies each case file's byte length, SHA-256, and
+case count on every run; the corpus changes only through an explicit re-freeze.
+`pnpm eval` runs the frozen-manifest checks plus the report-quality and
+strict-gate eval suites. The gate requires 100% compliance, zero known false
+positives or result inflation, exact material-claim attribution, and macro-F1
+of at least 0.90 after 25 cases.
 
 ## Live tests
 
@@ -144,7 +160,7 @@ Live Upriver and live-model tests are opt-in only, never part of normal CI.
 They require a hard budget and explicit test-operator opt-in. Recorded
 fixtures remain the repeatable regression oracle.
 
-The legacy report route remains deliberately fixture-only. The Phase 3 live
+The legacy report route remains deliberately fixture-only. The live
 workflow additionally requires the initial bounded-run authorization,
 persisted internal plan/cohort/credit checkpoints, an exact quote, independent
 per-run reservations, `UPRIVER_LIVE_WORKFLOW=true`, and a server-only key.
@@ -216,7 +232,7 @@ including reasons, latency, request IDs, outcome, and result-based credit
 estimates. The July 19, 2026 run passed at six result-based credits with zero
 retries.
 
-A controlled arbitrary-channel product run is a separate Phase 5 gate. It must
+A controlled arbitrary-channel product run is a separate live-release gate. It must
 use an exact public YouTube handle/URL, treat the one submit as authorization,
 persist and enforce the discovered cohort and quote internally, make zero
 automatic retries, retain safe request telemetry, and verify that any live

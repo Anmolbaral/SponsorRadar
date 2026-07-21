@@ -10,7 +10,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
-import { Phase3WorkflowService } from "@/src/radar/application/run-workflow";
+import { WorkflowService } from "@/src/radar/application/run-workflow";
 
 const fixtureDirectory = path.join(
   process.cwd(),
@@ -70,7 +70,7 @@ describe("persisted workflow migration fixtures", () => {
 
       const repository = new FileSystemWorkflowRepository({ directory });
       let gatewayConstructions = 0;
-      const service = new Phase3WorkflowService({
+      const service = new WorkflowService({
         repository,
         gatewayFactory: () => {
           gatewayConstructions += 1;
@@ -85,7 +85,7 @@ describe("persisted workflow migration fixtures", () => {
         policy: "legacy_shared_v1",
         maximumCredits: 0
       });
-      expect(restored.phase4).toEqual({
+      expect(restored.wordingAgent).toEqual({
         enabled: false,
         provider: "disabled",
         model: "disabled",

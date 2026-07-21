@@ -9,85 +9,99 @@
     "id": "peer-unknown-id",
     "task": "peer",
     "scenario": "unknown_id",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_identity"
   },
   {
     "id": "peer-missing-member",
     "task": "peer",
     "scenario": "missing_member",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_size"
   },
   {
     "id": "peer-duplicate-member",
     "task": "peer",
     "scenario": "duplicate_member",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_identity"
   },
   {
     "id": "peer-reordered-members",
     "task": "peer",
     "scenario": "reordered",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_identity"
   },
   {
     "id": "peer-extra-field",
     "task": "peer",
     "scenario": "extra_field",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "schema"
   },
   {
     "id": "peer-invented-digit",
     "task": "peer",
     "scenario": "numeric_digit",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "peer-invented-number-word",
     "task": "peer",
     "scenario": "numeric_word",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "peer-prompt-injection",
     "task": "peer",
     "scenario": "prompt_injection",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "peer-tool-request",
     "task": "peer",
     "scenario": "tool_request",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "peer-unsupported-buyer",
     "task": "peer",
     "scenario": "unsupported_buyer",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "peer-invented-url",
     "task": "peer",
     "scenario": "invented_url",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "peer-wrong-evidence",
     "task": "peer",
     "scenario": "wrong_evidence",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "exact_match"
   },
   {
     "id": "peer-duplicate-evidence",
     "task": "peer",
     "scenario": "duplicate_evidence",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "duplicate"
   },
   {
     "id": "peer-oversized-text",
     "task": "peer",
     "scenario": "oversized_text",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "schema"
   },
   {
     "id": "report-valid-attribution",
@@ -99,120 +113,180 @@
     "id": "report-unknown-lead",
     "task": "report",
     "scenario": "unknown_lead",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_identity"
   },
   {
     "id": "report-added-lead",
     "task": "report",
     "scenario": "added_lead",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_size"
   },
   {
     "id": "report-removed-lead",
     "task": "report",
     "scenario": "removed_lead",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_size"
   },
   {
     "id": "report-unknown-claim",
     "task": "report",
     "scenario": "unknown_claim",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unknown_claim"
   },
   {
     "id": "report-duplicate-claim",
     "task": "report",
     "scenario": "duplicate_claim",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "duplicate"
   },
   {
     "id": "report-removed-claim",
     "task": "report",
     "scenario": "removed_claim",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "exact_match"
   },
   {
     "id": "report-wrong-side-evidence",
     "task": "report",
     "scenario": "wrong_evidence",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "exact_match"
   },
   {
     "id": "report-missing-evidence",
     "task": "report",
     "scenario": "missing_evidence",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "schema"
   },
   {
     "id": "report-invented-digit",
     "task": "report",
     "scenario": "numeric_digit",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "report-invented-number-word",
     "task": "report",
     "scenario": "numeric_word",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "report-invented-url",
     "task": "report",
     "scenario": "invented_url",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "fabricated_value"
   },
   {
     "id": "report-unsupported-buyer",
     "task": "report",
     "scenario": "unsupported_buyer",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-unsupported-budget",
     "task": "report",
     "scenario": "unsupported_budget",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-active-campaign",
     "task": "report",
     "scenario": "active_campaign",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-stopped-sponsoring",
     "task": "report",
     "scenario": "stopped_sponsoring",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-prompt-injection",
     "task": "report",
     "scenario": "prompt_injection",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-html-payload",
     "task": "report",
     "scenario": "html_payload",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "unsafe_text"
   },
   {
     "id": "report-extra-field",
     "task": "report",
     "scenario": "extra_field",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "schema"
   },
   {
     "id": "report-fourth-sentence",
     "task": "report",
     "scenario": "fourth_sentence",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "schema"
   },
   {
     "id": "report-duplicate-narrative",
     "task": "report",
     "scenario": "duplicate_narrative",
-    "expectedAccepted": false
+    "expectedAccepted": false,
+    "expectedReason": "cohort_size"
+  },
+  {
+    "id": "reactivation-valid",
+    "task": "reactivation",
+    "scenario": "valid",
+    "expectedAccepted": true
+  },
+  {
+    "id": "reactivation-valid-alt-wording",
+    "task": "reactivation",
+    "scenario": "valid_alt",
+    "expectedAccepted": true
+  },
+  {
+    "id": "reactivation-omits-uncertainty",
+    "task": "reactivation",
+    "scenario": "omits_uncertainty",
+    "expectedAccepted": false,
+    "expectedReason": "same_brand_uncertainty"
+  },
+  {
+    "id": "reactivation-missing-relationship",
+    "task": "reactivation",
+    "scenario": "missing_relationship",
+    "expectedAccepted": false,
+    "expectedReason": "same_brand_relationship"
+  },
+  {
+    "id": "reactivation-asserts-product-continuity",
+    "task": "reactivation",
+    "scenario": "asserts_product_continuity",
+    "expectedAccepted": false,
+    "expectedReason": "same_brand_overclaim"
+  },
+  {
+    "id": "reactivation-asserts-buyer-continuity",
+    "task": "reactivation",
+    "scenario": "asserts_buyer_continuity",
+    "expectedAccepted": false,
+    "expectedReason": "same_brand_overclaim"
   }
 ]

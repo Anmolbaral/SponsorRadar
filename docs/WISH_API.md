@@ -1,20 +1,18 @@
 # The API I Wish Upriver Had
 
-## Verified sponsorship activations and reactivation scans
+Sponsor Radar needed two things the current API doesn't provide: a sponsorship
+record that says who paid whom, backed by evidence, and an async scan endpoint
+that runs the target-vs-peer comparison on Upriver's side.
 
-Sponsor Radar did not mainly need more prose. It needed one reusable primitive:
-an evidenced sponsorship activation with canonical brand, business unit,
-product line, paid-status, and coverage. On top of that primitive, Upriver
-could expose an asynchronous reactivation scan.
-
-The design below is a proposal. Freshness targets, unit economics, and source
-rights require Upriver owner confirmation.
+Everything below is a proposal. Freshness targets, pricing, and source rights
+need Upriver's confirmation.
 
 ## Resource model
 
 ### `SponsorshipActivation`
 
-An immutable observation, not a claim that a campaign is still active.
+One immutable observation: "this brand sponsored this video." Not a claim that
+a campaign is still running.
 
 ```json
 {
@@ -71,22 +69,20 @@ An immutable observation, not a claim that a campaign is still active.
 }
 ```
 
-Important semantics:
+Rules:
 
-- `confirmed_paid`, `brand_promotion`, `affiliate`, `organic`, and `unknown`
-  are distinct values.
+- `paid_status` separates confirmed paid deals from brand promotion, affiliate
+  links, organic mentions, and `unknown`.
 - `business_unit` and `product_line` may be `unknown`; they are never guessed
-  merely from a root domain.
-- Every inferred field carries evidence, confidence, observation time, and a
-  classifier/taxonomy version.
-- “No activation observed” is a coverage statement, never proof that a brand
-  stopped buying.
+  from a root domain.
+- Every inferred field carries its evidence, a confidence score, when it was
+  observed, and the classifier version that produced it.
+- "No activation observed" only says what was checked in the stated window. It
+  is never proof a brand stopped buying.
 
-## Endpoint sketch
+## Endpoints
 
-### Create a scan
-
-`POST /v1/sponsorship-opportunity-scans`
+### Create a scan — `POST /v1/sponsorship-opportunity-scans`
 
 ```json
 {
@@ -111,12 +107,9 @@ Important semantics:
 }
 ```
 
-Headers:
+Headers: `X-API-Key`, `Idempotency-Key`.
 
-- `X-API-Key: …`
-- `Idempotency-Key: …`
-
-Response: `202 Accepted`
+Response `202 Accepted`:
 
 ```json
 {
@@ -130,13 +123,11 @@ Response: `202 Accepted`
 }
 ```
 
-`quoted_credits` is illustrative contract shape, not a proposed price. Upriver
-should calculate it from cache state and return actual billed credits when the
-scan completes.
+`quoted_credits` is a quote, not a final price. Upriver computes it from what
+is already cached and reports the credits actually billed when the scan
+completes.
 
-### Read a scan
-
-`GET /v1/sponsorship-opportunity-scans/{scan_id}`
+### Read a scan — `GET /v1/sponsorship-opportunity-scans/{scan_id}`
 
 ```json
 {
@@ -183,129 +174,114 @@ scan completes.
 }
 ```
 
-The scan does **not** return a buyer, agency, budget, or `campaign_active`
-boolean unless a separately sourced resource supports it.
+The scan never returns a buyer, agency, budget, or "campaign active" flag
+unless a separately sourced record backs it.
 
-Suggested error semantics:
+Errors: `400` bad windows/limits · `404` creator not found · `409` idempotency
+key reused with different input · `422` ambiguous identity / unsupported
+platform / invalid cohort · `429` rate limit with `Retry-After` · `503` source
+coverage unavailable (returns safe partial results if any).
 
-- `400`: malformed windows or limits;
-- `404`: exact creator/channel not found;
-- `409`: idempotency key reused with different input;
-- `422`: ambiguous creator identity, unsupported platform, or invalid cohort;
-- `429`: rate limit with `Retry-After`;
-- `503`: source coverage unavailable, with safe partial results if any.
+## How Upriver would build it
 
-## Producer pipeline
+### Sources
 
-### Proposed sources
+1. Platform APIs, licensed data, or public content metadata — creator identity,
+   publish time, description, paid-promotion markers.
+2. Transcripts or ad-segment text where collection is permitted.
+3. Outbound links, following redirects within strict limits, to identify the
+   brand.
+4. Brand and product pages for product line and business unit.
+5. Upriver's existing creator graph, taxonomy, sponsor history, and manual
+   corrections.
+6. Human review of uncertain identity, payment, and product-continuity calls.
 
-1. Platform APIs, feeds, or licensed/public content metadata for creator
-   identity, publication time, description, and paid-promotion markers.
-2. Transcripts or ad-segment text where collection and use are permitted.
-3. Outbound links and bounded redirect resolution for brand identity.
-4. First-party brand and product pages for product family and business unit.
-5. Upriver's existing creator graph, category taxonomy, sponsor history, and
-   manual corrections.
-6. Human-review feedback on uncertain identity, compensation, and continuity.
-
-Source access, retention, and quoting rules must be reviewed per platform. The
-consumer build provides no evidence about Upriver's current licenses or
-internal ingestion architecture.
+Access, retention, and quoting rules need per-platform review; the consumer
+build reveals nothing about Upriver's current licenses or ingestion.
 
 ### Stages
 
-1. **Discover:** enqueue newly published content for tracked creators; retain a
-   per-source cursor and immutable observation time.
-2. **Extract:** identify sponsor mentions, disclosures, links, and candidate ad
-   segments. Store source evidence before classification.
-3. **Resolve identity:** expand safe redirects, normalize domains and aliases,
-   and map to a versioned canonical `brand_id`. Never fetch private-network
-   destinations.
-4. **Classify relationship:** separate paid status from placement format.
-   Low-confidence or conflicting evidence becomes `unknown`.
-5. **Resolve product graph:** map explicit product mentions and destination
-   pages to `product_line_id` and `business_unit_id`; retain candidate mappings
-   and evidence.
-6. **Build coverage:** record which creator, platform, and time window was
-   actually checked, including blocked, deleted, capped, and unavailable
-   sources.
-7. **Compute scan:** freeze the requested cohort, perform the temporal join,
-   apply continuity rules, and return 0–3 candidates plus exclusions.
-8. **Quality loop:** sample positives and unknowns for human review; version
-   labels, re-run affected joins, and expose corrections without rewriting the
-   original observation.
+1. **Discover** — watch tracked creators for new content; remember where each
+   source left off and when it was checked.
+2. **Extract** — find sponsor mentions, disclosures, links, and ad segments;
+   store the evidence before classifying it.
+3. **Resolve brand identity** — follow safe redirects, normalize domains and
+   aliases, map to a versioned `brand_id`. Never fetch private hosts.
+4. **Classify the relationship** — decide paid status separately from placement
+   format; weak or conflicting evidence becomes `unknown`, not a guess.
+5. **Map products** — link mentions and link destinations to a product line and
+   business unit, keeping the candidates and evidence.
+6. **Record coverage** — which creator, platform, and window was actually
+   checked, including blocked, deleted, or capped sources.
+7. **Run the scan** — freeze the peer set, compare the target's sponsor history
+   against recent peer activity, apply the continuity gate, return 0–3
+   candidates plus exclusions.
+8. **Review** — sample confirmed and uncertain results for human review;
+   version the labels so corrections re-run affected scans without rewriting
+   the original observation.
 
 ### Freshness targets
 
-These are design targets to validate, not observed Upriver SLAs.
+Design targets to validate, not observed SLAs.
 
-| Data | Proposed target | Rationale |
+| Data | Target | Why |
 | --- | --- | --- |
-| New sponsorship activation on priority channels | 6 hours p95 | Useful for a daily/weekly sales workflow without promising real-time detection. |
-| Long-tail channel refresh | 24 hours | Controls polling cost where urgency is lower. |
-| Creator reach/profile | Daily | Reach bands do not require per-minute updates. |
-| Redirect and product-line identity | On new link, then weekly | Destinations mutate less often but tracking links can expire. |
-| Coverage status | Every scan | Negative results are meaningful only with a current observed window. |
-| Classification/taxonomy changes | Versioned backfill | Prevent silent historical drift. |
+| New activation, priority channels | 6h p95 | Fits a daily/weekly sales workflow without promising real-time. |
+| Long-tail channel refresh | 24h | Caps polling cost where urgency is lower. |
+| Creator reach/profile | Daily | Reach bands don't need per-minute updates. |
+| Redirect / product identity | On new link, then weekly | Destinations change slowly, but links expire. |
+| Coverage status | Every scan | A negative result only means something with a current window. |
+| Classification changes | Versioned backfill | Prevents history changing silently. |
 
-### Cost model
+### Cost
 
-The dominant cost is likely content acquisition and enrichment, not the final
-join:
+The dominant cost is fetching and enriching content, not comparing it:
 
 ```text
-daily cost ≈
-  new content fetches
-  + transcript/ad extraction
-  + outbound-link resolution
-  + brand/product entity classification
-  + uncertain-item review
-  + storage and versioned backfills
+daily cost ≈ new content fetches + transcript/ad extraction
+           + outbound-link resolution + brand/product classification
+           + uncertain-item review + storage and versioned backfills
 ```
 
-The consumer evidence shows why shared computation matters: the broad pilot
-estimated about 983 Upriver credits for a clean rerun; the locked-cohort pilot
-estimated about 21 credits after reusing target history. Those are
-result-rate estimates, not producer infrastructure costs.
-
-Producer-side dollar cost per fetch, transcript minute, classifier call,
-redirect, stored evidence item, and human-review minute is unknown and requires
-owner confirmation. Before launch I would measure each term by source and
-channel tier, then price scans from incremental cache misses rather than
-charging every customer for the same creator history.
+Sharing that work is the point: the broad pilot estimated ~983 Upriver credits
+for a clean rerun, while the locked cohort reran at ~21 after reusing the
+target's history (result-rate estimates, not infra cost). I'd measure each cost
+term by source and channel tier before launch, then price scans from what is
+actually not yet cached rather than charging every customer for the same
+creator history.
 
 ## What breaks at 100×
 
-| Failure mode | Why it appears | Design response |
-| --- | --- | --- |
-| Platform blocking, quotas, or source-shape drift | Polling and backfills multiply; one markup change can erase coverage. | Source adapters, circuit breakers, per-source lag metrics, canaries, and explicit partial coverage. |
-| N-target × N-peer fan-out | Naive scans repeatedly fetch the same popular peers and histories. | Global activation store, cohort snapshots, shared cache, incremental joins, and bounded request limits. |
-| Brand identity merges and splits | Redirectors, resellers, short links, and conglomerate domains create false joins. | Versioned alias graph, evidence-backed merges, business-unit boundaries, and reversible corrections. |
-| Transcript/classifier spend | Extraction grows with content volume, including content with no sponsor. | Cheap disclosure/link prefilter, batch inference, tiered effort, and review only for uncertainty. |
-| Mutable or deleted evidence | Descriptions, redirects, and platform pages change after detection. | Immutable observed evidence, timestamps, content hashes, and retention policy. |
-| Hot-brand skew | A few brands and creators generate large join/update fan-out. | Partition by creator and brand, incremental materialized views, and backpressure. |
-| Model/taxonomy drift | A new classifier can change historical paid-status or continuity. | Version every classification, shadow-evaluate, and backfill selectively. |
-| Unsafe redirect fetching | Tracking URLs can target private or malicious hosts. | DNS/IP allow-deny checks, egress proxy, hop/size/time limits, and no credential forwarding. |
-| Quality-review bottleneck | Rare edge cases grow faster than a manual team. | Active-learning queues, uncertainty thresholds, customer correction signals, and sampled QA rather than universal review. |
+| Failure mode | Design response |
+| --- | --- |
+| Platforms block, throttle, or change markup, and coverage quietly shrinks | Per-source adapters with lag metrics and canary checks; report partial coverage explicitly. |
+| Many scans re-fetch the same popular peers | One shared activation store with frozen peer snapshots; scans reuse it instead of re-fetching. |
+| Brands merge, split, or hide behind link redirectors | A versioned alias graph; merges require evidence and can be reversed; business units stay separate. |
+| Transcript and classifier spend grows with all content | Cheap disclosure/link check first; run expensive models only on likely matches; review only what stays uncertain. |
+| Evidence gets edited or deleted after the fact | Store evidence immutably with timestamps and content hashes; set a retention policy. |
+| A few hot brands dominate the workload | Partition work by creator and brand; update scan results incrementally; shed load under pressure. |
+| New classifier versions rewrite history | Version every classification, compare new versions against old before switching, backfill selectively. |
+| Redirect fetching reaches private or malicious hosts | DNS/IP allow and deny lists, an egress proxy, hop/size/time limits, no credential forwarding. |
+| Human review becomes the bottleneck | Route only low-confidence items to review; accept customer corrections; sample the rest for QA. |
 
-## What I would cut for v0
+## What I'd cut for v0
 
 - YouTube only.
-- Exact target URL and up to three **client-supplied** peer URLs; no automatic
-  peer recommendation in the first contract.
-- Fixed 365-day target, 90-day peer, and 90-day staleness defaults with small
+- Exact target URL plus up to three client-supplied peer URLs; no automatic
+  peer recommendation yet.
+- Fixed 365-day target / 90-day peer / 90-day staleness defaults, with small
   bounded overrides.
-- Explicit public disclosure required for `confirmed_paid`; uncertainty returns
-  `unknown`.
-- Product-line continuity limited to same family or adjacent line in the same
-  business unit; otherwise exclude with a reason.
-- Maximum three results, asynchronous execution, one idempotent scan, and no
-  automatic retry after ambiguous paid work.
-- No buyer/contact enrichment, outreach generation, budget estimate, or active
-  campaign claim.
-- No cross-platform creator graph, free-text category scan, or exhaustive
-  historical backfill.
+- `confirmed_paid` requires explicit public disclosure; anything uncertain
+  returns `unknown`.
+- Continuity limited to the same product family or an adjacent line in the same
+  business unit; everything else is excluded with a reason.
+- Max three results, async, one idempotent scan, no automatic retry after
+  ambiguous paid work.
+- No buyer/contact enrichment, outreach, budget estimates, or active-campaign
+  claims.
+- No cross-platform graph, free-text category scan, or full historical
+  backfill.
 
-That v0 is narrower than Sponsor Radar's eventual product ambitions, but it
-would remove the manual identity and continuity work that consumed the most
-judgment in the build while preserving honest evidence and coverage.
+This v0 is narrower than Sponsor Radar's ambitions, but it removes the manual
+brand-identity and product-continuity work that consumed the most judgment in
+the build, while keeping evidence and coverage honest.

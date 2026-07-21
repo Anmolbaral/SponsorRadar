@@ -66,7 +66,7 @@ export class OpenAiResponsesLlmPort implements LlmPort {
     this.model = options.model?.trim() || "gpt-5.6-terra";
     if (!/^gpt-5\.6-(?:terra|sol)$/.test(this.model)) {
       throw new TypeError(
-        "Phase 4 OpenAI model must be gpt-5.6-terra or gpt-5.6-sol"
+        "Wording-agent OpenAI model must be gpt-5.6-terra or gpt-5.6-sol"
       );
     }
     const baseUrl = (options.baseUrl ?? "https://api.openai.com/v1").replace(

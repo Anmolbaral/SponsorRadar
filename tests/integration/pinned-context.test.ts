@@ -49,7 +49,7 @@ describe("pinned Upriver agent context", () => {
     );
 
     expect(bundle.manifestId).toBe(
-      "sponsor-radar-phase4-context-v1"
+      "sponsor-radar-wording-context-v1"
     );
     expect(bundle.totalContextBytes).toBe(5621);
     expect(

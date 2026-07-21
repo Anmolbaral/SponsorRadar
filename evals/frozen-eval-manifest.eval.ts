@@ -7,7 +7,7 @@ import { z } from "zod";
 const ManifestSchema = z
   .object({
     schema_version: z.literal(1),
-    eval_set_id: z.literal("sponsor-radar-phase4-frozen-v1"),
+    eval_set_id: z.literal("sponsor-radar-agent-safety-frozen-v1"),
     frozen_at: z.iso.date(),
     hash_algorithm: z.literal("sha256"),
     files: z
@@ -35,12 +35,12 @@ const ManifestSchema = z
   })
   .strict();
 
-describe("Phase 4 frozen eval manifest", () => {
+describe("frozen eval manifest", () => {
   it("matches every reviewed case file byte-for-byte", async () => {
     const manifest = ManifestSchema.parse(
       JSON.parse(
         await readFile(
-          path.join(process.cwd(), "evals/phase4-manifest.json"),
+          path.join(process.cwd(), "evals/frozen-eval-manifest.json"),
           "utf8"
         )
       ) as unknown

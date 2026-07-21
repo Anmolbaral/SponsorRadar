@@ -9,12 +9,12 @@ export type AuditActor =
   | "llm";
 
 export type AuditPhase =
-  | "phase_1_fixture"
-  | "phase_2_live"
-  | "phase_3_fixture"
-  | "phase_3_live"
-  | "phase_4_fixture"
-  | "phase_4_live";
+  | "report_fixture"
+  | "report_live"
+  | "workflow_fixture"
+  | "workflow_live"
+  | "workflow_wording_fixture"
+  | "workflow_wording_live";
 export type AuditMode = "fixture" | "live";
 export type CreditReconciliationStatus =
   | "not_applicable"
@@ -61,6 +61,7 @@ export interface AuditEvent {
     providerRequestId: string | null;
     outcome?: "success" | "failure";
     errorType?: string;
+    httpStatus?: number;
   };
   skill?: {
     name: string;
@@ -260,7 +261,7 @@ export class AuditRecorder {
   constructor(options: AuditRecorderOptions = {}) {
     this.runId = options.runId ?? randomUUID();
     this.clock = options.clock ?? Date.now;
-    this.phase = options.phase ?? "phase_1_fixture";
+    this.phase = options.phase ?? "report_fixture";
     this.mode = options.mode ?? "fixture";
     this.sink = options.sink;
   }
@@ -538,7 +539,15 @@ export class AuditRecorder {
           : {
               ...completedTool,
               outcome: "failure",
-              errorType: event.code
+              errorType: event.code,
+              // Preserve the upstream HTTP status (e.g. 503) that otherwise
+              // gets collapsed into the generic errorType. Same 100-599 guard
+              // as the LLM audit path.
+              ...(Number.isInteger(event.status) &&
+              (event.status ?? 0) >= 100 &&
+              (event.status ?? 0) <= 599
+                ? { httpStatus: event.status as number }
+                : {})
             }
     });
   }
