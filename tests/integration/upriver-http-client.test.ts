@@ -123,6 +123,98 @@ describe("UpriverHttpClient", () => {
     }
   );
 
+  it("treats HTTP 404 as terminal not_found and keeps the structured provider detail", async () => {
+    const fetch = queuedFetch([
+      jsonResponse(
+        {
+          detail: {
+            code: "channel_not_found",
+            message: "The requested channel was not found."
+          }
+        },
+        404,
+        { "x-request-id": "provider-404" }
+      )
+    ]);
+    const client = new UpriverHttpClient({
+      apiKey: "server-secret",
+      fetch: fetch.run,
+      requestId: () => "local-404"
+    });
+
+    const error = await captureError(() =>
+      client.request({
+        method: "GET",
+        path: "/v1/creators/resolve",
+        validate: (input) => input
+      })
+    );
+
+    expect(error).toBeInstanceOf(UpriverHttpError);
+    expect(error).toMatchObject({
+      code: "not_found",
+      status: 404,
+      providerCode: "channel_not_found",
+      providerMessage: "The requested channel was not found."
+    });
+    expect(fetch.calls).toHaveLength(1);
+    expect(JSON.stringify(error)).not.toContain("server-secret");
+  });
+
+  it("abandons oversized error bodies instead of buffering them", async () => {
+    const hugeMessage = "x".repeat(64_000);
+    const fetch = queuedFetch([
+      jsonResponse(
+        { detail: { code: "channel_not_found", message: hugeMessage } },
+        404
+      )
+    ]);
+    const client = new UpriverHttpClient({
+      apiKey: "server-secret",
+      fetch: fetch.run
+    });
+    const error = await captureError(() =>
+      client.request({
+        method: "GET",
+        path: "/v1/creators/resolve",
+        validate: (input) => input
+      })
+    );
+    expect(error).toMatchObject({
+      code: "not_found",
+      providerCode: null,
+      providerMessage: null
+    });
+  });
+
+  it("redacts unstructured 404 details and non-slug provider codes", async () => {
+    for (const detail of [
+      "free text server-secret",
+      [{ msg: "loc-style server-secret" }],
+      { code: "spaced out code", message: "server-secret echoed" }
+    ]) {
+      const fetch = queuedFetch([jsonResponse({ detail }, 404)]);
+      const client = new UpriverHttpClient({
+        apiKey: "server-secret",
+        fetch: fetch.run
+      });
+      const error = await captureError(() =>
+        client.request({
+          method: "GET",
+          path: "/v1/creators/resolve",
+          validate: (input) => input
+        })
+      );
+      expect(error).toBeInstanceOf(UpriverHttpError);
+      expect(error).toMatchObject({
+        code: "not_found",
+        providerCode: null,
+        providerMessage: null
+      });
+      expect(JSON.stringify(error)).not.toContain("server-secret");
+    }
+  });
+
   it("retries a network failure and 5xx at most twice with bounded exponential backoff", async () => {
     const time = controlledTime(0);
     const fetch = queuedFetch([

@@ -1,8 +1,12 @@
 import { randomUUID } from "node:crypto";
+import { ApiErrorSchema } from "@/src/radar/adapters/upriver/contracts";
 
 export const UPRIVER_BASE_URL = "https://api.upriver.ai";
 
 const TERMINAL_STATUS_CODES = new Set([400, 401, 403]);
+const MAX_ERROR_BODY_LENGTH = 16_384;
+const MAX_PROVIDER_CODE_LENGTH = 64;
+const MAX_PROVIDER_MESSAGE_LENGTH = 300;
 
 export type UpriverFetch = (
   input: RequestInfo | URL,
@@ -62,12 +66,19 @@ export type UpriverErrorCode =
   | "bad_request"
   | "authentication_failed"
   | "permission_denied"
+  | "not_found"
   | "rate_limited"
   | "upstream_error"
   | "http_error"
   | "network_failure"
   | "timeout"
   | "invalid_response";
+
+/** Upriver's own error code/message, bounded; the rest of the body is dropped. */
+export interface UpriverProviderErrorDetail {
+  providerCode: string | null;
+  providerMessage: string | null;
+}
 
 interface UpriverLifecycleIdentity {
   method: "GET" | "POST";
@@ -109,19 +120,24 @@ export interface UpriverTimer {
 }
 
 /**
- * Deliberately contains no request headers, response body, URL query, or raw
- * network error. It is safe to send to application logs.
+ * Safe to log: carries no raw payload, headers, or query — only the
+ * provider's error code/message as bounded, sanitized strings.
  */
 export class UpriverHttpError extends Error {
   readonly name = "UpriverHttpError";
+  readonly providerCode: string | null;
+  readonly providerMessage: string | null;
 
   constructor(
     message: string,
     readonly code: UpriverErrorCode,
     readonly status: number | null,
-    readonly meta: UpriverRequestMetadata
+    readonly meta: UpriverRequestMetadata,
+    providerDetail?: UpriverProviderErrorDetail
   ) {
     super(message);
+    this.providerCode = providerDetail?.providerCode ?? null;
+    this.providerMessage = providerDetail?.providerMessage ?? null;
   }
 
   toJSON(): {
@@ -129,6 +145,8 @@ export class UpriverHttpError extends Error {
     message: string;
     code: UpriverErrorCode;
     status: number | null;
+    providerCode: string | null;
+    providerMessage: string | null;
     meta: UpriverRequestMetadata;
   } {
     return {
@@ -136,6 +154,8 @@ export class UpriverHttpError extends Error {
       message: this.message,
       code: this.code,
       status: this.status,
+      providerCode: this.providerCode,
+      providerMessage: this.providerMessage,
       meta: this.meta
     };
   }
@@ -435,6 +455,15 @@ export class UpriverHttpClient {
         };
       }
 
+      const willRetry =
+        !TERMINAL_STATUS_CODES.has(response.status) &&
+        (response.status === 429 || response.status >= 500) &&
+        attempt <= this.maxRetries;
+      // Read before clearing the attempt timer so a stalled error body is
+      // still bounded by the same abort controller as the request itself.
+      const providerDetail = willRetry
+        ? NO_PROVIDER_DETAIL
+        : await readProviderErrorDetail(response);
       this.clearTimer(timeoutHandle);
       const latencyMs = elapsed(attemptStartedAt, this.now());
       const errorAttempt: UpriverAttemptMetadata = {
@@ -446,11 +475,7 @@ export class UpriverHttpClient {
         providerRequestId
       };
 
-      if (
-        !TERMINAL_STATUS_CODES.has(response.status) &&
-        (response.status === 429 || response.status >= 500) &&
-        attempt <= this.maxRetries
-      ) {
+      if (willRetry) {
         errorAttempt.retryDelayMs =
           response.status === 429
             ? this.retryAfterOrBackoff(response.headers, attempt)
@@ -467,7 +492,8 @@ export class UpriverHttpClient {
         response.status,
         requestId,
         requestStartedAt,
-        attempts
+        attempts,
+        providerDetail
       );
     }
 
@@ -748,13 +774,15 @@ export class UpriverHttpClient {
     status: number | null,
     requestId: string,
     startedAt: number,
-    attempts: readonly UpriverAttemptMetadata[]
+    attempts: readonly UpriverAttemptMetadata[],
+    providerDetail?: UpriverProviderErrorDetail
   ): UpriverHttpError {
     return new UpriverHttpError(
       message,
       code,
       status,
-      this.metadata(requestId, startedAt, attempts)
+      this.metadata(requestId, startedAt, attempts),
+      providerDetail
     );
   }
 
@@ -853,6 +881,7 @@ function errorCodeForStatus(status: number): UpriverErrorCode {
   if (status === 400) return "bad_request";
   if (status === 401) return "authentication_failed";
   if (status === 403) return "permission_denied";
+  if (status === 404) return "not_found";
   if (status === 429) return "rate_limited";
   if (status >= 500) return "upstream_error";
   return "http_error";
@@ -862,10 +891,107 @@ function safeHttpMessage(status: number): string {
   if (status === 400) return "Upriver rejected the request";
   if (status === 401) return "Upriver authentication failed";
   if (status === 403) return "Upriver permission was denied";
+  if (status === 404) return "Upriver could not find the requested resource";
   if (status === 429) return "Upriver rate limit was reached";
   if (status >= 500) return "Upriver remained unavailable after retrying";
   return `Upriver request failed with HTTP ${status}`;
 }
+
+const NO_PROVIDER_DETAIL: UpriverProviderErrorDetail = {
+  providerCode: null,
+  providerMessage: null
+};
+
+/**
+ * Extracts only the structured `{detail: {code, message}}` form; free-text
+ * and array details stay redacted (they can echo request content). Never
+ * throws: an unreadable error body must not mask the HTTP failure.
+ */
+async function readProviderErrorDetail(
+  response: Response
+): Promise<UpriverProviderErrorDetail> {
+  try {
+    const body = await readBoundedBody(response, MAX_ERROR_BODY_LENGTH);
+    if (body === null || body.length === 0) {
+      return NO_PROVIDER_DETAIL;
+    }
+    const parsed = ApiErrorSchema.safeParse(JSON.parse(body));
+    if (!parsed.success) {
+      return NO_PROVIDER_DETAIL;
+    }
+    const detail = parsed.data.detail;
+    if (typeof detail === "string" || Array.isArray(detail)) {
+      return NO_PROVIDER_DETAIL;
+    }
+    const providerCode =
+      typeof detail.code === "string" && PROVIDER_CODE_PATTERN.test(detail.code)
+        ? detail.code
+        : null;
+    if (providerCode === null) {
+      return NO_PROVIDER_DETAIL;
+    }
+    return {
+      providerCode,
+      providerMessage:
+        typeof detail.message === "string"
+          ? boundedErrorText(detail.message, MAX_PROVIDER_MESSAGE_LENGTH)
+          : null
+    };
+  } catch {
+    return NO_PROVIDER_DETAIL;
+  }
+}
+
+/** Caps the read itself: an oversized body is abandoned, never buffered. */
+async function readBoundedBody(
+  response: Response,
+  maximumBytes: number
+): Promise<string | null> {
+  const declaredLength = Number(response.headers.get("content-length") ?? "");
+  if (Number.isFinite(declaredLength) && declaredLength > maximumBytes) {
+    return null;
+  }
+  if (!response.body) {
+    const text = await response.text();
+    return text.length > maximumBytes ? null : text;
+  }
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maximumBytes) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+const PROVIDER_CODE_PATTERN = new RegExp(
+  `^[a-zA-Z0-9_.-]{1,${MAX_PROVIDER_CODE_LENGTH}}$`
+);
+
+function boundedErrorText(value: string, maximumLength: number): string | null {
+  const stripped = value
+    .replace(SANITIZED_CHARACTERS_PATTERN, " ")
+    .trim()
+    .slice(0, maximumLength);
+  return stripped.length === 0 ? null : stripped;
+}
+
+/** All C0 controls (tab/LF/CR included), DEL, and bidi override characters. */
+const SANITIZED_CHARACTERS_PATTERN = new RegExp(
+  "[\\u0000-\\u001F\\u007F\\u200E\\u200F\\u202A-\\u202E\\u2066-\\u2069]",
+  "g"
+);
 
 function elapsed(startedAt: number, endedAt: number): number {
   return Math.max(0, endedAt - startedAt);

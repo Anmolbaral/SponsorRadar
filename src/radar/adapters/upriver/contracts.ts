@@ -5,6 +5,12 @@ export const ApiErrorSchema = z
   .object({
     detail: z.union([
       z.string(),
+      z
+        .object({
+          code: z.string().optional(),
+          message: z.string().optional()
+        })
+        .passthrough(),
       z.array(
         z
           .object({

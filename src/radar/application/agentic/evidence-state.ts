@@ -56,9 +56,31 @@ export class AgentEvidenceState {
   private readonly failedPeerRefs = new Set<string>();
   private targetSponsors: NormalizedSponsorEvidenceResult | null = null;
   private readonly analyses = new Map<string, AgentAnalysis>();
+  private channelNotFoundMessage: string | null = null;
 
   get resolved(): ResolvedTarget | null {
     return this.resolvedTarget;
+  }
+
+  /** Set only from a typed provider not-found failure, never by the model. */
+  get channelNotFound(): string | null {
+    return this.channelNotFoundMessage;
+  }
+
+  recordChannelNotFound(providerMessage: string | null): void {
+    if (this.resolvedTarget !== null) {
+      return;
+    }
+    this.channelNotFoundMessage =
+      providerMessage ?? "The requested channel was not found.";
+  }
+
+  requireChannelNotFound(): void {
+    if (this.channelNotFoundMessage === null) {
+      throw new AgentEvidencePreconditionError(
+        "The channel_not_found outcome is only valid after resolve_target reported the channel does not exist"
+      );
+    }
   }
 
   get peers(): readonly AgentPeer[] | null {
@@ -101,6 +123,7 @@ export class AgentEvidenceState {
 
   recordResolvedTarget(resolved: ResolvedTarget): void {
     this.resolvedTarget = resolved;
+    this.channelNotFoundMessage = null;
   }
 
   recordLockedPeers(peers: readonly LockedPeer[]): readonly AgentPeer[] {

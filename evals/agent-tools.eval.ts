@@ -86,7 +86,8 @@ describe("agent tool capability contracts", () => {
       audit,
       state: new AgentEvidenceState(),
       phase: "workflow_fixture",
-      now: () => Date.parse("2026-07-22T00:00:00.000Z")
+      now: () => Date.parse("2026-07-22T00:00:00.000Z"),
+      requestedChannel: "@UrAvgConsumer"
     });
 
     const journey: Array<{ tool: string; args: Record<string, unknown> }> = [
@@ -141,7 +142,8 @@ describe("agent tool capability contracts", () => {
       audit,
       state: new AgentEvidenceState(),
       phase: "workflow_fixture",
-      now: Date.now
+      now: Date.now,
+      requestedChannel: "@UrAvgConsumer"
     });
 
     const failureProbes: Array<{

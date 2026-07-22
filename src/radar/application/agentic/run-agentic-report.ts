@@ -80,7 +80,8 @@ export function composeAgenticRun(
     audit,
     state,
     phase,
-    now
+    now,
+    requestedChannel: input.channel
   });
 
   return {

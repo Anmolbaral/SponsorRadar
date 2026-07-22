@@ -10,6 +10,7 @@ import {
 } from "@/src/radar/adapters/upriver/contracts";
 import {
   UpriverHttpClient,
+  UpriverHttpError,
   type CursorPaginationStopReason
 } from "@/src/radar/adapters/upriver/http-client";
 import {
@@ -158,19 +159,24 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
       "resolve_target",
       "Resolve the exact requested YouTube creator"
     );
-    const response = await this.client.request({
-      method: "POST",
-      path: TOOL_REGISTRY.resolve_target.upriverEndpoint,
-      body: { urls: [requested.lookupUrl] },
-      audit: {
-        operation: auditToolName("live", "resolve_target"),
-        reason: "Confirm the exact requested YouTube channel before research",
-        estimatedCredits: this.estimateCredits("resolve_target"),
-        creditsPerResult: UPRIVER_CREDIT_RATES.creatorResult,
-        resultRows: (data) => data.results.length
-      },
-      validate: CreatorBatchResponseWireSchema.parse
-    });
+    let response;
+    try {
+      response = await this.client.request({
+        method: "POST",
+        path: TOOL_REGISTRY.resolve_target.upriverEndpoint,
+        body: { urls: [requested.lookupUrl] },
+        audit: {
+          operation: auditToolName("live", "resolve_target"),
+          reason: "Confirm the exact requested YouTube channel before research",
+          estimatedCredits: this.estimateCredits("resolve_target"),
+          creditsPerResult: UPRIVER_CREDIT_RATES.creatorResult,
+          resultRows: (data) => data.results.length
+        },
+        validate: CreatorBatchResponseWireSchema.parse
+      });
+    } catch (error) {
+      throw await this.disambiguateResolveFailure(error, requested.lookupUrl);
+    }
     this.budget.reconcile(
       allocation,
       response.data.results.length * UPRIVER_CREDIT_RATES.creatorResult
@@ -453,6 +459,65 @@ export class LiveUpriverGateway implements SponsorRadarEvidencePort {
       throw new UpriverCreditPreflightError(decision.reason);
     }
     return decision.allocationId;
+  }
+
+  /**
+   * The batch resolve endpoint reports a nonexistent channel as a 5xx, while
+   * /v1/creators/similar reports it as a structured channel_not_found 404.
+   * After a batch 5xx, one bounded probe disambiguates; anything but a clear
+   * not-found verdict rethrows the original error unchanged.
+   */
+  private async disambiguateResolveFailure(
+    batchError: unknown,
+    lookupUrl: string
+  ): Promise<unknown> {
+    if (
+      !(batchError instanceof UpriverHttpError) ||
+      batchError.status === null ||
+      batchError.status < 500
+    ) {
+      return batchError;
+    }
+    try {
+      const reason =
+        "Disambiguate a failed resolve: probe whether the channel exists";
+      const allocation = this.reserve("resolve_target", reason);
+      const validateProbe = (input: unknown): { results?: unknown[] } =>
+        input as { results?: unknown[] };
+      const probe = await this.client.request({
+        method: "POST",
+        path: "/v1/creators/similar",
+        body: {
+          channel_url: lookupUrl,
+          limit: 1,
+          platforms: ["youtube"],
+          min_followers: 1_000,
+          max_followers: 100_000
+        },
+        audit: {
+          operation: auditToolName("live", "resolve_target"),
+          reason,
+          estimatedCredits: this.estimateCredits("resolve_target"),
+          creditsPerResult: UPRIVER_CREDIT_RATES.creatorResult,
+          resultRows: (data) => data.results?.length ?? 0
+        },
+        validate: validateProbe
+      });
+      this.budget.reconcile(
+        allocation,
+        (probe.data.results?.length ?? 0) * UPRIVER_CREDIT_RATES.creatorResult
+      );
+      return batchError;
+    } catch (probeError) {
+      if (
+        probeError instanceof UpriverHttpError &&
+        probeError.code === "not_found" &&
+        probeError.providerCode === "channel_not_found"
+      ) {
+        return probeError;
+      }
+      return batchError;
+    }
   }
 }
 

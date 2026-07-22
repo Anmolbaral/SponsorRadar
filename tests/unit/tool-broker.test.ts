@@ -2,9 +2,15 @@ import { describe, expect, it } from "vitest";
 import type { AgentToolCall } from "@/src/agent/llm/agent-llm-port";
 import { AuditRecorder } from "@/src/observability/audit";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
+import {
+  UpriverHttpError,
+  type UpriverErrorCode,
+  type UpriverProviderErrorDetail
+} from "@/src/radar/adapters/upriver/http-client";
 import type { SponsorRadarEvidencePort } from "@/src/radar/application/ports";
 import { AgentEvidenceState } from "@/src/radar/application/agentic/evidence-state";
 import {
+  AgentChannelNotFoundError,
   AgentToolBroker,
   type ToolDispatchOutcome
 } from "@/src/radar/application/agentic/tool-broker";
@@ -44,7 +50,8 @@ function fixtureBroker(maximumCredits = 160): {
     audit,
     state,
     phase: "workflow_fixture",
-    now: () => Date.parse("2026-07-22T00:00:00.000Z")
+    now: () => Date.parse("2026-07-22T00:00:00.000Z"),
+    requestedChannel: "@UrAvgConsumer"
   });
   return { broker, state, audit, budget };
 }
@@ -100,7 +107,8 @@ describe("AgentToolBroker", () => {
       audit,
       state: new AgentEvidenceState(),
       phase: "workflow_live",
-      now: Date.now
+      now: Date.now,
+      requestedChannel: "@Whatever"
     });
 
     const outcome = await broker.dispatch(
@@ -185,4 +193,133 @@ describe("AgentToolBroker", () => {
     expect(outcome.isError).toBe(true);
     expect(parseEnvelope(outcome).code).toBe("missing_prerequisite");
   });
+
+  it("turns a provider not_found into a channel_not_found envelope and records the fact", async () => {
+    const { broker, state } = failingResolveBroker("not_found", 404, {
+      providerCode: "channel_not_found",
+      providerMessage: "The requested channel was not found."
+    });
+
+    const outcome = await broker.dispatch(
+      toolCall("resolve_target", { channel: "@NoSuchChannel" })
+    );
+
+    expect(outcome.isError).toBe(true);
+    const envelope = parseEnvelope(outcome);
+    expect(envelope.code).toBe("channel_not_found");
+    expect(envelope.providerCode).toBe("channel_not_found");
+    expect(envelope.providerMessage).toBe(
+      "The requested channel was not found."
+    );
+    expect(envelope.retryable).toBe(false);
+    expect(state.channelNotFound).toBe("The requested channel was not found.");
+  });
+
+  it("does not record a not-found verdict for a channel other than the requested one", async () => {
+    const { broker, state } = failingResolveBroker("not_found", 404, {
+      providerCode: "channel_not_found",
+      providerMessage: "The requested channel was not found."
+    });
+
+    const outcome = await broker.dispatch(
+      toolCall("resolve_target", { channel: "@SomeOtherChannel" })
+    );
+
+    expect(outcome.isError).toBe(true);
+    expect(parseEnvelope(outcome).code).toBe("tool_failed");
+    expect(state.channelNotFound).toBeNull();
+  });
+
+  it("terminates via AgentChannelNotFoundError only after the recorded provider verdict", async () => {
+    const { broker } = failingResolveBroker("not_found", 404, {
+      providerCode: "channel_not_found",
+      providerMessage: "The requested channel was not found."
+    });
+    await broker.dispatch(toolCall("resolve_target", { channel: "@NoSuchChannel" }));
+
+    await expect(
+      broker.dispatch(toolCall("submit_report", { outcome: "channel_not_found" }))
+    ).rejects.toThrowError(AgentChannelNotFoundError);
+  });
+
+  it("refuses the channel_not_found outcome when the provider never said so", async () => {
+    const { broker } = fixtureBroker();
+    const outcome = await broker.dispatch(
+      toolCall("submit_report", { outcome: "channel_not_found" })
+    );
+    expect(outcome.isError).toBe(true);
+    expect(parseEnvelope(outcome).code).toBe("missing_prerequisite");
+  });
+
+  it("refuses submit_report with both analysisRef and outcome, or neither", async () => {
+    const { broker } = fixtureBroker();
+    const both = await broker.dispatch(
+      toolCall("submit_report", {
+        analysisRef: "analysis_1",
+        outcome: "channel_not_found"
+      })
+    );
+    expect(parseEnvelope(both).code).toBe("invalid_arguments");
+
+    const neither = await broker.dispatch(toolCall("submit_report", {}));
+    expect(parseEnvelope(neither).code).toBe("invalid_arguments");
+  });
+
+  it("marks transient provider failures retryable and terminal ones not", async () => {
+    const transient = await failingResolveBroker("upstream_error", 503)
+      .broker.dispatch(toolCall("resolve_target", { channel: "@Whatever" }));
+    const transientEnvelope = parseEnvelope(transient);
+    expect(transientEnvelope.code).toBe("tool_failed");
+    expect(transientEnvelope.retryable).toBe(true);
+    expect(transientEnvelope.errorType).toBe("upstream_error");
+
+    const terminal = await failingResolveBroker("bad_request", 400)
+      .broker.dispatch(toolCall("resolve_target", { channel: "@Whatever" }));
+    const terminalEnvelope = parseEnvelope(terminal);
+    expect(terminalEnvelope.code).toBe("tool_failed");
+    expect(terminalEnvelope.retryable).toBe(false);
+  });
 });
+
+function failingResolveBroker(
+  code: UpriverErrorCode,
+  status: number,
+  providerDetail?: UpriverProviderErrorDetail
+): { broker: AgentToolBroker; state: AgentEvidenceState } {
+  const error = new UpriverHttpError(
+    "Upriver request failed",
+    code,
+    status,
+    {
+      requestId: "test-request",
+      providerRequestId: null,
+      latencyMs: 1,
+      attempts: []
+    },
+    providerDetail
+  );
+  const port: SponsorRadarEvidencePort = {
+    mode: "live",
+    estimateCredits: () => 1,
+    estimateRunCredits: () => 156,
+    resolveTarget: () => Promise.reject(error),
+    listTargetSponsors: () => Promise.reject(new Error("must not be called")),
+    listLockedPeers: () => Promise.reject(new Error("must not be called")),
+    listPeerSponsors: () => Promise.reject(new Error("must not be called")),
+    loadVerificationLedger: () =>
+      Promise.reject(new Error("must not be called"))
+  };
+  const audit = new AuditRecorder({ phase: "workflow_live", mode: "live" });
+  const state = new AgentEvidenceState();
+  const broker = new AgentToolBroker({
+    executor: new EvidenceToolExecutor({ port, audit, stage: "report" }),
+    port,
+    budget: new CreditBudget(160),
+    audit,
+    state,
+    phase: "workflow_live",
+    now: Date.now,
+    requestedChannel: "@NoSuchChannel"
+  });
+  return { broker, state };
+}

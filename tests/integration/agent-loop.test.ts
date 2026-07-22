@@ -7,6 +7,7 @@ import {
 } from "@/src/agent/llm/fixture-agent-llm";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import type { NormalizedSponsorEvidenceResult } from "@/src/radar/adapters/upriver/normalize";
+import { UpriverHttpError } from "@/src/radar/adapters/upriver/http-client";
 import type { SponsorRadarEvidencePort } from "@/src/radar/application/ports";
 import {
   AgentDidNotFinalizeError,
@@ -137,6 +138,52 @@ describe("agent loop against the fixture cohort", () => {
         llm
       )
     ).rejects.toThrow(AgentDidNotFinalizeError);
+  });
+
+  it("ends in two turns via the channel_not_found outcome when the provider says the channel does not exist", async () => {
+    const notFound = new UpriverHttpError(
+      "Upriver could not find the requested resource",
+      "not_found",
+      404,
+      {
+        requestId: "loop-not-found",
+        providerRequestId: null,
+        latencyMs: 1,
+        attempts: []
+      },
+      {
+        providerCode: "channel_not_found",
+        providerMessage: "The requested channel was not found."
+      }
+    );
+    const port: SponsorRadarEvidencePort = {
+      mode: "live",
+      estimateCredits: () => 1,
+      estimateRunCredits: () => 156,
+      resolveTarget: () => Promise.reject(notFound),
+      listTargetSponsors: () => Promise.reject(new Error("must not be called")),
+      listLockedPeers: () => Promise.reject(new Error("must not be called")),
+      listPeerSponsors: () => Promise.reject(new Error("must not be called")),
+      loadVerificationLedger: () =>
+        Promise.reject(new Error("must not be called"))
+    };
+    const llm = new FixtureAgentLlm([
+      {
+        respond: fixtureAssistantToolUse("resolve_target", {
+          channel: "@NoSuchChannel"
+        })
+      },
+      {
+        respond: fixtureAssistantToolUse("submit_report", {
+          outcome: "channel_not_found"
+        })
+      }
+    ]);
+
+    await expect(
+      runAgenticReport({ channel: "@NoSuchChannel" }, port, llm)
+    ).rejects.toThrowError("The requested channel was not found.");
+    expect(llm.consumedSteps).toBe(2);
   });
 
   it("fails closed on planner refusal", async () => {

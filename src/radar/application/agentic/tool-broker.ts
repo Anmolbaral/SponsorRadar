@@ -14,6 +14,7 @@ import {
 } from "@/src/radar/application/tools/tool-registry";
 import type { CreditBudget } from "@/src/radar/domain/credits";
 import { isReachComparable } from "@/src/radar/domain/reach";
+import { parseYouTubeChannelReference } from "@/src/radar/domain/youtube";
 import type { WinbackReport } from "@/src/radar/domain/types";
 import {
   AGENT_TOOL_CATALOG,
@@ -53,6 +54,41 @@ export class AgentRunFailedError extends Error {
   }
 }
 
+/**
+ * Graceful terminal: the provider said the channel doesn't exist and the
+ * server-held state recorded it — the model can cite it, never assert it.
+ * The message is fixed and reviewed; provider text never reaches persisted
+ * or user-facing surfaces.
+ */
+export class AgentChannelNotFoundError extends Error {
+  constructor() {
+    super("The requested channel was not found.");
+    this.name = "AgentChannelNotFoundError";
+  }
+}
+
+/** A not-found verdict may only be recorded for the run's requested channel. */
+function isSameChannelReference(proposed: string, requested: string): boolean {
+  try {
+    return (
+      parseYouTubeChannelReference(proposed).lookupUrl ===
+      parseYouTubeChannelReference(requested).lookupUrl
+    );
+  } catch {
+    return proposed.trim().toLowerCase() === requested.trim().toLowerCase();
+  }
+}
+
+/** Code decides retryability; unclassified failures never invite paid retries. */
+function isRetryableUpriverCode(code: UpriverHttpError["code"]): boolean {
+  return (
+    code === "rate_limited" ||
+    code === "timeout" ||
+    code === "network_failure" ||
+    code === "upstream_error"
+  );
+}
+
 export interface AgentToolBrokerOptions {
   executor: EvidenceToolExecutor;
   port: SponsorRadarEvidencePort;
@@ -61,6 +97,8 @@ export interface AgentToolBrokerOptions {
   state: AgentEvidenceState;
   phase: WinbackReport["phase"];
   now: () => number;
+  /** The user-requested channel; a not-found verdict only counts for it. */
+  requestedChannel: string;
 }
 
 /**
@@ -121,6 +159,29 @@ export class AgentToolBroker {
           record: (result) => {
             state.recordResolvedTarget(result);
             return projectResolvedTarget(result);
+          },
+          onFailure: (error) => {
+            if (
+              !(error instanceof UpriverHttpError) ||
+              error.code !== "not_found" ||
+              !isSameChannelReference(
+                args.channel,
+                this.options.requestedChannel
+              )
+            ) {
+              return null;
+            }
+            state.recordChannelNotFound(error.providerMessage);
+            if (state.channelNotFound === null) {
+              return null;
+            }
+            return this.errorEnvelope("channel_not_found", {
+              message:
+                "The provider reported that this channel does not exist. Do not research further; finish with submit_report using outcome \"channel_not_found\".",
+              providerCode: error.providerCode ?? "channel_not_found",
+              providerMessage: state.channelNotFound,
+              retryable: false
+            });
           }
         });
       case "list_locked_peers": {
@@ -210,7 +271,36 @@ export class AgentToolBroker {
             rows: analysis.qualification.leads.length
           };
         });
-      case "submit_report":
+      case "submit_report": {
+        if (args.analysisRef && args.outcome) {
+          return this.errorEnvelope("invalid_arguments", {
+            message:
+              "submit_report takes either analysisRef or outcome, not both"
+          });
+        }
+        if (args.outcome === "channel_not_found") {
+          state.requireChannelNotFound();
+          await this.options.audit.tool(
+            {
+              name: "local.submit_report",
+              reason:
+                "Terminate the run: the provider reported the channel was not found",
+              mode: "fixture",
+              input: { outcome: "channel_not_found" },
+              cacheStatus: "not_applicable",
+              estimatedCredits: 0
+            },
+            async () => ({}),
+            () => ({ rows: 0 })
+          );
+          throw new AgentChannelNotFoundError();
+        }
+        if (!args.analysisRef) {
+          return this.errorEnvelope("invalid_arguments", {
+            message:
+              "submit_report needs an analysisRef from analyze_evidence, or outcome \"channel_not_found\" after the provider reported the channel does not exist"
+          });
+        }
         return this.executeLocal("submit_report", () => {
           const report = state.assembleReport({
             analysisRef: args.analysisRef,
@@ -232,6 +322,7 @@ export class AgentToolBroker {
             terminal: { report }
           };
         });
+      }
     }
   }
 
@@ -300,10 +391,16 @@ export class AgentToolBroker {
           error
         );
       }
+      const upriver = error instanceof UpriverHttpError ? error : null;
+      const retryable = upriver ? isRetryableUpriverCode(upriver.code) : false;
       return this.errorEnvelope("tool_failed", {
-        message: `${name} failed and will not be retried`,
-        errorType:
-          error instanceof UpriverHttpError ? error.code : "internal"
+        message: retryable
+          ? `${name} failed with a transient provider error; you may propose it again or finish with what you have`
+          : `${name} failed and retrying the same call cannot succeed`,
+        errorType: upriver ? upriver.code : "internal",
+        providerCode: upriver?.providerCode ?? null,
+        providerMessage: upriver?.providerMessage ?? null,
+        retryable
       });
     }
   }

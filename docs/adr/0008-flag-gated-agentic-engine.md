@@ -67,6 +67,28 @@ controls below.
 - Operational drills: kill-mid-loop settles cleanly fail-closed; rollback
   leaves legacy runs unaffected and agentic runs 404-self-healing.
 
+## Amendment: provider error semantics and the not-found terminal (July 22, 2026)
+
+Live smokes showed a dead-end: an unresolvable channel produced only a
+status-derived generic error, so the planner burned its turns with no legal
+way to finish, and the failed run settled at the full ceiling. Three changes,
+all within the decisions above:
+
+1. The HTTP client extracts the provider's structured error `{code, message}`
+   verbatim (bounded, sanitized, slug-gated); free-text bodies stay redacted.
+   404 maps to a new `not_found` error code.
+2. Failure envelopes carry `providerCode`/`providerMessage` and a
+   code-decided `retryable` flag. `submit_report` accepts a
+   `channel_not_found` outcome, valid only when server state recorded that
+   provider verdict; it terminates the run as failed with the provider's
+   message, settled at actual spend.
+3. The batch resolve endpoint misreports nonexistent channels as 5xx, so
+   after a batch 5xx the live gateway makes one bounded probe to
+   `/v1/creators/similar` to disambiguate; any unclear probe outcome rethrows
+   the original error.
+
+Prompt and tool schema versions moved to `agent-loop-v2`/`agent-tools-v2`.
+
 ## Consequences
 
 Two engines are maintained until the parity gate passes; the cutover

@@ -5,6 +5,7 @@ import {
 } from "@/src/radar/adapters/upriver/live-evidence-gateway";
 import {
   UpriverHttpClient,
+  UpriverHttpError,
   type UpriverFetch,
   type UpriverLifecycleEvent
 } from "@/src/radar/adapters/upriver/http-client";
@@ -165,6 +166,70 @@ describe("dynamic live Upriver evidence gateway", () => {
         rows: 1,
         resultBasedCredits: 1
       }
+    });
+  });
+
+  it("disambiguates a batch 5xx into not_found when the similar probe reports channel_not_found", async () => {
+    const paths: string[] = [];
+    const fetch: UpriverFetch = async (input) => {
+      const pathname = new URL(String(input)).pathname;
+      paths.push(pathname);
+      if (pathname === "/v1/creators/batch") {
+        return new Response(
+          JSON.stringify({
+            detail: "Failed to process batch request. Please try again later."
+          }),
+          { status: 500, headers: { "content-type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({
+          detail: {
+            code: "channel_not_found",
+            message: "The requested channel was not found."
+          }
+        }),
+        { status: 404, headers: { "content-type": "application/json" } }
+      );
+    };
+    const gateway = createGateway(fetch);
+
+    const error = await gateway.resolveTarget("@NoSuchChannel").then(
+      () => {
+        throw new Error("resolveTarget should have rejected");
+      },
+      (caught: unknown) => caught
+    );
+
+    expect(error).toBeInstanceOf(UpriverHttpError);
+    expect(error).toMatchObject({
+      code: "not_found",
+      status: 404,
+      providerCode: "channel_not_found",
+      providerMessage: "The requested channel was not found."
+    });
+    expect(paths).toEqual(["/v1/creators/batch", "/v1/creators/similar"]);
+  });
+
+  it("keeps the original batch 5xx when the similar probe does not report channel_not_found", async () => {
+    const fetch: UpriverFetch = async (input) => {
+      const pathname = new URL(String(input)).pathname;
+      if (pathname === "/v1/creators/batch") {
+        return new Response(JSON.stringify({ detail: "boom" }), {
+          status: 503,
+          headers: { "content-type": "application/json" }
+        });
+      }
+      return new Response(JSON.stringify({ results: [] }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    };
+    const gateway = createGateway(fetch);
+
+    await expect(gateway.resolveTarget("@AnyChannel")).rejects.toMatchObject({
+      code: "upstream_error",
+      status: 503
     });
   });
 

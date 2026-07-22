@@ -27,6 +27,7 @@ import {
   composeAgenticRun,
   type ComposedAgenticRun
 } from "@/src/radar/application/agentic/run-agentic-report";
+import { AgentChannelNotFoundError } from "@/src/radar/application/agentic/tool-broker";
 import { AGENT_TRANSCRIPT_SCHEMA_VERSION } from "@/src/radar/application/agentic/transcript";
 
 export const AGENTIC_RUN_SCHEMA_VERSION = "agentic-v1";
@@ -281,7 +282,7 @@ export class AgenticWorkflowService implements RunEngine {
     try {
       const report = await composed.run();
       record = this.terminalRecord(record, composed, report);
-    } catch {
+    } catch (error) {
       record = {
         ...this.heartbeat(record, composed, record.budget.iterationsUsed),
         state: {
@@ -289,12 +290,19 @@ export class AgenticWorkflowService implements RunEngine {
           state: "failed",
           updatedAt: new Date(this.clock()).toISOString()
         },
-        error: {
-          code: "research_failed",
-          message:
-            "We couldn’t complete this research right now. Start a new search or try again later.",
-          retryable: false
-        },
+        error:
+          error instanceof AgentChannelNotFoundError
+            ? {
+                code: "channel_not_found",
+                message: error.message,
+                retryable: false
+              }
+            : {
+                code: "research_failed",
+                message:
+                  "We couldn’t complete this research right now. Start a new search or try again later.",
+                retryable: false
+              },
         auditEvents: composed.audit.getEvents() as AuditEvent[]
       };
     }
@@ -470,15 +478,19 @@ export class AgenticWorkflowService implements RunEngine {
     if (!record.reservationId) {
       return;
     }
+    // channel_not_found ends deterministically with known spend; only
+    // ambiguous failures settle conservatively at the full ceiling.
+    const conservative =
+      record.state.state === "failed" &&
+      record.error?.code !== "channel_not_found";
     await this.repository.finalizeQuotaReservation({
       quotaKey: `${AGENTIC_QUOTA_KEY_PREFIX}:${record.runId}`,
       reservationId: record.reservationId,
       idempotencyKey: `${record.runId}:terminal-settle`,
       outcome: "settled",
-      actualUnits:
-        record.state.state === "failed"
-          ? record.budget.maximumCredits
-          : record.budget.settledCredits
+      actualUnits: conservative
+        ? record.budget.maximumCredits
+        : record.budget.settledCredits
     });
   }
 

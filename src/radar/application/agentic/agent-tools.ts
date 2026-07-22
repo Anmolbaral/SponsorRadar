@@ -44,9 +44,29 @@ export const AGENT_TOOL_INPUT_SCHEMAS = {
   analyze_evidence: z.object({}).strict(),
   submit_report: z
     .object({
-      analysisRef: z.string().min(1).max(20)
+      analysisRef: z.string().min(1).max(20).nullish(),
+      outcome: z.literal("channel_not_found").nullish()
     })
     .strict()
+} as const;
+
+/**
+ * OpenAI strict function calling rejects optional properties: every key must
+ * be required and optionality expressed as null. The Zod schema above stays
+ * permissive so scripted planners may omit keys entirely.
+ */
+const SUBMIT_REPORT_WIRE_SCHEMA = {
+  type: "object",
+  properties: {
+    analysisRef: {
+      anyOf: [{ type: "string", minLength: 1, maxLength: 20 }, { type: "null" }]
+    },
+    outcome: {
+      anyOf: [{ type: "string", enum: ["channel_not_found"] }, { type: "null" }]
+    }
+  },
+  required: ["analysisRef", "outcome"],
+  additionalProperties: false
 } as const;
 
 export type AgentToolName = keyof typeof AGENT_TOOL_INPUT_SCHEMAS;
@@ -63,7 +83,7 @@ export const AGENT_TOOL_CATALOG: Record<AgentToolName, AgentToolCatalogEntry> =
       kind: "evidence",
       operation: "resolve_target",
       description:
-        "Resolve and verify the requested YouTube channel to an exact channel identity, and load the research windows (target window, peer window, stale cutoff). Must succeed before any other tool. Cost: 1 credit."
+        "Resolve and verify the requested YouTube channel to an exact channel identity, and load the research windows (target window, peer window, stale cutoff). Must succeed before any other tool. Cost: 1 credit. If it reports channel_not_found, finish immediately with submit_report outcome \"channel_not_found\"."
     },
     list_locked_peers: {
       kind: "evidence",
@@ -93,7 +113,7 @@ export const AGENT_TOOL_CATALOG: Record<AgentToolName, AgentToolCatalogEntry> =
       kind: "local",
       operation: null,
       description:
-        "Finalize the run by assembling the report from a completed analysis. This is the only way to finish. Free. Pass the analysisRef from analyze_evidence."
+        "Finalize the run; this is the only way to finish. Free. Pass the analysisRef from analyze_evidence to submit the report — or, only after resolve_target reported channel_not_found, pass outcome \"channel_not_found\" instead to end the run without a report."
     }
   };
 
@@ -101,9 +121,11 @@ export function agentToolDefinitions(): AgentToolDefinition[] {
   return (Object.keys(AGENT_TOOL_CATALOG) as AgentToolName[]).map((name) => ({
     name,
     description: AGENT_TOOL_CATALOG[name].description,
-    inputSchema: z.toJSONSchema(AGENT_TOOL_INPUT_SCHEMAS[name], {
-      target: "draft-2020-12"
-    }) as AgentToolDefinition["inputSchema"]
+    inputSchema: (name === "submit_report"
+      ? SUBMIT_REPORT_WIRE_SCHEMA
+      : z.toJSONSchema(AGENT_TOOL_INPUT_SCHEMAS[name], {
+          target: "draft-2020-12"
+        })) as AgentToolDefinition["inputSchema"]
   }));
 }
 
