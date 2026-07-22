@@ -8,7 +8,18 @@ import {
   type AgentMessage,
   type AgentToolCall
 } from "@/src/agent/llm/agent-llm-port";
-import { OpenAiLlmError } from "@/src/agent/llm/openai-responses-llm-port";
+export class OpenAiLlmError extends Error {
+  constructor(
+    message: string,
+    readonly status: number | null,
+    readonly providerRequestId: string | null = null,
+    readonly providerErrorType: string | null = null,
+    readonly providerErrorCode: string | null = null
+  ) {
+    super(message);
+    this.name = "OpenAiLlmError";
+  }
+}
 
 const UsageSchema = z
   .object({

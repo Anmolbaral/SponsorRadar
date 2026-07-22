@@ -1,6 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { WorkflowRunResource } from "@/src/radar/application/run-workflow";
 
+// Default journey (ADR 0008/0009): the autonomous engine finishes the whole
+// run inside the create request, so submission goes straight to the report.
+
 const savedRunIdKey = "sponsor-radar-run-id";
 const channelInputLabel = "Channel handle or URL";
 const submitButtonName = "Research channel";
@@ -92,44 +95,51 @@ test("rendered failures hide implementation vocabulary and diagnostics", async (
   expect(publicText).not.toContain("/Users/operator/.data/sponsor-radar");
 });
 
-test("one click returns and restores only the Dell XPS lead", async ({
+test("one click completes an autonomous run inline and restores only the Dell XPS lead", async ({
   page
 }) => {
-  const automaticActions: string[] = [];
-  let releasePlanResolution!: () => void;
-  const holdPlanResolution = new Promise<void>((resolve) => {
-    releasePlanResolution = resolve;
-  });
+  const actionRequests: string[] = [];
   page.on("request", (request) => {
-    if (!new URL(request.url()).pathname.endsWith("/actions")) return;
-    const body = request.postDataJSON() as { action?: string } | null;
-    if (body?.action) automaticActions.push(body.action);
-  });
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action === "approve_plan") {
-      await holdPlanResolution;
+    if (new URL(request.url()).pathname.endsWith("/actions")) {
+      actionRequests.push(request.method());
     }
-    await route.continue();
+  });
+  let releaseCreateResponse!: () => void;
+  const holdCreateResponse = new Promise<void>((resolve) => {
+    releaseCreateResponse = resolve;
+  });
+  await page.route("**/api/runs", async (route) => {
+    const response = await route.fetch();
+    await holdCreateResponse;
+    await route.fulfill({ response });
   });
 
   await page.goto("/");
   await enterFixtureChannel(page);
   await page.getByRole("button", { name: submitButtonName }).click();
+
+  // The whole run happens inside the create request: the intake stays busy
+  // and no approval, review, or cancel controls ever surface.
   await expect(
-    page.getByRole("heading", { name: "Researching winback opportunities" })
-  ).toBeVisible();
+    page.getByRole("button", { name: "Starting research…" })
+  ).toBeDisabled();
+  await expect(page.locator(".workflow-panel")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Cancel research" })
+  ).toHaveCount(0);
   await expectNoReviewUi(page);
-  releasePlanResolution();
+  releaseCreateResponse();
 
   await expectFixtureReport(page);
-  expect(automaticActions).toEqual(["approve_plan", "approve_execution"]);
+  expect(actionRequests).toEqual([]);
   await expectNoReviewUi(page);
 
   await expect(
     page.getByRole("heading", { name: "Dell", exact: true })
   ).toBeVisible();
-  await expect(page.getByText("Strong product match")).toBeVisible();
+  await expect(
+    page.getByText("Same sponsor · product unverified")
+  ).toBeVisible();
   await expect(page.getByText("1 opportunity")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Dave2D" })).toBeVisible();
   await expect(page.getByText(/sponsored Dave2D 33 days ago/)).toBeVisible();
@@ -179,58 +189,7 @@ test("one click returns and restores only the Dell XPS lead", async ({
         request.pathname === `/api/runs/${savedRunId}`
     )
   ).toBe(true);
-});
-
-test("an interrupted automatic step can be cancelled without sponsor research", async ({
-  page
-}) => {
-  const actions: string[] = [];
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action) actions.push(body.action);
-    if (body.action !== "approve_plan") {
-      await route.continue();
-      return;
-    }
-    await route.fulfill({
-      status: 503,
-      contentType: "application/json",
-      body: JSON.stringify({
-        error: "Channel resolution is temporarily unavailable",
-        code: "run_conflict",
-        retryable: true
-      })
-    });
-  });
-
-  await page.goto("/");
-  await enterFixtureChannel(page);
-  await page.getByRole("button", { name: submitButtonName }).click();
-
-  await expect(
-    page.getByRole("heading", { name: "We couldn’t continue this search" })
-  ).toBeVisible();
-  await expect(page.locator(".workflow-issue")).toContainText(
-    "This search changed while the page was open."
-  );
-  await expect(page.locator(".workspace > .error-panel")).toHaveCount(0);
-  await expect(page.getByText("Research in progress", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Research paused safely", { exact: true })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Try again" })).toBeEnabled();
-  await expectNoReviewUi(page);
-  await page.getByRole("button", { name: "Cancel research" }).click();
-
-  await expect(
-    page.getByRole("heading", { name: "Research cancelled" })
-  ).toBeVisible();
-  await expect(
-    page.getByText("Research was cancelled before more work started.")
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Dell", exact: true })
-  ).toHaveCount(0);
-  expect(actions).toEqual(["approve_plan", "cancel"]);
-  await expectNoReviewUi(page);
+  expect(actionRequests).toEqual([]);
 });
 
 test("a lost create response reuses the persisted idempotency key", async ({
@@ -255,7 +214,9 @@ test("a lost create response reuses the persisted idempotency key", async ({
   await page.goto("/");
   await enterFixtureChannel(page);
   await page.getByRole("button", { name: submitButtonName }).click();
-  await expect(page.locator(".form-error")).toBeVisible();
+  // The create request holds the connection for the whole inline run, so
+  // the aborted response can take longer than the default expect timeout.
+  await expect(page.locator(".form-error")).toBeVisible({ timeout: 20_000 });
 
   await page.reload();
   await expect(page.getByLabel(channelInputLabel)).toHaveValue(
@@ -339,9 +300,9 @@ test("arbitrary exact channels enter the one-click workflow without a review scr
     const body = route.request().postDataJSON() as { channel?: string };
     submittedChannel = body.channel;
 
-    // The local E2E server deliberately runs the deterministic fixture gateway.
-    // Rewrite only the server-side fixture input so this remains a zero-cost
-    // browser contract test for arbitrary-channel intake.
+    // The local E2E server runs the agentic fixture engine. Rewrite only the
+    // server-side fixture input so this remains a zero-cost browser contract
+    // test for arbitrary-channel intake.
     const response = await route.fetch({
       postData: JSON.stringify({ channel: "@UrAvgConsumer" })
     });
@@ -361,9 +322,9 @@ test("arbitrary exact channels enter the one-click workflow without a review scr
 test("a completed run with no qualified leads renders the explicit empty state", async ({
   page
 }) => {
-  await rewriteExecutionResponse(page, (completed) => {
+  await rewriteCompletedRunResponse(page, (completed) => {
     if (!completed.report) {
-      throw new Error("Expected the fixture execution to return a report");
+      throw new Error("Expected the fixture run to return a report");
     }
     return {
       ...completed,
@@ -394,9 +355,9 @@ test("a completed run with no qualified leads renders the explicit empty state",
 test("partial peer coverage remains visible while verified leads are preserved", async ({
   page
 }) => {
-  await rewriteExecutionResponse(page, (completed) => {
+  await rewriteCompletedRunResponse(page, (completed) => {
     if (!completed.report) {
-      throw new Error("Expected the fixture execution to return a report");
+      throw new Error("Expected the fixture run to return a report");
     }
     return {
       ...completed,
@@ -433,18 +394,13 @@ test("partial peer coverage remains visible while verified leads are preserved",
   await expect(page.getByText(/Sponsor research failed for Hayls World/)).toBeVisible();
 });
 
-test("request rate limiting stops automatic work and remains explicitly retryable", async ({
+test("request rate limiting stops research before it starts and remains explicitly retryable", async ({
   page
 }) => {
-  let executionAttempts = 0;
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action !== "approve_execution") {
-      await route.continue();
-      return;
-    }
-    executionAttempts += 1;
-    if (executionAttempts > 1) {
+  let createAttempts = 0;
+  await page.route("**/api/runs", async (route) => {
+    createAttempts += 1;
+    if (createAttempts > 1) {
       await route.continue();
       return;
     }
@@ -463,32 +419,35 @@ test("request rate limiting stops automatic work and remains explicitly retryabl
   await enterFixtureChannel(page);
   await page.getByRole("button", { name: submitButtonName }).click();
 
-  await expect(page.locator(".workflow-issue")).toContainText(
+  await expect(page.locator(".form-error")).toContainText(
     "Too many research requests were started at once."
   );
-  await expect(page.locator(".workspace > .error-panel")).toHaveCount(0);
+  await expect(page.locator(".form-error")).toContainText(
+    "Your request is saved. Try again when you’re ready."
+  );
+  await expect(page.locator(".workflow-panel")).toHaveCount(0);
   await page.waitForTimeout(300);
-  expect(executionAttempts).toBe(1);
+  expect(createAttempts).toBe(1);
+  await expect
+    .poll(() =>
+      page.evaluate((key) => window.localStorage.getItem(key), savedRunIdKey)
+    )
+    .toBeNull();
   await expectNoReviewUi(page);
   await expect(page.getByRole("button", { name: "Try again" })).toBeEnabled();
 
   await page.getByRole("button", { name: "Try again" }).click();
   await expectFixtureReport(page);
-  expect(executionAttempts).toBe(2);
+  expect(createAttempts).toBe(2);
   await expectNoReviewUi(page);
 });
 
 test("the per-run research limit is friendly and never offers a paid retry", async ({
   page
 }) => {
-  let planAttempts = 0;
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action !== "approve_plan") {
-      await route.continue();
-      return;
-    }
-    planAttempts += 1;
+  let createAttempts = 0;
+  await page.route("**/api/runs", async (route) => {
+    createAttempts += 1;
     await route.fulfill({
       status: 409,
       contentType: "application/json",
@@ -505,35 +464,32 @@ test("the per-run research limit is friendly and never offers a paid retry", asy
   await enterFixtureChannel(page);
   await page.getByRole("button", { name: submitButtonName }).click();
 
-  const panel = page.locator(".workflow-panel");
-  await expect(
-    panel.getByRole("heading", { name: "We couldn’t continue this search" })
-  ).toBeVisible();
-  await expect(panel).toContainText(
+  await expect(page.locator(".form-error")).toContainText(
     "This research reached its safety limit. Start a new search."
   );
-  await expect(panel).toContainText(
-    "No additional research was started after this issue."
-  );
   await expect(page.getByRole("button", { name: "Try again" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Back to search" })).toBeEnabled();
+  await expect(
+    page.getByRole("button", { name: submitButtonName })
+  ).toBeEnabled();
+  await expect(page.locator(".workflow-panel")).toHaveCount(0);
+  await expect(page.locator(".report")).toHaveCount(0);
   await page.waitForTimeout(300);
-  expect(planAttempts).toBe(1);
+  expect(createAttempts).toBe(1);
+  await expect
+    .poll(() =>
+      page.evaluate((key) => window.localStorage.getItem(key), savedRunIdKey)
+    )
+    .toBeNull();
 });
 
-test("a saved-capacity mismatch is safe, integrated, and not misleadingly retryable", async ({
+test("a saved-capacity mismatch is safe, sanitized, and not misleadingly retryable", async ({
   page
 }) => {
   const quotaHash =
     "5f4b7f44e6924ad88f4ca4e19efd7da904b4264a4564d299c14016fc74851760";
-  let planAttempts = 0;
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action !== "approve_plan") {
-      await route.continue();
-      return;
-    }
-    planAttempts += 1;
+  let createAttempts = 0;
+  await page.route("**/api/runs", async (route) => {
+    createAttempts += 1;
     await route.fulfill({
       status: 409,
       contentType: "application/json",
@@ -549,32 +505,27 @@ test("a saved-capacity mismatch is safe, integrated, and not misleadingly retrya
   await enterFixtureChannel(page);
   await page.getByRole("button", { name: submitButtonName }).click();
 
-  const panel = page.locator(".workflow-panel");
-  await expect(
-    panel.getByRole("heading", { name: "We couldn’t continue this search" })
-  ).toBeVisible();
-  await expect(panel.getByRole("alert")).toHaveCount(1);
-  await expect(panel).toContainText(
+  const formError = page.locator(".form-error");
+  await expect(formError).toContainText(
     "We couldn’t complete this research right now. Start a new search or try again later."
   );
-  await expect(panel).toContainText(
-    "No additional research was started after this issue."
-  );
-  await expect(page.locator(".workspace > .error-panel")).toHaveCount(0);
+  await expect(formError).not.toContainText(quotaHash);
+  await expect(formError).not.toContainText("maximumUnits");
+  await expect(formError).not.toContainText("150");
+  await expect(formError).not.toContainText("200");
+  await expectPublicSurfaceSafe(page);
   await expect(page.getByText("Research in progress", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Research paused safely", { exact: true })).toHaveCount(0);
-  await expect(panel).not.toContainText(quotaHash);
-  await expect(panel).not.toContainText("maximumUnits");
-  await expect(panel).not.toContainText("150");
-  await expect(panel).not.toContainText("200");
   await expect(page.getByRole("button", { name: "Try again" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Back to search" })).toBeEnabled();
-  await page.waitForTimeout(300);
-  expect(planAttempts).toBe(1);
-
-  await page.getByRole("button", { name: "Back to search" }).click();
-  await expect(page.getByLabel(channelInputLabel)).toBeVisible();
   await expect(page.locator(".workflow-panel")).toHaveCount(0);
+  await page.waitForTimeout(300);
+  expect(createAttempts).toBe(1);
+
+  // The intake stays live, so the user is already back at search.
+  const input = page.getByLabel(channelInputLabel);
+  await expect(input).toBeEditable();
+  await input.fill("@MKBHD");
+  await expect(formError).toHaveCount(0);
 });
 
 test("mobile layout stays within the viewport and stacks the primary form", async ({
@@ -662,20 +613,17 @@ async function enterFixtureChannel(page: Page): Promise<void> {
     .fill("@UrAvgConsumer");
 }
 
-async function rewriteExecutionResponse(
+// Rewrites the create response: the autonomous run completes inside the
+// create request, so terminal-report shaping happens at this one boundary.
+async function rewriteCompletedRunResponse(
   page: Page,
   rewrite: (completed: WorkflowRunResource) => WorkflowRunResource
 ): Promise<void> {
-  await page.route("**/api/runs/*/actions", async (route) => {
-    const body = route.request().postDataJSON() as { action?: string };
-    if (body.action !== "approve_execution") {
-      await route.continue();
-      return;
-    }
+  await page.route("**/api/runs", async (route) => {
     const response = await route.fetch();
     if (!response.ok()) {
       throw new Error(
-        `Fixture execution failed with HTTP ${response.status()}`
+        `Fixture research failed with HTTP ${response.status()}`
       );
     }
     const completed = (await response.json()) as WorkflowRunResource;
@@ -696,7 +644,7 @@ async function expectNoReviewUi(page: Page): Promise<void> {
     })
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: /Approve plan|Approve \d+ peers?/ })
+    page.getByRole("button", { name: /approve|review|confirm/i })
   ).toHaveCount(0);
   await expect(page.getByText("Full run ceiling", { exact: true })).toHaveCount(
     0

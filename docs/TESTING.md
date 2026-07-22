@@ -41,10 +41,17 @@ boundary:
 - dynamic leads preserve `same_brand_reactivation` wording and keep product,
   campaign, and buyer continuity unverified.
 
-Bounded-wording integration tests verify the purpose-bound context manifest, raw-byte
-and section hashes, UTF-8/size checks, symlink rejection, runtime output
-validation, paired LLM audit events, call/token reservations, tool-call
-rejection, refusals, and the exact zero-retry OpenAI request shape.
+Agent-loop integration tests drive the loop with a scripted planner: the full
+fixture research journey, honest finishes that skip the expensive target
+history, a prose-only turn nudged back to tools exactly once, rogue tool
+proposals returned as structured refusals without execution, budget denials
+the planner can adapt to, iteration-cap and refusal fail-closed terminations,
+and the two-turn `channel_not_found` ending. The OpenAI planner adapter is
+tested against the exact zero-retry Responses request shape: strict serial
+function tools, transcript encoding, refusal mapping, model-pin enforcement,
+and fail-closed handling of malformed tool arguments. Migration tests parse
+the sanitized checked-in `agentic-v1` record, fail closed on unknown schema
+versions or mutated states, and pin the store directory.
 
 Filesystem integration tests cover optimistic snapshot conflicts, immutable
 event ordering, idempotent internal approvals, concurrent credit reservation
@@ -54,22 +61,22 @@ real child-process lock contention/dead-owner recovery.
 ## Acceptance tests
 
 Acceptance tests begin at the user-facing use case: supply one YouTube handle
-or URL and inspect the report. The fixture golden-replay journey must produce only
-Dell/XPS, show evidence and coverage warnings, and expose a complete
+or URL and inspect the report. The fixture golden-replay journey must produce
+exactly one Dell same-brand reactivation lead, show evidence and coverage
+warnings, and expose a complete
 zero-credit trace. That fixed output is the golden oracle only. In live mode,
 an arbitrary exact public YouTube identity enters dynamic resolution; invalid
 or unresolvable input must fail honestly instead of returning the Dell fixture
 or a fuzzy substitute.
 
-Workflow acceptance tests directly exercise the full create → internal plan
-checkpoint → internal cohort/credit checkpoints → execute → verify journey,
-stale revisions, repeated idempotency keys, restart/refresh restore, warm-cache
-zero-call behavior, interruption before a paid claim,
-cancellation-versus-resolution races, stale warm-plan repricing, ambiguous
-live-resolution recovery, live-mode server guards, and conservative partial
-peer failure. These workflow-level checkpoints remain testable APIs and
-persisted records even though the live product no longer presents them as user
-review screens.
+Workflow acceptance tests exercise the HTTP boundary end to end: one POST
+completes an autonomous fixture journey to a terminal report, a repeated
+idempotency key returns the same run without duplicate work, approval actions
+on autonomous runs are refused as conflicts, invalid planner/evidence
+combinations fail closed at run creation, and a stale interrupted run offers
+only `resume`, which settles its reservation conservatively and terminates
+fail-closed. Conservative partial peer failure keeps its own acceptance suite
+through the same engine.
 
 Dynamic-qualification acceptance tests additionally assert peer-first
 cost control for `same_brand_reactivation`: peer sponsor histories are
@@ -77,19 +84,18 @@ researched before the target, the paid target-history search runs only when a
 peer row carries evidence-backed, in-window, domain-resolvable `explicit_ad`
 evidence, and a run with no qualifying peer signal skips that search and emits
 the honest `target_history_not_searched` coverage notice with an empty lead
-set. Persisted failed runs are also asserted never to carry a raw internal
-error message, and no-op or rejected cancel/resume actions record no approval.
+set. Persisted failed runs are also asserted to carry only reviewed, typed
+failure messages, never a raw internal error.
 
-Bounded-wording acceptance tests prove the workflow generates rationale only for the
-exact locked cohort, binds that cohort hash into the internal checkpoint, uses
-it directly during execution instead of re-fetching peers, and emits grounded
-wording only after deterministic qualification. A malicious report response
-fails closed: the canonical lead, qualification policy, evidence, count,
-coverage, and deterministic fallback wording remain unchanged. The strict
-Dell fixture also asserts its exact historical result.
+The agentic report golden pin
+(`tests/acceptance/agentic-report-golden.test.ts`) replaced the two-engine
+parity test at cutover: the fixture cohort must produce exactly one Dell
+same-brand reactivation lead via Dave2D with the pinned funnel counts and
+coverage-code set, so any drift in qualification, evidence selection, or
+coverage fails the pin.
 
 The browser (Playwright) matrix covers the one-click persisted fixture report,
-automatic internal advancement, refresh restore during progress,
+single-request autonomous completion, refresh restore during progress,
 create-response loss, transient restore failure, invalid input, no results,
 partial coverage, rate limits, mobile layout, and keyboard/accessibility
 behavior. It must assert that:
@@ -124,7 +130,8 @@ The immediate UI slice now uses **Channel handle or URL**, shows the
 parser-backed `We’ll research: youtube.com/...` interpretation while the field
 remains editable, and uses **Research channel** as its one submit action.
 Focused parser, type, and lint checks validate the implementation. Browser
-verification, the broader public-API leakage gate, and server-owned progression
+verification, the broader public-API leakage gate, and a durable background
+worker for run execution
 remain release dependencies; this UI check does not mark those migrations
 complete.
 
@@ -143,30 +150,28 @@ Safety-critical eval cases require 100%, not an average score.
 
 The frozen offline eval corpus is byte-for-byte pinned by the single manifest
 `evals/frozen-eval-manifest.json` under the ID
-`sponsor-radar-agent-safety-frozen-v1`. It contains 31 labeled eligibility
-cases for macro-F1 (`strict-gate`), 42 agent output-safety cases, and 10
-bounded-LLM-session boundary cases — 52 adversarial output/boundary cases in
-total, covering exact rejection reasons and same-brand-reactivation
-uncertainty. The manifest verifies each case file's byte length, SHA-256, and
+`sponsor-radar-agent-safety-frozen-v2`. It contains the 31 labeled eligibility
+cases for macro-F1 (`strict-gate`). The v1 set's 42 agent output-safety cases
+and 10 bounded-LLM-session boundary cases guarded the deleted wording stack;
+their retirement was a recorded re-freeze to v2 (ADR 0009), not a silent
+weakening. The manifest verifies the case file's byte length, SHA-256, and
 case count on every run; the corpus changes only through an explicit re-freeze.
-`pnpm eval` runs the frozen-manifest checks plus the report-quality and
-strict-gate eval suites. The gate requires 100% compliance, zero known false
-positives or result inflation, exact material-claim attribution, and macro-F1
-of at least 0.90 after 25 cases.
+`pnpm eval` runs the frozen-manifest check, the strict-gate suite, and the two
+unfrozen agentic suites below. The gate requires 100% compliance, zero known
+false positives or result inflation, exact material-claim attribution, and
+macro-F1 of at least 0.90 after 25 cases.
 
-The agentic engine (ADR 0008) adds two unfrozen eval suites that run in the
-same `pnpm eval` gate: `report-quality-agentic.eval.ts` applies the identical
-golden-report gates through the autonomous engine, and `agent-tools.eval.ts`
+The two unfrozen suites in the same `pnpm eval` gate are
+`report-quality-agentic.eval.ts`, which applies the golden-report quality
+gates through the autonomous engine, and `agent-tools.eval.ts`, which
 verifies every agent tool against its deliverable contract in
 `tests/fixtures/agent/tool-contracts.json` — required fields delivered,
 forbidden content (excerpts, URLs) never leaked, and failure envelopes within
-each tool's declared codes. The paid `test:live-agentic` smoke re-verifies the
-same contracts against real providers. Agentic engine behavior is further
+each tool's declared codes. Engine behavior is further
 pinned by `tests/acceptance/agentic-workflow-route.test.ts` (autonomous
-journey, coexistence across flag flips, idempotency, fail-closed recovery),
-`tests/acceptance/agentic-report-parity.test.ts` (deep equality with the
-legacy same-brand pipeline plus the golden-lead pin), and
-`tests/e2e/agentic.spec.ts` via `pnpm test:e2e:agentic`.
+journey, idempotency, refused approval actions, fail-closed recovery),
+the golden pin at `tests/acceptance/agentic-report-golden.test.ts`, and
+`tests/e2e/agentic.spec.ts` inside the standard `pnpm test:e2e` matrix.
 
 ## Live tests
 
@@ -174,25 +179,27 @@ Live Upriver and live-model tests are opt-in only, never part of normal CI.
 They require a hard budget and explicit test-operator opt-in. Recorded
 fixtures remain the repeatable regression oracle.
 
-The legacy report route remains deliberately fixture-only. The live
-workflow additionally requires the initial bounded-run authorization,
-persisted internal plan/cohort/credit checkpoints, an exact quote, independent
-per-run reservations, `UPRIVER_LIVE_WORKFLOW=true`, and a server-only key.
+The live workflow requires the initial bounded-run authorization, a persisted
+up-front per-run credit reservation, conservative per-call preflight,
+`UPRIVER_LIVE_WORKFLOW=true`, and a server-only key.
 
-For the production live workflow, each run has a hard 160-credit maximum and
-the current conservative uncached full-run reservation is 157:
+For the production live workflow, each run has a hard 160-credit maximum,
+reserved atomically before the first tool call. Conservative per-call
+preflight estimates are:
 
-- initial target resolution plus forced-fresh execution revalidation: 2;
+- exact target resolution: 1;
 - up to ten Similar Beta results: provisionally 10;
 - up to 23 grouped target sponsor results: 115; and
 - up to two grouped sponsor results for each of three peers: 30.
 
-The Similar Beta line uses the one-credit creator-result rate only as a
+Actual spend varies with the planner's chosen research path; every call is
+preflighted against the remaining reservation. The Similar Beta line uses the
+one-credit creator-result rate only as a
 conservative provisional quote because its billing is not documented. The
 application records result-based estimates; provider-dashboard reconciliation
 is still required for billing truth.
 
-The optional paid wording adapter is separately guarded:
+The paid planner is separately guarded:
 
 ```bash
 SPONSOR_RADAR_LLM_MODE=openai \
@@ -201,35 +208,19 @@ OPENAI_API_KEY=... \
 pnpm dev
 ```
 
-The server pins the model, makes at most one attempt for each of the two
-purposes, and falls back to deterministic wording after any bounded failure.
-Ordinary CI uses `SPONSOR_RADAR_LLM_MODE=fixture`.
+The server pins the model, serializes tool calls, makes zero automatic
+retries, and terminates the run fail-closed after any planner failure — there
+is no wording stage or wording fallback anymore. Ordinary CI uses
+`SPONSOR_RADAR_LLM_MODE=fixture`, the deterministic scripted planner, which is
+valid only with fixture evidence.
 
-The separate paid model contract smoke makes exactly one peer-rationale
-request using synthetic public input. It does not transmit the repository
-policy, pinned Upriver context, or real run data:
-
-```bash
-SPONSOR_RADAR_LIVE_LLM_SMOKE=true pnpm test:live-llm
-```
-
-It requires `OPENAI_API_KEY` and is skipped by default.
-
-The bounded deep regression makes nine sequential synthetic requests: four
-peer-rationale cases, four strict grounded-report cases, and one adversarial
-same-brand-reactivation case. It stops on the first failure, never retries,
-reserves no more than 5,500 output tokens, and prints a redacted per-case
-record with provider request ID and token usage:
-
-```bash
-SPONSOR_RADAR_LIVE_LLM_DEEP=true pnpm test:live-llm-deep
-```
-
-On July 20, 2026, the continuity-U hardened matrix passed all nine baseline,
-prompt-injection, unknown-ID, claim-pressure, wrong-attribution, and
-same-brand/product-overclaim cases. It used 4,865 input and 1,873 output tokens
-with zero retries. The earlier eight-case v2 result remains in the historical
-record. The quota incident and schema-grounding finding are documented in
+The standalone wording-model harnesses (`test:live-llm`, `test:live-llm-deep`)
+were deleted with the wording stack. Their July 20, 2026 results — the
+nine-case continuity-U hardened matrix passing all baseline, prompt-injection,
+unknown-ID, claim-pressure, wrong-attribution, and same-brand/
+product-overclaim cases at 4,865 input and 1,873 output tokens with zero
+retries — remain valid historical evidence for the deleted boundary, and the
+quota incident and schema-grounding finding stay documented in
 [the manager-ready live API record](./OPENAI_LIVE_API_RECORD.md).
 
 The six-credit contract smoke is separate:
@@ -248,37 +239,40 @@ retries.
 
 A controlled arbitrary-channel product run is a separate live-release gate. It must
 use an exact public YouTube handle/URL, treat the one submit as authorization,
-persist and enforce the discovered cohort and quote internally, make zero
+enforce the per-run reservation and every code ceiling, make zero
 automatic retries, retain safe request telemetry, and verify that any live
 result says product, campaign, and buyer continuity are unverified. Do not use
 the Dell fixture as evidence that this gate passed. Railway deployment follows
 this gate; it has not happened yet.
 
-The opt-in harness for that exact path is:
+The opt-in harness for that exact path is the paid end-to-end agentic smoke,
+in which a real OpenAI planner drives real Upriver evidence tools for one
+bounded run:
 
 ```bash
-SPONSOR_RADAR_LIVE_FULL_WORKFLOW=true pnpm test:live-full
+SPONSOR_RADAR_AGENTIC_LIVE_SMOKE=true \
+UPRIVER_LIVE_WORKFLOW=true \
+SPONSOR_RADAR_LIVE_LLM=true \
+pnpm test:live-agentic
 ```
 
-It uses a fresh temporary repository, creates the initial run authorization,
-exercises both internal approval checkpoints explicitly, enforces the
-160-credit per-run ceiling, makes no automatic retries, and emits only redacted
-request/usage summaries. The explicit internal calls are a test-harness
-mechanism, not user-facing actions. Live Upriver evidence stays inside the
-workflow and uses deterministic bounded wording in this gate. The paid OpenAI
-boundary is validated separately by the synthetic deep matrix, so repository
-policy and live provider evidence are not exported during integration testing.
-The harness is skipped by default.
+It requires both provider keys, asserts the report schema, qualification
+policy, and evidence fields, enforces the 160-credit per-run ceiling with zero
+retries, and streams redacted audit events and a redacted run summary. The
+researched channel defaults to `@Dave2D`
+(`SPONSOR_RADAR_AGENTIC_SMOKE_CHANNEL` overrides it). The harness is skipped
+by default. On July 22, 2026 — day one of the three-day live-smoke cadence —
+nine live runs spent roughly 659 provisional credits: eight passed within
+ceilings (maximum 146 of 160) and the ninth exposed the unresolvable-channel
+dead-end fixed the same day and recorded in ADR 0008's amendment; bad handles
+now end in two planner turns and one credit with the typed `channel_not_found`
+failure.
 
-On July 20, 2026, the full live-evidence gate passed for
-`@DwarkeshPatel` as an explicitly partial report. Six provider calls returned
-one target, ten Similar rows, eleven target sponsor rows, and three total peer
-sponsor rows. The run used 81 provisional result-based credits, made zero
-retries, and returned zero qualified opportunities rather than inventing a
-lead. Coverage remained partial because sponsor-domain/tracking data was
-incomplete and a bounded result cap was reached. The live model boundary was
-validated separately with nine synthetic calls; no live provider evidence or
-repository policy was transmitted to OpenAI in the integration gate.
+The pre-cutover legacy harness (`test:live-full`) was deleted with the legacy
+engine. Its July 20, 2026 result remains historical evidence: the full
+live-evidence gate passed for `@DwarkeshPatel` as an explicitly partial
+report — six provider calls, 81 provisional result-based credits, zero
+retries, and zero qualified opportunities rather than an invented lead.
 
 The earlier language-filtered attempt failed closed with HTTP 409 and made no
 sponsor calls. The complete discovery and full-run request-ID sequences are in

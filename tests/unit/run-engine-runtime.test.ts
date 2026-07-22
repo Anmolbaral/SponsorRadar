@@ -4,9 +4,8 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   createRunEngineFromEnvironment,
-  runEngineKind
+  LiveWorkflowDisabledError
 } from "@/src/radar/adapters/run-engine-runtime";
-import { LiveWorkflowDisabledError } from "@/src/radar/adapters/workflow-runtime";
 
 const temporaryDirectories: string[] = [];
 
@@ -25,27 +24,36 @@ async function stubIsolatedDataDirectory(): Promise<void> {
   vi.stubEnv("SPONSOR_RADAR_DATA_DIR", directory);
 }
 
-describe("run engine selection", () => {
-  it("defaults to the legacy engine when the flag is unset", async () => {
+describe("run engine composition", () => {
+  it("composes the agentic engine unconditionally in fixture mode", async () => {
     await stubIsolatedDataDirectory();
-    expect(runEngineKind()).toBe("legacy");
+    vi.stubEnv("UPRIVER_MODE", "fixture");
+    vi.stubEnv("SPONSOR_RADAR_LLM_MODE", "fixture");
     expect(createRunEngineFromEnvironment()).toBeDefined();
   });
 
-  it("selects the legacy engine explicitly", () => {
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "legacy");
-    expect(runEngineKind()).toBe("legacy");
-  });
-
-  it("fails closed on unknown engine values", () => {
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "experimental");
+  it("fails closed when the run credit limit exceeds the hard ceiling", async () => {
+    await stubIsolatedDataDirectory();
+    vi.stubEnv("SPONSOR_RADAR_RUN_CREDIT_LIMIT", "161");
     expect(() => createRunEngineFromEnvironment()).toThrow(
       LiveWorkflowDisabledError
     );
   });
 
-  it("fails closed on browser-cased values instead of coercing", () => {
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "Agentic");
+  it("fails closed when the planner LLM is disabled", async () => {
+    await stubIsolatedDataDirectory();
+    vi.stubEnv("SPONSOR_RADAR_LLM_MODE", "disabled");
+    expect(() => createRunEngineFromEnvironment()).toThrow(
+      LiveWorkflowDisabledError
+    );
+  });
+
+  it("refuses a scripted fixture planner over live paid evidence", async () => {
+    await stubIsolatedDataDirectory();
+    vi.stubEnv("UPRIVER_MODE", "live");
+    vi.stubEnv("UPRIVER_LIVE_WORKFLOW", "true");
+    vi.stubEnv("UPRIVER_API_KEY", "server-secret");
+    vi.stubEnv("SPONSOR_RADAR_LLM_MODE", "fixture");
     expect(() => createRunEngineFromEnvironment()).toThrow(
       LiveWorkflowDisabledError
     );

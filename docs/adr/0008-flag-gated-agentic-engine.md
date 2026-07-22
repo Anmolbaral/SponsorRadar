@@ -1,6 +1,6 @@
 # ADR 0008: Flag-gated agentic engine
 
-- Status: Accepted
+- Status: Accepted; superseded in part by ADR 0009 (flag and legacy engine deleted; the parity gate's remaining items became post-cutover checks)
 - Date: July 22, 2026
 
 ## Context

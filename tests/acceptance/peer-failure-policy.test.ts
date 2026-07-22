@@ -1,4 +1,9 @@
 import { describe, expect, it } from "vitest";
+import {
+  FixtureAgentLlm,
+  fixtureAssistantToolUse,
+  type FixtureAgentStep
+} from "@/src/agent/llm/fixture-agent-llm";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import {
   UpriverHttpError,
@@ -10,20 +15,102 @@ import type {
   EvidenceOperation,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
-import { runWinbackReport } from "@/src/radar/application/run-winback-report";
+import { canTreatPeerFailureAsPartial } from "@/src/radar/application/peer-failure-policy";
+import { runAgenticReport } from "@/src/radar/application/agentic/run-agentic-report";
+import { AgentRunFailedError } from "@/src/radar/application/agentic/tool-broker";
 import { parseYouTubeIdentity } from "@/src/radar/domain/youtube";
+
+const FIXTURE_CHANNEL = "@UrAvgConsumer";
+// Hayls World is peer_3 in the fixture cohort locked for @UrAvgConsumer.
+const FAILING_PEER_REF = "peer_3";
+
+// Full research journey; the model is told the failed peer is partial and
+// finishes with the remaining evidence.
+function partialJourneySteps(): FixtureAgentStep[] {
+  return [
+    {
+      respond: fixtureAssistantToolUse("resolve_target", {
+        channel: FIXTURE_CHANNEL
+      })
+    },
+    { respond: fixtureAssistantToolUse("list_locked_peers", {}) },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: "peer_1"
+      })
+    },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: "peer_2"
+      })
+    },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: FAILING_PEER_REF
+      })
+    },
+    {
+      expect: (messages) => {
+        const lastToolResult = [...messages]
+          .reverse()
+          .find((message) => message.role === "tool_result");
+        if (
+          !lastToolResult ||
+          lastToolResult.role !== "tool_result" ||
+          !lastToolResult.isError ||
+          !lastToolResult.content.includes("peer_research_failed")
+        ) {
+          throw new Error(
+            "The failed peer must come back as a peer_research_failed envelope"
+          );
+        }
+      },
+      respond: fixtureAssistantToolUse("list_target_sponsors", {})
+    },
+    { respond: fixtureAssistantToolUse("analyze_evidence", {}) },
+    {
+      respond: fixtureAssistantToolUse("submit_report", {
+        analysisRef: "analysis_1"
+      })
+    }
+  ];
+}
+
+// Shortest path to the failing peer for termination scenarios.
+function failFastSteps(): FixtureAgentStep[] {
+  return [
+    {
+      respond: fixtureAssistantToolUse("resolve_target", {
+        channel: FIXTURE_CHANNEL
+      })
+    },
+    { respond: fixtureAssistantToolUse("list_locked_peers", {}) },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: FAILING_PEER_REF
+      })
+    }
+  ];
+}
+
+async function rejectionOf(promise: Promise<unknown>): Promise<unknown> {
+  return promise.then(
+    () => {
+      throw new Error("Expected the agentic run to terminate");
+    },
+    (error) => error
+  );
+}
 
 describe("peer failure policy", () => {
   it("preserves successful fixture evidence as a partial report", async () => {
-    const gateway = new FailingPeerGateway(
-      "fixture",
-      new Error("Recorded fixture peer failure")
-    );
+    const failure = new Error("Recorded fixture peer failure");
+    expect(canTreatPeerFailureAsPartial("fixture", failure)).toBe(true);
 
-    const { report } = await runWinbackReport(
-      { channel: "@UrAvgConsumer" },
-      gateway,
-      { allowPartialPeerFailure: true }
+    const { report } = await runAgenticReport(
+      { channel: FIXTURE_CHANNEL },
+      new FailingPeerGateway("fixture", failure),
+      new FixtureAgentLlm(partialJourneySteps())
     );
 
     expect(report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
@@ -44,32 +131,38 @@ describe("peer failure policy", () => {
     ["upstream_error", 503, "http_error"],
     ["invalid_response", 200, "success"]
   ] as const)(
-    "propagates ambiguous live %s failures",
+    "terminates the run on ambiguous live %s failures",
     async (code, status, outcome) => {
       const failure = upriverFailure(code, status, outcome);
-      const gateway = new FailingPeerGateway("live", failure);
+      expect(canTreatPeerFailureAsPartial("live", failure)).toBe(false);
 
-      await expect(
-        runWinbackReport(
-          { channel: "@UrAvgConsumer", maximumCredits: 150 },
-          gateway,
-          { allowPartialPeerFailure: true, phase: "workflow_live" }
+      const rejection = await rejectionOf(
+        runAgenticReport(
+          { channel: FIXTURE_CHANNEL, maximumCredits: 150 },
+          new FailingPeerGateway("live", failure),
+          new FixtureAgentLlm(failFastSteps())
         )
-      ).rejects.toBe(failure);
+      );
+
+      expect(rejection).toBeInstanceOf(AgentRunFailedError);
+      expect((rejection as AgentRunFailedError).cause).toBe(failure);
     }
   );
 
-  it("propagates unclassified live provider errors", async () => {
+  it("terminates the run on unclassified live provider errors", async () => {
     const failure = new Error("Unknown provider failure");
-    const gateway = new FailingPeerGateway("live", failure);
+    expect(canTreatPeerFailureAsPartial("live", failure)).toBe(false);
 
-    await expect(
-      runWinbackReport(
-        { channel: "@UrAvgConsumer", maximumCredits: 150 },
-        gateway,
-        { allowPartialPeerFailure: true, phase: "workflow_live" }
+    const rejection = await rejectionOf(
+      runAgenticReport(
+        { channel: FIXTURE_CHANNEL, maximumCredits: 150 },
+        new FailingPeerGateway("live", failure),
+        new FixtureAgentLlm(failFastSteps())
       )
-    ).rejects.toBe(failure);
+    );
+
+    expect(rejection).toBeInstanceOf(AgentRunFailedError);
+    expect((rejection as AgentRunFailedError).cause).toBe(failure);
   });
 
   it.each([
@@ -81,12 +174,12 @@ describe("peer failure policy", () => {
     "permits explicitly no-spend terminal live %s failures to remain partial",
     async (code, status, outcome) => {
       const failure = upriverFailure(code, status, outcome);
-      const gateway = new FailingPeerGateway("live", failure);
+      expect(canTreatPeerFailureAsPartial("live", failure)).toBe(true);
 
-      const { report } = await runWinbackReport(
-        { channel: "@UrAvgConsumer", maximumCredits: 150 },
-        gateway,
-        { allowPartialPeerFailure: true, phase: "workflow_live" }
+      const { report } = await runAgenticReport(
+        { channel: FIXTURE_CHANNEL, maximumCredits: 150 },
+        new FailingPeerGateway("live", failure),
+        new FixtureAgentLlm(partialJourneySteps())
       );
 
       expect(report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
@@ -138,8 +231,8 @@ class FailingPeerGateway implements SponsorRadarEvidencePort {
     return this.fixture.listTargetSponsors(targetUrl);
   }
 
-  listLockedPeers(targetUrl: string) {
-    return this.fixture.listLockedPeers(targetUrl);
+  listLockedPeers(targetUrl: string, targetSubscriberCount?: number) {
+    return this.fixture.listLockedPeers(targetUrl, targetSubscriberCount);
   }
 
   listPeerSponsors(peerUrl: string) {

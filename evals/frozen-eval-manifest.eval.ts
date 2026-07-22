@@ -4,10 +4,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
+// Re-frozen as v1 minus the two case files that guarded the deleted legacy
+// wording stack; only strict-gate remains. Recorded in ADR 0009.
 const ManifestSchema = z
   .object({
     schema_version: z.literal(1),
-    eval_set_id: z.literal("sponsor-radar-agent-safety-frozen-v1"),
+    eval_set_id: z.literal("sponsor-radar-agent-safety-frozen-v2"),
     frozen_at: z.iso.date(),
     hash_algorithm: z.literal("sha256"),
     files: z
@@ -21,7 +23,7 @@ const ManifestSchema = z
           })
           .strict()
       )
-      .length(3),
+      .length(1),
     gates: z
       .object({
         tool_policy_budget_compliance: z.literal(1),

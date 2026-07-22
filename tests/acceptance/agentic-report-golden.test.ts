@@ -3,15 +3,10 @@ import { FixtureResearchPlanner } from "@/src/agent/llm/fixture-research-planner
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import type { SponsorRadarEvidencePort } from "@/src/radar/application/ports";
 import { runAgenticReport } from "@/src/radar/application/agentic/run-agentic-report";
-import { runWinbackReport } from "@/src/radar/application/run-winback-report";
 
 const FIXTURE_CHANNEL = "@UrAvgConsumer";
 
-/**
- * The legacy engine researches the fixture cohort under the same-brand
- * policy when its port declares it, which makes the deterministic pipeline
- * the parity oracle for the agentic engine's assembled report.
- */
+// Fixture evidence port declaring the same-brand reactivation policy.
 function sameBrandFixturePort(): SponsorRadarEvidencePort {
   const fixture = new FixtureEvidenceGateway(process.cwd());
   return {
@@ -28,7 +23,7 @@ function sameBrandFixturePort(): SponsorRadarEvidencePort {
   };
 }
 
-describe("agentic report parity and golden pin", () => {
+describe("agentic report golden pin", () => {
   it("pins the fixture golden output: one Dell reactivation via Dave2D", async () => {
     const { report } = await runAgenticReport(
       { channel: FIXTURE_CHANNEL },
@@ -61,32 +56,5 @@ describe("agentic report parity and golden pin", () => {
         "grouped_summary_limit"
       ])
     );
-  });
-
-  it("matches the legacy same-brand pipeline on leads, funnel, coverage, and methodology", async () => {
-    const now = () => Date.parse("2026-07-22T00:00:00.000Z");
-
-    const legacy = await runWinbackReport(
-      { channel: FIXTURE_CHANNEL },
-      sameBrandFixturePort(),
-      { now }
-    );
-    const agentic = await runAgenticReport(
-      { channel: FIXTURE_CHANNEL },
-      sameBrandFixturePort(),
-      new FixtureResearchPlanner(),
-      { now }
-    );
-
-    expect(agentic.report.leads).toEqual(legacy.report.leads);
-    expect(agentic.report.funnel).toEqual(legacy.report.funnel);
-    expect(agentic.report.coverage).toEqual(legacy.report.coverage);
-    expect(agentic.report.target).toEqual(legacy.report.target);
-    expect(agentic.report.targetIdentity).toEqual(
-      legacy.report.targetIdentity
-    );
-    expect(agentic.report.asOf).toBe(legacy.report.asOf);
-    expect(agentic.report.methodology).toEqual(legacy.report.methodology);
-    expect(agentic.report.schemaVersion).toBe(legacy.report.schemaVersion);
   });
 });

@@ -1,6 +1,6 @@
 # ADR 0007: Server-owned run orchestration
 
-- Status: Accepted direction; implementation pending
+- Status: Implemented July 22, 2026 via ADR 0008/0009 (the wording stage was deleted at cutover)
 - Date: July 20, 2026
 
 ## Decision

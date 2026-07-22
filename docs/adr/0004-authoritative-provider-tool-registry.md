@@ -1,6 +1,6 @@
 # ADR 0004: Authoritative provider tool registry
 
-- Status: Accepted; implemented July 20, 2026
+- Status: Accepted; implemented July 20, 2026; the ADR 0008 proposal-surface amendment became the rule at the ADR 0009 cutover
 - Date: July 20, 2026
 
 ## Decision

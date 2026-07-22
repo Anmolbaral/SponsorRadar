@@ -8,7 +8,7 @@ import {
   PersistenceConflictError,
   PersistenceCorruptionError
 } from "@/src/radar/adapters/persistence";
-import { LiveWorkflowDisabledError } from "@/src/radar/adapters/workflow-runtime";
+import { LiveWorkflowDisabledError } from "@/src/radar/adapters/run-engine-runtime";
 import {
   RunAccountingMigrationRequiredError,
   RunCreditLimitExceededError,

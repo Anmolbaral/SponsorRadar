@@ -46,7 +46,6 @@ async function configureAgenticFixtureEnvironment(): Promise<string> {
   vi.stubEnv("SPONSOR_RADAR_DATA_DIR", directory);
   vi.stubEnv("UPRIVER_MODE", "fixture");
   vi.stubEnv("SPONSOR_RADAR_LLM_MODE", "fixture");
-  vi.stubEnv("SPONSOR_RADAR_ENGINE", "agentic");
   return directory;
 }
 
@@ -136,82 +135,7 @@ describe("Agentic workflow HTTP boundary", () => {
     expect(payload.code).toBe("run_conflict");
   });
 
-  it("keeps legacy runs fully readable and actionable while the agentic flag is on", async () => {
-    const directory = await configureAgenticFixtureEnvironment();
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "legacy");
-
-    const legacyRun = (await (
-      await createRun(
-        request("/api/runs", "legacy-before-flip", {
-          channel: "@UrAvgConsumer"
-        })
-      )
-    ).json()) as WorkflowRunResource;
-    expect(legacyRun.status).toBe("awaiting_plan_approval");
-
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "agentic");
-    vi.stubEnv("SPONSOR_RADAR_DATA_DIR", directory);
-
-    const fetched = await getRun(
-      new Request(`http://localhost/api/runs/${legacyRun.runId}`),
-      context(legacyRun.runId)
-    );
-    expect(fetched.status).toBe(200);
-    const fetchedRun = (await fetched.json()) as WorkflowRunResource;
-    expect(fetchedRun.status).toBe("awaiting_plan_approval");
-
-    const approved = await mutateRun(
-      request(
-        `/api/runs/${legacyRun.runId}/actions`,
-        "legacy-approve-after-flip",
-        {
-          action: "approve_plan",
-          expectedVersion: legacyRun.version,
-          planId: legacyRun.plan.planId
-        }
-      ),
-      context(legacyRun.runId)
-    );
-    expect(approved.status).toBe(200);
-
-    const replayed = (await (
-      await createRun(
-        request("/api/runs", "legacy-before-flip", {
-          channel: "@UrAvgConsumer"
-        })
-      )
-    ).json()) as WorkflowRunResource;
-    expect(replayed.runId).toBe(legacyRun.runId);
-  });
-
-  it("keeps agentic runs readable after rolling the flag back to legacy", async () => {
-    await configureAgenticFixtureEnvironment();
-    const agenticRun = (await (
-      await createRun(
-        request("/api/runs", "agentic-before-rollback", {
-          channel: "@UrAvgConsumer"
-        })
-      )
-    ).json()) as WorkflowRunResource;
-
-    vi.stubEnv("SPONSOR_RADAR_ENGINE", "legacy");
-    const fetched = await getRun(
-      new Request(`http://localhost/api/runs/${agenticRun.runId}`),
-      context(agenticRun.runId)
-    );
-    expect(fetched.status).toBe(200);
-
-    const replayed = (await (
-      await createRun(
-        request("/api/runs", "agentic-before-rollback", {
-          channel: "@UrAvgConsumer"
-        })
-      )
-    ).json()) as WorkflowRunResource;
-    expect(replayed.runId).toBe(agenticRun.runId);
-  });
-
-  it("fails closed on invalid engine and planner combinations", async () => {
+  it("fails closed on invalid planner combinations", async () => {
     await configureAgenticFixtureEnvironment();
 
     vi.stubEnv("SPONSOR_RADAR_LLM_MODE", "disabled");

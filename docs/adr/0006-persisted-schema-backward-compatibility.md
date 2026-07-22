@@ -1,6 +1,6 @@
 # ADR 0006: Persisted-schema backward compatibility
 
-- Status: Accepted
+- Status: Accepted; amended by ADR 0009 (legacy-store runs 404 after the cutover)
 - Date: July 20, 2026
 
 ## Decision

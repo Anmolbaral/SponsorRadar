@@ -2,7 +2,7 @@ import type { AgentToolCall } from "@/src/agent/llm/agent-llm-port";
 import type { AuditRecorder } from "@/src/observability/audit";
 import { UpriverHttpError } from "@/src/radar/adapters/upriver/http-client";
 import type { SponsorRadarEvidencePort } from "@/src/radar/application/ports";
-import { canTreatPeerFailureAsPartial } from "@/src/radar/application/run-winback-report";
+import { canTreatPeerFailureAsPartial } from "@/src/radar/application/peer-failure-policy";
 import type {
   EvidenceToolExecutor,
   EvidenceToolRequests,

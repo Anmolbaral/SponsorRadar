@@ -6,9 +6,8 @@ import type {
 } from "@/src/radar/application/run-workflow";
 
 /**
- * The public run-orchestration contract shared by every engine. The legacy
- * `WorkflowService` satisfies it structurally; the agentic engine implements
- * it behind the server-side `SPONSOR_RADAR_ENGINE` flag (ADR 0008).
+ * The public run-orchestration contract, implemented by the agentic engine
+ * (ADR 0008/0009). The wire shapes it serves are frozen in run-workflow.ts.
  */
 export interface RunEngine {
   createRun(
@@ -34,4 +33,3 @@ export interface RunEngine {
   ): Promise<WorkflowRunResource>;
 }
 
-export type RunEngineKind = "legacy" | "agentic";

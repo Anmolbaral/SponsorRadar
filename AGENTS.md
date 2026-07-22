@@ -11,7 +11,8 @@ persistence compatibility, or evidence-preservation rules.
   requires ≥ 22.18). Deploy: Railway (`railway.json`).
 - **Layout:**
   - `src/radar/` — deterministic domain + application pipeline. Owns every fact.
-  - `src/agent/` — the bounded LLM wording layer. Wording only; adds no facts.
+  - `src/agent/` — the planner LLM boundary (port, scripted fixture planner,
+    OpenAI Responses adapter). Proposes tool calls only; adds no facts.
   - `src/observability/` — append-only audit.
   - `evals/` — frozen offline eval corpus (`evals/cases/*.json`,
     `evals/frozen-eval-manifest.json`).
@@ -35,7 +36,7 @@ pnpm lint            # eslint
 pnpm test:unit       # unit + domain-core coverage (90% floor)
 pnpm test:integration
 pnpm test:acceptance
-pnpm eval            # frozen offline eval corpus
+pnpm eval            # frozen offline eval corpus + agentic eval suites
 pnpm test:all        # typecheck + unit + integration + acceptance + eval
 pnpm test:e2e        # Playwright (fixture-forced)
 pnpm verify          # lint + test:all + build — the pre-release gate
@@ -49,12 +50,12 @@ never part of `verify` or CI — see **Paid live calls**.
 
 - A user submits one YouTube channel, sees concise progress, and gets one concise
   result or one actionable failure.
-- The initial submission authorizes exactly one bounded run. Plan, cohort, cost,
-  and execution checkpoints are internal controls, not user confirmation screens.
+- The initial submission authorizes exactly one bounded, autonomous run. Spend,
+  iteration, token, and transcript ceilings are internal code-enforced
+  controls, not user confirmation screens.
 - Eligibility, identity, evidence selection, dates, coverage, result count, and
-  spend policy are deterministic. In the legacy engine the LLM improves wording
-  only. In the flag-gated agentic engine (ADR 0008) the LLM may additionally
-  *propose* tool calls through the mediating broker — it still may not add
+  spend policy are deterministic. The LLM plans the research: it *proposes*
+  tool calls through the mediating broker (ADR 0008/0009) — it may not add
   facts, change qualification, execute tools directly, or alter result count.
 - Channel identity is exact and anchored to a verified YouTube channel ID. A
   handle or legacy URL is an input reference, not identity — no display-name
@@ -152,7 +153,7 @@ never part of `verify` or CI — see **Paid live calls**.
   integration, acceptance, evals, production build, and applicable browser
   journeys. Don't rerun expensive suites for unrelated small changes.
 - Ordinary tests are deterministic, fixture-backed, network-free, and zero-cost.
-  Browser tests force fixture evidence and fixture wording.
+  Browser tests force fixture evidence and the fixture planner.
 - Maintain migration fixtures, public-error leakage tests, registry denial tests,
   spend and ambiguous-replay tests, and exact identity/cache tests.
 - Don't weaken deterministic eligibility, evidence attribution, no-padding, the

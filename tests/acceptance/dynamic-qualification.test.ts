@@ -1,4 +1,11 @@
 import { describe, expect, it } from "vitest";
+import {
+  FixtureAgentLlm,
+  fixtureAssistantToolUse,
+  type FixtureAgentStep
+} from "@/src/agent/llm/fixture-agent-llm";
+import { FixtureResearchPlanner } from "@/src/agent/llm/fixture-research-planner";
+import type { AuditEvent } from "@/src/observability/audit";
 import type {
   NormalizedSponsorEvidence,
   NormalizedSponsorEvidenceResult
@@ -9,12 +16,13 @@ import type {
   ResolvedTarget,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
-import {
-  approvedCohortHash,
-  runWinbackReport
-} from "@/src/radar/application/run-winback-report";
+import { runAgenticReport } from "@/src/radar/application/agentic/run-agentic-report";
+import type { CoverageNotice, QualifiedLead } from "@/src/radar/domain/types";
 
 const TARGET_URL = "https://www.youtube.com/@DynamicTarget";
+// Same channel identity as TARGET_URL expressed as a non-canonical URL form.
+const EQUIVALENT_TARGET_URL_FORM =
+  "https://youtube.com/@DynamicTarget?view_as=subscriber";
 const RENAMED_TARGET_URL = "https://www.youtube.com/@RenamedTarget";
 const PEER_ONE_URL = "https://www.youtube.com/@PeerOne";
 const PEER_TWO_URL = "https://www.youtube.com/@PeerTwo";
@@ -22,15 +30,17 @@ const PEER_TWO_URL = "https://www.youtube.com/@PeerTwo";
 describe("dynamic same-brand reactivation qualification", () => {
   it("uses exact API evidence without claiming product continuity or loading a ledger", async () => {
     const gateway = new DynamicEvidencePort();
-    const { report, events } = await runWinbackReport(
+    const { report, events } = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      gateway
+      gateway,
+      new FixtureResearchPlanner()
     );
 
     expect(gateway.ledgerCalls).toBe(0);
     expect(
       events.some(
-        (event) => event.tool?.name === "local.load_verification_ledger"
+        (event: AuditEvent) =>
+          event.tool?.name === "local.load_verification_ledger"
       )
     ).toBe(false);
     expect(report.methodology).toMatchObject({
@@ -106,19 +116,20 @@ describe("dynamic same-brand reactivation qualification", () => {
 
   it("researches peers before the target and spends the target call only when a peer signal qualifies", async () => {
     const gateway = new DynamicEvidencePort();
-    const { report, events } = await runWinbackReport(
+    const { report, events } = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      gateway
+      gateway,
+      new FixtureResearchPlanner()
     );
 
     const callOrder = events
       .filter(
-        (event) =>
+        (event: AuditEvent) =>
           event.eventType === "tool.started" &&
           (event.tool?.name === "live.list_peer_sponsors" ||
             event.tool?.name === "live.list_target_sponsors")
       )
-      .map((event) => event.tool!.name);
+      .map((event: AuditEvent) => event.tool!.name);
 
     expect(callOrder).toContain("live.list_peer_sponsors");
     expect(callOrder).toContain("live.list_target_sponsors");
@@ -135,15 +146,19 @@ describe("dynamic same-brand reactivation qualification", () => {
 
   it("skips the paid target-history search and reports honestly when no peer signal qualifies", async () => {
     const gateway = new NoPeerSignalPort();
-    const { report, events } = await runWinbackReport(
+    // The skip decision is the planner's; the honest zero-target coverage
+    // and funnel are enforced in code whenever the target is unsearched.
+    const { report, events } = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      gateway
+      gateway,
+      new FixtureAgentLlm(skipTargetHistorySteps())
     );
 
     expect(gateway.targetSponsorCalls).toBe(0);
     expect(
       events.some(
-        (event) => event.tool?.name === "live.list_target_sponsors"
+        (event: AuditEvent) =>
+          event.tool?.name === "live.list_target_sponsors"
       )
     ).toBe(false);
     expect(report.leads).toEqual([]);
@@ -164,7 +179,7 @@ describe("dynamic same-brand reactivation qualification", () => {
     // Honest: never asserts the target has no sponsors — only that we did not look.
     expect(
       report.coverage.some(
-        (notice) => notice.code === "target_domain_coverage"
+        (notice: CoverageNotice) => notice.code === "target_domain_coverage"
       )
     ).toBe(false);
   });
@@ -173,13 +188,15 @@ describe("dynamic same-brand reactivation qualification", () => {
     const firstGateway = new DynamicEvidencePort([]);
     const secondGateway = new DynamicEvidencePort([]);
 
-    const first = await runWinbackReport(
+    const first = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      firstGateway
+      firstGateway,
+      new FixtureResearchPlanner()
     );
-    const second = await runWinbackReport(
+    const second = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      secondGateway
+      secondGateway,
+      new FixtureResearchPlanner()
     );
 
     expect(firstGateway.ledgerCalls).toBe(0);
@@ -213,9 +230,10 @@ describe("dynamic same-brand reactivation qualification", () => {
       })
     ]);
 
-    const { report } = await runWinbackReport(
+    const { report } = await runAgenticReport(
       { channel: "@DynamicTarget" },
-      gateway
+      gateway,
+      new FixtureResearchPlanner()
     );
 
     expect(report.funnel).toMatchObject({
@@ -228,66 +246,27 @@ describe("dynamic same-brand reactivation qualification", () => {
   });
 
   it("accepts equivalent approved YouTube URL forms as one target identity", async () => {
-    const gateway = new DynamicEvidencePort();
-    const target = {
-      name: "Dynamic Target",
-      url: "https://youtube.com/@DynamicTarget?view_as=subscriber",
-      subscriberCount: 1_000_000
-    };
-    const identity = (await gateway.resolveTarget()).identity;
-    const peers = await gateway.listLockedPeers(TARGET_URL, 1_000_000);
-
-    const { report } = await runWinbackReport(
+    // Target evidence arrives under a non-canonical but equivalent URL form;
+    // identity matching must treat it as the one approved target identity.
+    const gateway = new EquivalentUrlFormEvidencePort();
+    const { report } = await runAgenticReport(
       { channel: "@DynamicTarget" },
       gateway,
-      {
-        approvedCohort: {
-          target,
-          identity,
-          peers,
-          cohortHash: approvedCohortHash(target, peers, identity)
-        }
-      }
+      new FixtureResearchPlanner()
     );
 
     expect(report.target.url).toBe(TARGET_URL);
-    expect(report.leads.map((lead) => lead.brand)).toEqual(["Acme"]);
+    expect(report.leads.map((lead: QualifiedLead) => lead.brand)).toEqual([
+      "Acme"
+    ]);
   });
 
   it("accepts a renamed handle and display name when the verified channel ID is unchanged", async () => {
     const gateway = new SameIdPresentationDriftPort();
-    const approvedTarget = {
-      name: "Old Target Name",
-      url: "https://www.youtube.com/@OldTargetHandle",
-      subscriberCount: 1_000_000
-    };
-    const approvedIdentity = {
-      verificationBasis: "channel_id" as const,
-      channelId: "UCDynamicTarget123",
-      handle: "OldTargetHandle",
-      canonicalUrl: approvedTarget.url,
-      key: "channel:UCDynamicTarget123"
-    };
-    const peers = await gateway.listLockedPeers(
-      approvedTarget.url,
-      approvedTarget.subscriberCount
-    );
-
-    const { report } = await runWinbackReport(
+    const { report } = await runAgenticReport(
       { channel: "@OldTargetHandle" },
       gateway,
-      {
-        approvedCohort: {
-          target: approvedTarget,
-          identity: approvedIdentity,
-          peers,
-          cohortHash: approvedCohortHash(
-            approvedTarget,
-            peers,
-            approvedIdentity
-          )
-        }
-      }
+      new FixtureResearchPlanner()
     );
 
     expect(report.target).toEqual({
@@ -300,9 +279,39 @@ describe("dynamic same-brand reactivation qualification", () => {
       channelId: "UCDynamicTarget123",
       handle: "RenamedTarget"
     });
-    expect(report.leads.map((lead) => lead.brand)).toEqual(["Acme"]);
+    expect(report.leads.map((lead: QualifiedLead) => lead.brand)).toEqual([
+      "Acme"
+    ]);
   });
 });
+
+/** Scripted planner turns that finish without the paid target-history call. */
+function skipTargetHistorySteps(): FixtureAgentStep[] {
+  return [
+    {
+      respond: fixtureAssistantToolUse("resolve_target", {
+        channel: "@DynamicTarget"
+      })
+    },
+    { respond: fixtureAssistantToolUse("list_locked_peers", {}) },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: "peer_1"
+      })
+    },
+    {
+      respond: fixtureAssistantToolUse("list_peer_sponsors", {
+        peerRef: "peer_2"
+      })
+    },
+    { respond: fixtureAssistantToolUse("analyze_evidence", {}) },
+    {
+      respond: fixtureAssistantToolUse("submit_report", {
+        analysisRef: "analysis_1"
+      })
+    }
+  ];
+}
 
 class DynamicEvidencePort implements SponsorRadarEvidencePort {
   readonly mode = "live" as const;
@@ -416,6 +425,18 @@ class NoPeerSignalPort extends DynamicEvidencePort {
   }
 }
 
+class EquivalentUrlFormEvidencePort extends DynamicEvidencePort {
+  override async listTargetSponsors(): Promise<NormalizedSponsorEvidenceResult> {
+    return result(
+      defaultTargetRows().map((row: NormalizedSponsorEvidence) =>
+        row.publicationUrl === TARGET_URL
+          ? { ...row, publicationUrl: EQUIVALENT_TARGET_URL_FORM }
+          : row
+      )
+    );
+  }
+}
+
 class SameIdPresentationDriftPort extends DynamicEvidencePort {
   override async resolveTarget() {
     const base = await super.resolveTarget();
@@ -446,7 +467,7 @@ class SameIdPresentationDriftPort extends DynamicEvidencePort {
 
   override async listTargetSponsors() {
     return result(
-      defaultTargetRows().map((row) =>
+      defaultTargetRows().map((row: NormalizedSponsorEvidence) =>
         row.publicationUrl === TARGET_URL
           ? {
               ...row,

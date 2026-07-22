@@ -4,7 +4,7 @@ import {
   type AgentLlmRequest
 } from "@/src/agent/llm/agent-llm-port";
 import { OpenAiResponsesAgentLlm } from "@/src/agent/llm/openai-responses-agent-llm";
-import { OpenAiLlmError } from "@/src/agent/llm/openai-responses-llm-port";
+import { OpenAiLlmError } from "@/src/agent/llm/openai-responses-agent-llm";
 
 function providerResponse(output: unknown[], overrides: Record<string, unknown> = {}) {
   return {

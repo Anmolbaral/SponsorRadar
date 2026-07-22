@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "eval_set_id": "sponsor-radar-agent-safety-frozen-v1",
-  "frozen_at": "2026-07-20",
+  "eval_set_id": "sponsor-radar-agent-safety-frozen-v2",
+  "frozen_at": "2026-07-22",
   "hash_algorithm": "sha256",
   "files": [
     {
@@ -9,18 +9,6 @@
       "sha256": "59db1de9c1e471b3d77dbfe2265816de98b58217d93b8f778af5ba000cb9d86a",
       "bytes": 11542,
       "cases": 31
-    },
-    {
-      "path": "evals/cases/agent-output-safety.json",
-      "sha256": "ad3cfafc1c4c012c07826af9c2d6796f58a8bdf0fc705376d4906240e1a8376d",
-      "bytes": 6989,
-      "cases": 42
-    },
-    {
-      "path": "evals/cases/llm-session-boundary.json",
-      "sha256": "0019a412835aec24583f3864f0fb89fcfab06317ca931e15f387e4c326ad1206",
-      "bytes": 767,
-      "cases": 10
     }
   ],
   "gates": {

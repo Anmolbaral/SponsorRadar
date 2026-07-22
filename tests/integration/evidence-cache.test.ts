@@ -2,6 +2,8 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
+import { FixtureResearchPlanner } from "@/src/agent/llm/fixture-research-planner";
+import type { AuditEvent } from "@/src/observability/audit";
 import { CachedEvidenceGateway } from "@/src/radar/adapters/cache/cached-evidence-gateway";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
@@ -10,7 +12,7 @@ import type {
   EvidenceOperation,
   SponsorRadarEvidencePort
 } from "@/src/radar/application/ports";
-import { runWinbackReport } from "@/src/radar/application/run-winback-report";
+import { runAgenticReport } from "@/src/radar/application/agentic/run-agentic-report";
 
 const temporaryDirectories: string[] = [];
 
@@ -29,44 +31,53 @@ describe("cached evidence gateway", () => {
     const coldProvider = new CountingLiveFixtureGateway(process.cwd());
     const coldGateway = new CachedEvidenceGateway(coldProvider, repository);
 
-    const cold = await runWinbackReport(
-      { channel: "@UrAvgConsumer", maximumCredits: 1_000 },
+    const cold = await runAgenticReport(
+      { channel: "@UrAvgConsumer" },
       coldGateway,
-      { phase: "workflow_live" }
+      new FixtureResearchPlanner()
     );
 
+    expect(cold.report.phase).toBe("workflow_live");
     expect(cold.report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
-    expect(coldProvider.totalCalls()).toBe(7);
+    // The agent tool catalog has no verification-ledger tool; every other
+    // evidence operation must reach the provider exactly once when cold.
+    expect(coldProvider.calls).toEqual({
+      resolve_target: 1,
+      list_target_sponsors: 1,
+      list_locked_peers: 1,
+      list_peer_sponsors: 3,
+      load_verification_ledger: 0
+    });
+    const coldEvidenceEvents = evidenceToolCompletions(cold.events);
+    expect(coldEvidenceEvents).toHaveLength(6);
     expect(
-      cold.events
-        .filter((event) => event.eventType === "tool.completed")
-        .every((event) => event.tool?.cacheStatus === "miss")
+      coldEvidenceEvents.every((event) => event.tool?.cacheStatus === "miss")
     ).toBe(true);
     expect(cold.report.audit.resultBasedCreditEstimate).toBeGreaterThan(0);
 
     const warmProvider = new CountingLiveFixtureGateway(process.cwd());
     const warmGateway = new CachedEvidenceGateway(warmProvider, repository);
-    const warm = await runWinbackReport(
-      { channel: "https://youtube.com/@UrAvgConsumer", maximumCredits: 0 },
+    // The agent broker preflights at conservative uncached estimates, so the
+    // warm run needs nominal headroom; zero spend is proven by settlement.
+    const warm = await runAgenticReport(
+      { channel: "https://youtube.com/@UrAvgConsumer" },
       warmGateway,
-      { phase: "workflow_live" }
+      new FixtureResearchPlanner()
     );
 
     expect(warm.report.leads).toEqual(cold.report.leads);
     expect(warm.report.funnel).toEqual(cold.report.funnel);
     expect(warmProvider.totalCalls()).toBe(0);
     expect(warm.report.audit.resultBasedCreditEstimate).toBe(0);
+    const warmEvidenceEvents = evidenceToolCompletions(warm.events);
+    expect(warmEvidenceEvents).toHaveLength(6);
     expect(
-      warm.events
-        .filter((event) => event.eventType === "tool.completed")
-        .every(
-          (event) =>
-            event.tool?.cacheStatus === "hit" &&
-            event.tool.estimatedCredits === 0 &&
-            (event.tool.mode === "fixture"
-              ? event.tool.resultBasedCredits === null
-              : event.tool.resultBasedCredits === 0)
-        )
+      warmEvidenceEvents.every(
+        (event) =>
+          event.tool?.cacheStatus === "hit" &&
+          event.tool.estimatedCredits === 0 &&
+          event.tool.resultBasedCredits === 0
+      )
     ).toBe(true);
   });
 
@@ -533,6 +544,17 @@ class ReassignedIdentityGateway extends CountingLiveFixtureGateway {
       }
     };
   }
+}
+
+// Provider-backed completions only; local.* tool events carry no cache state.
+function evidenceToolCompletions(
+  events: readonly AuditEvent[]
+): AuditEvent[] {
+  return events.filter(
+    (event) =>
+      event.eventType === "tool.completed" &&
+      event.tool?.name?.startsWith("live.") === true
+  );
 }
 
 function resolveTargetCacheKey(cachePolicyKey: string): string {

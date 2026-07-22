@@ -2,140 +2,35 @@ import path from "node:path";
 import type { AgentLlmPort } from "@/src/agent/llm/agent-llm-port";
 import { FixtureResearchPlanner } from "@/src/agent/llm/fixture-research-planner";
 import { OpenAiResponsesAgentLlm } from "@/src/agent/llm/openai-responses-agent-llm";
+import type { AuditRecorder } from "@/src/observability/audit";
 import { CachedEvidenceGateway } from "@/src/radar/adapters/cache/cached-evidence-gateway";
 import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
 import { FileSystemWorkflowRepository } from "@/src/radar/adapters/persistence";
-import {
-  createWorkflowServiceFromEnvironment,
-  environmentInteger,
-  liveGateway,
-  LiveWorkflowDisabledError,
-  workflowDataDirectory,
-  workflowMode
-} from "@/src/radar/adapters/workflow-runtime";
+import { UpriverHttpClient } from "@/src/radar/adapters/upriver/http-client";
+import { LiveUpriverGateway } from "@/src/radar/adapters/upriver/live-evidence-gateway";
 import { AgenticWorkflowService } from "@/src/radar/application/agentic/agentic-run-service";
-import type { RunEngine, RunEngineKind } from "@/src/radar/application/run-engine";
+import type { EvidenceMode } from "@/src/radar/application/ports";
+import type { RunEngine } from "@/src/radar/application/run-engine";
 import {
   MAXIMUM_RUN_CREDITS,
-  RunNotFoundError,
-  runIdFor,
-  type ApproveExecutionInput,
-  type ApprovePlanInput,
-  type MutateRunInput,
-  type WorkflowGatewayFactory,
-  type WorkflowRunResource
+  type WorkflowGatewayFactory
 } from "@/src/radar/application/run-workflow";
 
+export class LiveWorkflowDisabledError extends Error {
+  readonly code = "live_workflow_disabled";
+
+  constructor(message: string) {
+    super(message);
+    this.name = "LiveWorkflowDisabledError";
+  }
+}
+
 /**
- * Composition root for run orchestration (ADR 0007/0008). The engine choice
- * is server-side only; reads and recovery actions always dispatch on which
- * store holds the record, so runs from either engine stay reachable across
- * flag flips and one idempotency key can never create two runs.
+ * Composition root for run orchestration (ADR 0009): the agentic engine is
+ * the only engine. Run records live under `${dataDir}/agentic`; the evidence
+ * cache stays at the data-dir root so pre-cutover cached evidence is reused.
  */
 export function createRunEngineFromEnvironment(): RunEngine {
-  const engine = runEngineKind();
-  const legacy = createWorkflowServiceFromEnvironment();
-  const agentic = createAgenticServiceFromEnvironment(engine);
-  return new EngineRouter(legacy, agentic, engine);
-}
-
-export function runEngineKind(): RunEngineKind {
-  const raw = process.env.SPONSOR_RADAR_ENGINE ?? "legacy";
-  if (raw !== "legacy" && raw !== "agentic") {
-    throw new LiveWorkflowDisabledError(
-      "SPONSOR_RADAR_ENGINE must be legacy or agentic"
-    );
-  }
-  return raw;
-}
-
-class EngineRouter implements RunEngine {
-  constructor(
-    private readonly legacy: RunEngine,
-    private readonly agentic: AgenticWorkflowService,
-    private readonly activeEngine: RunEngineKind
-  ) {}
-
-  async createRun(
-    requestedChannel: string,
-    idempotencyKey: string
-  ): Promise<WorkflowRunResource> {
-    const runId = runIdFor(idempotencyKey);
-    if (this.activeEngine === "agentic") {
-      if (await this.legacyHasRun(runId)) {
-        return this.legacy.createRun(requestedChannel, idempotencyKey);
-      }
-      return this.agentic.createRun(requestedChannel, idempotencyKey);
-    }
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.getRun(runId);
-    }
-    return this.legacy.createRun(requestedChannel, idempotencyKey);
-  }
-
-  async getRun(runId: string): Promise<WorkflowRunResource> {
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.getRun(runId);
-    }
-    return this.legacy.getRun(runId);
-  }
-
-  async approvePlan(
-    runId: string,
-    input: ApprovePlanInput
-  ): Promise<WorkflowRunResource> {
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.approvePlan(runId, input);
-    }
-    return this.legacy.approvePlan(runId, input);
-  }
-
-  async approveExecution(
-    runId: string,
-    input: ApproveExecutionInput
-  ): Promise<WorkflowRunResource> {
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.approveExecution(runId, input);
-    }
-    return this.legacy.approveExecution(runId, input);
-  }
-
-  async cancelRun(
-    runId: string,
-    input: MutateRunInput
-  ): Promise<WorkflowRunResource> {
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.cancelRun(runId, input);
-    }
-    return this.legacy.cancelRun(runId, input);
-  }
-
-  async resumeRun(
-    runId: string,
-    input: MutateRunInput
-  ): Promise<WorkflowRunResource> {
-    if (await this.agentic.hasRun(runId)) {
-      return this.agentic.resumeRun(runId, input);
-    }
-    return this.legacy.resumeRun(runId, input);
-  }
-
-  private async legacyHasRun(runId: string): Promise<boolean> {
-    try {
-      await this.legacy.getRun(runId);
-      return true;
-    } catch (error) {
-      if (error instanceof RunNotFoundError) {
-        return false;
-      }
-      throw error;
-    }
-  }
-}
-
-function createAgenticServiceFromEnvironment(
-  activeEngine: RunEngineKind
-): AgenticWorkflowService {
   const repositoryRoot = process.cwd();
   const mode = workflowMode();
   const dataDirectory = workflowDataDirectory(repositoryRoot);
@@ -152,8 +47,6 @@ function createAgenticServiceFromEnvironment(
     "SPONSOR_RADAR_CACHE_TTL_MS",
     60 * 60 * 1_000
   );
-  // Agentic run records live in a parallel store (ADR 0006/0008); the
-  // evidence cache stays in the legacy store so both engines share it.
   const agenticRepository = new FileSystemWorkflowRepository({
     directory: path.join(dataDirectory, "agentic")
   });
@@ -162,6 +55,11 @@ function createAgenticServiceFromEnvironment(
   });
   const gatewayFactory: WorkflowGatewayFactory = (input) => {
     const { audit, maximumCredits = runCreditLimit } = input;
+    if (input.mode !== mode) {
+      throw new LiveWorkflowDisabledError(
+        `Persisted ${input.mode} run cannot continue while UPRIVER_MODE=${mode}`
+      );
+    }
     const underlying =
       mode === "fixture"
         ? new FixtureEvidenceGateway(repositoryRoot)
@@ -177,7 +75,7 @@ function createAgenticServiceFromEnvironment(
     repository: agenticRepository,
     gatewayFactory,
     mode,
-    llm: activeEngine === "agentic" ? agentLlmFromEnvironment(mode) : null,
+    llm: agentLlmFromEnvironment(mode),
     runCreditLimit,
     maxIterations: environmentInteger("SPONSOR_RADAR_AGENT_MAX_ITERATIONS", 12)
   });
@@ -220,4 +118,69 @@ function agentLlmFromEnvironment(
     apiKey,
     model: process.env.SPONSOR_RADAR_OPENAI_MODEL
   });
+}
+
+export function workflowDataDirectory(repositoryRoot: string): string {
+  const configured = process.env.SPONSOR_RADAR_DATA_DIR;
+  return configured
+    ? path.resolve(
+        /*turbopackIgnore: true*/
+        configured
+      )
+    : path.join(repositoryRoot, ".data", "sponsor-radar");
+}
+
+export function workflowMode(): EvidenceMode {
+  const mode = process.env.UPRIVER_MODE ?? "fixture";
+  if (mode !== "fixture" && mode !== "live") {
+    throw new LiveWorkflowDisabledError(
+      "UPRIVER_MODE must be fixture or live"
+    );
+  }
+  if (
+    mode === "live" &&
+    process.env.UPRIVER_LIVE_WORKFLOW !== "true"
+  ) {
+    throw new LiveWorkflowDisabledError(
+      "The live workflow requires UPRIVER_LIVE_WORKFLOW=true"
+    );
+  }
+  return mode;
+}
+
+export function liveGateway(
+  repositoryRoot: string,
+  maximumCredits: number,
+  audit: AuditRecorder | undefined
+): LiveUpriverGateway {
+  const apiKey = process.env.UPRIVER_API_KEY?.trim() ?? "";
+  if (!apiKey) {
+    throw new LiveWorkflowDisabledError(
+      "The live workflow requires a server-only Upriver API key"
+    );
+  }
+  return new LiveUpriverGateway(
+    repositoryRoot,
+    new UpriverHttpClient({
+      apiKey,
+      maxRetries: 0,
+      attemptTimeoutMs: 10_000,
+      observer: audit
+        ? (event) => audit.recordHttpLifecycle(event)
+        : undefined
+    }),
+    { maximumCredits }
+  );
+}
+
+export function environmentInteger(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined) return fallback;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new LiveWorkflowDisabledError(
+      `${name} must be a positive integer`
+    );
+  }
+  return value;
 }

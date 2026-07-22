@@ -1,6 +1,6 @@
 # ADR 0001: One-click bounded-run authorization
 
-- Status: Accepted
+- Status: Accepted; approval-flow copy obsoleted by ADR 0009 (runs complete inline with no approval checkpoints)
 - Date: July 20, 2026
 
 ## Decision

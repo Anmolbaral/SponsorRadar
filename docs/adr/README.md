@@ -12,3 +12,4 @@ constraints and migration boundaries.
 - [0006 — Persisted-schema backward compatibility](0006-persisted-schema-backward-compatibility.md)
 - [0007 — Server-owned run orchestration](0007-server-owned-run-orchestration.md)
 - [0008 — Flag-gated agentic engine](0008-flag-gated-agentic-engine.md)
+- [0009 — Agentic cutover and legacy deletion](0009-agentic-cutover-and-legacy-deletion.md)

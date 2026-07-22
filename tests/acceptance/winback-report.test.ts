@@ -1,30 +1,38 @@
 import { describe, expect, it } from "vitest";
-import {
-  FixtureEvidenceGateway,
-  UnsupportedFixtureChannelError
-} from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
-import { runWinbackReport } from "@/src/radar/application/run-winback-report";
+import { FixtureResearchPlanner } from "@/src/agent/llm/fixture-research-planner";
+import { FixtureEvidenceGateway } from "@/src/radar/adapters/fixtures/fixture-evidence-gateway";
+import { AgentIterationLimitError } from "@/src/radar/application/agentic/agent-loop";
+import { runAgenticReport } from "@/src/radar/application/agentic/run-agentic-report";
+
+// Acceptance harness for the agentic engine: the scripted fixture planner
+// drives the full research journey against the captured fixture cohort.
+function runFixtureWinback(channel: string) {
+  return runAgenticReport(
+    { channel },
+    new FixtureEvidenceGateway(process.cwd()),
+    new FixtureResearchPlanner()
+  );
+}
 
 describe("Sponsor winback acceptance", () => {
-  it("turns one channel handle into exactly one verified Dell/XPS lead", async () => {
-    const gateway = new FixtureEvidenceGateway(process.cwd());
-    const { report, events } = await runWinbackReport(
-      { channel: "@UrAvgConsumer" },
-      gateway
-    );
+  it("turns one channel handle into exactly one Dell same-brand reactivation lead", async () => {
+    const { report, events } = await runFixtureWinback("@UrAvgConsumer");
 
-    expect(report.phase).toBe("report_fixture");
+    expect(report.phase).toBe("workflow_fixture");
     expect(report.target.name).toBe("UrAvgConsumer");
+    expect(report.methodology.qualificationPolicy).toBe(
+      "same_brand_reactivation"
+    );
     expect(report.funnel).toEqual({
       targetApiRows: 89,
       staleDomainResolvedTargets: 36,
       staleExplicitTargetCandidates: 11,
       strictPeerApiRows: 3,
-      manuallyConfirmedS3PeerRows: 3,
-      joinableS3PeerRows: 2,
+      manuallyConfirmedS3PeerRows: 0,
+      joinableS3PeerRows: 0,
       rawDomainMatches: 1,
-      strictProductContinuousPasses: 1,
-      sameBrandReactivationPasses: 0
+      strictProductContinuousPasses: 0,
+      sameBrandReactivationPasses: 1
     });
     expect(report.leads).toHaveLength(1);
     expect(report.leads[0]).toMatchObject({
@@ -33,9 +41,9 @@ describe("Sponsor winback acceptance", () => {
       peer: "Dave2D",
       peerUrl: "https://www.youtube.com/@Dave2D",
       peerSubscriberCount: 3690000,
-      continuity: "A",
-      targetProductLine: "Dell XPS 14 / XPS laptops",
-      peerProductLine: "Dell XPS 13 / XPS laptops",
+      continuity: "U",
+      targetProductLine: "Unverified",
+      peerProductLine: "Unverified",
       targetObservedPlacements: 2,
       targetFirstObservedDate: null,
       peerObservedPlacements: 1,
@@ -49,9 +57,7 @@ describe("Sponsor winback acceptance", () => {
     expect(report.leads[0].peerEvidence.contentUrl).toContain(
       "youtube.com/watch"
     );
-    expect(report.leads[0].outreachHypothesis).toContain(
-      "worth researching for outreach"
-    );
+    expect(report.leads[0].outreachHypothesis).toContain("worth researching");
     expect(report.leads[0].outreachHypothesis).not.toMatch(
       /stopped sponsoring|same buyer is active/i
     );
@@ -65,31 +71,33 @@ describe("Sponsor winback acceptance", () => {
         }),
         expect.objectContaining({
           code: "peer_domain_joinability",
-          numerator: 2,
+          numerator: 1,
           denominator: 3,
-          percentage: 66.7
+          percentage: 33.3
         }),
         expect.objectContaining({ code: "grouped_summary_limit" })
       ])
     );
 
+    // submit_report is still in flight when the summary is taken, so the
+    // summary counts the seven prior completed tool calls.
     expect(report.audit).toMatchObject({
       toolCalls: 7,
-      llmCalls: 0,
+      llmCalls: 8,
       skillsLoaded: [],
       resultBasedCreditEstimate: 0,
-      projectedLiveCredits: 129,
+      projectedLiveCredits: 125,
       timeToFirstResultMs: expect.any(Number),
       totalDurationMs: expect.any(Number)
     });
-    const completed = events.filter(
-      (event) => event.eventType === "tool.completed"
-    );
     const started = events.filter(
       (event) => event.eventType === "tool.started"
     );
-    expect(started).toHaveLength(7);
-    expect(completed).toHaveLength(7);
+    const completed = events.filter(
+      (event) => event.eventType === "tool.completed"
+    );
+    expect(started).toHaveLength(8);
+    expect(completed).toHaveLength(8);
     expect(
       completed.every(
         (event) =>
@@ -99,27 +107,27 @@ describe("Sponsor winback acceptance", () => {
           event.tool.outcome === "success"
       )
     ).toBe(true);
-    expect(events.some((event) => event.eventType.startsWith("llm."))).toBe(
-      false
+    const llmCompleted = events.filter(
+      (event) => event.eventType === "llm.completed"
     );
+    expect(llmCompleted).toHaveLength(8);
+    expect(
+      llmCompleted.every((event) => event.llm?.purpose === "agent_loop")
+    ).toBe(true);
   });
 
   it("accepts the canonical channel URL as the same identity", async () => {
-    const gateway = new FixtureEvidenceGateway(process.cwd());
-    const { report } = await runWinbackReport(
-      {
-        channel:
-          "https://www.youtube.com/@UrAvgConsumer?sub_confirmation=1"
-      },
-      gateway
+    const { report } = await runFixtureWinback(
+      "https://www.youtube.com/@UrAvgConsumer?sub_confirmation=1"
     );
     expect(report.leads.map((lead) => lead.brand)).toEqual(["Dell"]);
   });
 
   it("fails honestly for a channel outside the verified fixture", async () => {
-    const gateway = new FixtureEvidenceGateway(process.cwd());
-    await expect(
-      runWinbackReport({ channel: "@SomeOtherCreator" }, gateway)
-    ).rejects.toBeInstanceOf(UnsupportedFixtureChannelError);
+    // resolve_target keeps failing for unsupported channels, so the run can
+    // never finalize a report and fails closed at the iteration ceiling.
+    await expect(runFixtureWinback("@SomeOtherCreator")).rejects.toThrow(
+      AgentIterationLimitError
+    );
   });
 });
