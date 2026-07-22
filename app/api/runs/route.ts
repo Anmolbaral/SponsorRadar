@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createWorkflowServiceFromEnvironment } from "@/src/radar/adapters/workflow-runtime";
+import { createRunEngineFromEnvironment } from "@/src/radar/adapters/run-engine-runtime";
 import {
   assertExactYouTubeChannel,
   enforceMutationRateLimit,
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     enforceMutationRateLimit(request, "create_run");
     const input = CreateRunSchema.parse(await readBoundedJson(request));
     assertExactYouTubeChannel(input.channel);
-    const service = createWorkflowServiceFromEnvironment();
+    const service = createRunEngineFromEnvironment();
     const run = await service.createRun(input.channel, idempotencyKey(request));
     return NextResponse.json(run, {
       status: 201,

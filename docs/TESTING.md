@@ -154,6 +154,20 @@ strict-gate eval suites. The gate requires 100% compliance, zero known false
 positives or result inflation, exact material-claim attribution, and macro-F1
 of at least 0.90 after 25 cases.
 
+The agentic engine (ADR 0008) adds two unfrozen eval suites that run in the
+same `pnpm eval` gate: `report-quality-agentic.eval.ts` applies the identical
+golden-report gates through the autonomous engine, and `agent-tools.eval.ts`
+verifies every agent tool against its deliverable contract in
+`tests/fixtures/agent/tool-contracts.json` — required fields delivered,
+forbidden content (excerpts, URLs) never leaked, and failure envelopes within
+each tool's declared codes. The paid `test:live-agentic` smoke re-verifies the
+same contracts against real providers. Agentic engine behavior is further
+pinned by `tests/acceptance/agentic-workflow-route.test.ts` (autonomous
+journey, coexistence across flag flips, idempotency, fail-closed recovery),
+`tests/acceptance/agentic-report-parity.test.ts` (deep equality with the
+legacy same-brand pipeline plus the golden-lead pin), and
+`tests/e2e/agentic.spec.ts` via `pnpm test:e2e:agentic`.
+
 ## Live tests
 
 Live Upriver and live-model tests are opt-in only, never part of normal CI.

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "agent-tool-contracts-v1",
+  "description": "Deliverable contract per agent tool (ADR 0008). Each entry states what the tool is supposed to deliver in its success envelope, what it must never leak, its credit cost, and the error envelopes it may return. Fixture evals assert these contracts on every pnpm eval; the live smoke re-verifies the same shapes against real providers.",
+  "contracts": [
+    {
+      "tool": "resolve_target",
+      "kind": "evidence",
+      "purpose": "Anchor the run to one verified YouTube channel identity and load the research windows.",
+      "deliverable": {
+        "requiredFields": [
+          "data.target.name",
+          "data.target.subscriberCount",
+          "data.identity.channelId",
+          "data.windows.targetWindow.since",
+          "data.windows.peerWindow.since",
+          "data.windows.staleCutoffExclusive",
+          "data.windows.asOf"
+        ],
+        "forbiddenSubstrings": ["excerpt", "contentUrl"]
+      },
+      "creditCost": "1 credit (creatorResult rate) in live mode; 0 on cache hit or fixture",
+      "failureEnvelopes": ["invalid_arguments", "budget_exceeded", "tool_failed"]
+    },
+    {
+      "tool": "list_locked_peers",
+      "kind": "evidence",
+      "purpose": "Lock up to three reach-comparable peers and hand out the peerRef handles all later calls must use.",
+      "deliverable": {
+        "requiredFields": ["data.peerCount", "data.peers.0.peerRef", "data.peers.0.name", "data.peers.0.subscriberCount", "data.peers.0.reachRatio"],
+        "forbiddenSubstrings": ["\"url\"", "creatorId"]
+      },
+      "creditCost": "up to 10 credits (similar-creator result cap) in live mode; 0 on cache hit or fixture",
+      "failureEnvelopes": ["missing_prerequisite", "budget_exceeded", "tool_failed"]
+    },
+    {
+      "tool": "list_target_sponsors",
+      "kind": "evidence",
+      "purpose": "Retrieve the target's 365-day sponsor history — the expensive call an economical planner defers until peer signal exists.",
+      "deliverable": {
+        "requiredFields": ["data.rowCount", "data.completeness", "data.rows.0.sponsorName", "data.rows.0.domain", "data.rows.0.publishedDate", "data.rows.0.placementType"],
+        "forbiddenSubstrings": ["excerpt", "watch?v="]
+      },
+      "creditCost": "up to 115 credits (23 grouped results x 5) in live mode; 0 on cache hit or fixture",
+      "failureEnvelopes": ["missing_prerequisite", "budget_exceeded", "tool_failed"]
+    },
+    {
+      "tool": "list_peer_sponsors",
+      "kind": "evidence",
+      "purpose": "Retrieve one locked peer's recent explicit sponsorships, addressed only by peerRef.",
+      "deliverable": {
+        "requiredFields": ["data.peerRef", "data.rowCount", "data.completeness", "data.rows.0.sponsorName", "data.rows.0.domain"],
+        "forbiddenSubstrings": ["excerpt", "watch?v="]
+      },
+      "creditCost": "up to 10 credits (2 grouped results x 5) per peer in live mode; 0 on cache hit or fixture",
+      "failureEnvelopes": ["missing_prerequisite", "invalid_arguments", "budget_exceeded", "peer_research_failed"]
+    },
+    {
+      "tool": "analyze_evidence",
+      "kind": "local",
+      "purpose": "Run the deterministic same-brand reactivation qualification over everything gathered; the only source of leads.",
+      "deliverable": {
+        "requiredFields": ["data.analysisRef", "data.leadCount", "data.targetHistorySearched", "data.funnel.targetApiRows", "data.funnel.sameBrandReactivationPasses"],
+        "forbiddenSubstrings": ["outreachHypothesis", "continuityReason"]
+      },
+      "creditCost": "free (local computation)",
+      "failureEnvelopes": ["missing_prerequisite"]
+    },
+    {
+      "tool": "submit_report",
+      "kind": "local",
+      "purpose": "Finalize the run: the server assembles the WinbackReport from held evidence; the model contributes no fact-bearing field.",
+      "deliverable": {
+        "requiredFields": ["data.submitted", "data.leadCount", "data.outcome"],
+        "forbiddenSubstrings": ["leads\":[{"]
+      },
+      "creditCost": "free (local computation)",
+      "failureEnvelopes": ["missing_prerequisite", "invalid_arguments"]
+    }
+  ]
+}

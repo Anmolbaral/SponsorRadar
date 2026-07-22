@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "agentic-v1",
+  "engine": "agentic",
+  "runId": "run_0000000000000000000000000000abcd",
+  "requestedChannel": "@SanitizedChannel",
+  "mode": "fixture",
+  "state": {
+    "state": "completed",
+    "createdAt": "2026-07-22T00:00:00.000Z",
+    "updatedAt": "2026-07-22T00:00:04.000Z"
+  },
+  "budget": {
+    "maximumCredits": 160,
+    "settledCredits": 0,
+    "iterationsUsed": 8,
+    "maxIterations": 12
+  },
+  "reservationId": "sanitized-reservation-id",
+  "resolvedCohort": {
+    "target": {
+      "name": "Sanitized Target",
+      "url": "https://www.youtube.com/@SanitizedChannel",
+      "subscriberCount": 1000000
+    },
+    "identity": {
+      "verificationBasis": "channel_id",
+      "channelId": "UCsanitized000000000000",
+      "handle": "SanitizedChannel",
+      "canonicalUrl": "https://www.youtube.com/@SanitizedChannel",
+      "key": "channel:UCsanitized000000000000"
+    },
+    "peers": [
+      {
+        "name": "Sanitized Peer",
+        "url": "https://www.youtube.com/@SanitizedPeer",
+        "subscriberCount": 900000,
+        "creatorId": null
+      }
+    ]
+  },
+  "report": null,
+  "error": null,
+  "auditEvents": [],
+  "llm": {
+    "provider": "fixture",
+    "model": "agent-planner-fixture-v1"
+  }
+}

@@ -199,6 +199,27 @@ The default model adapter is a network-free fixture. The optional OpenAI adapter
 is server-only, zero-retry, tool-free, strict-JSON-Schema, non-stored, and
 enabled separately from live Upriver evidence.
 
+## Flag-gated agentic engine (ADR 0008)
+
+`SPONSOR_RADAR_ENGINE=agentic` selects a second orchestration engine behind
+the same `/api/runs` contract. An LLM planner proposes tool calls; a broker
+(`src/radar/application/agentic/tool-broker.ts`) validates each proposal
+against a fixed six-tool catalog, enforces the per-run credit budget with a
+conservative preflight and result-based settlement, and executes through the
+single `ToolExecutor`. Facts stay deterministic: evidence accumulates in
+server-held state (`evidence-state.ts`), qualification runs the extracted
+`same-brand-qualification.ts` module, and the report is assembled by code —
+the model authors no fact-bearing field. Runs are autonomous (no approval
+checkpoints), bounded by iteration/token/transcript/credit ceilings enforced
+in code, and persist to a parallel `agentic-v1` store under
+`${SPONSOR_RADAR_DATA_DIR}/agentic` so the legacy store stays byte-identical
+and rollback self-heals. The engine router
+(`src/radar/adapters/run-engine-runtime.ts`) dispatches reads and recovery on
+which store holds the record, so runs from either engine stay reachable
+across flag flips and one idempotency key never creates two runs. Fixture
+mode drives the loop with a deterministic rule-based planner; live mode uses
+a zero-retry OpenAI Responses tool-calling adapter with serial tool calls.
+
 ## Stable code boundaries
 
 Historical engineering phases are archived in `docs/archive/BUILD_HISTORY.md`

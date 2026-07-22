@@ -48,7 +48,8 @@ export default defineConfig({
         env: {
           SPONSOR_RADAR_DATA_DIR: e2eDataDirectory,
           SPONSOR_RADAR_LLM_MODE: "fixture",
-          UPRIVER_MODE: "fixture"
+          UPRIVER_MODE: "fixture",
+          SPONSOR_RADAR_ENGINE: process.env.SPONSOR_RADAR_ENGINE ?? "legacy"
         },
         reuseExistingServer: !process.env.CI,
         timeout: 120_000

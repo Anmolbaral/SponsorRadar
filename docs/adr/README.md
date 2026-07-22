@@ -11,3 +11,4 @@ constraints and migration boundaries.
 - [0005 — Public product vocabulary](0005-public-product-vocabulary.md)
 - [0006 — Persisted-schema backward compatibility](0006-persisted-schema-backward-compatibility.md)
 - [0007 — Server-owned run orchestration](0007-server-owned-run-orchestration.md)
+- [0008 — Flag-gated agentic engine](0008-flag-gated-agentic-engine.md)

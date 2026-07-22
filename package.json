@@ -23,11 +23,13 @@
     "test:live-full": "vitest run tests/live/full-dynamic-workflow.test.ts",
     "test:live-legacy": "vitest run tests/live/upriver-legacy-compatibility.test.ts",
     "test:live-llm": "vitest run tests/live/openai-live-smoke.test.ts",
+    "test:live-agentic": "vitest run tests/live/agentic-live-smoke.test.ts",
     "test:live-llm-deep": "vitest run tests/live/openai-live-deep.test.ts",
     "eval": "vitest run evals",
     "test:all": "pnpm typecheck && pnpm test:unit && pnpm test:integration && pnpm test:acceptance && pnpm eval",
     "test:phase4": "pnpm test:all",
     "test:e2e": "playwright test",
+    "test:e2e:agentic": "SPONSOR_RADAR_ENGINE=agentic PLAYWRIGHT_PORT=3101 playwright test tests/e2e/agentic.spec.ts",
     "verify": "pnpm lint && pnpm test:all && pnpm build"
   },
   "dependencies": {

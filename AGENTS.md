@@ -52,8 +52,10 @@ never part of `verify` or CI — see **Paid live calls**.
 - The initial submission authorizes exactly one bounded run. Plan, cohort, cost,
   and execution checkpoints are internal controls, not user confirmation screens.
 - Eligibility, identity, evidence selection, dates, coverage, result count, and
-  spend policy are deterministic. The LLM improves wording only — it may not add
-  facts, change qualification, select tools, or alter result count.
+  spend policy are deterministic. In the legacy engine the LLM improves wording
+  only. In the flag-gated agentic engine (ADR 0008) the LLM may additionally
+  *propose* tool calls through the mediating broker — it still may not add
+  facts, change qualification, execute tools directly, or alter result count.
 - Channel identity is exact and anchored to a verified YouTube channel ID. A
   handle or legacy URL is an input reference, not identity — no display-name
   matching, no silent fuzzy substitution.
@@ -64,6 +66,21 @@ never part of `verify` or CI — see **Paid live calls**.
   ambiguous settlement.
 - Finish and verify one reform wave before the next. Railway deployment is the
   final gate and needs explicit user authorization.
+
+## Coding conventions
+
+- Function and variable names are descriptive, full words — no abbreviations
+  (`estimateResolutionCredits`, not `estResCred`). Booleans read as predicates
+  (`isTerminal`, `hasExplicitEvidence`). One concept per file; keep files
+  focused rather than long.
+- Comments state only non-obvious constraints the code cannot express (an
+  invariant, a provider quirk, a safety rule). Never narrate what the next
+  line does, why a change is correct, or progress residue ("fixed", "was
+  previously X", "TODO from last session"). Leave residue only when it
+  documents an impact on a specific still-affected area, and keep it short.
+- Match the surrounding code's idiom, error-class style, and Zod usage before
+  introducing a new pattern.
+- This file stays guardrails-and-conventions only — no narrative history.
 
 ## Public vocabulary and errors
 

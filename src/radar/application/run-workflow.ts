@@ -70,8 +70,8 @@ export interface WorkflowRunPlan {
   executionCreditCeiling: number;
   totalCreditCeiling: number;
   maxPeers: 3;
-  llmCallCeiling: 0 | 2;
-  llmOutputTokenCeiling: 0 | 1200;
+  llmCallCeiling: number;
+  llmOutputTokenCeiling: number;
   operations: readonly string[];
 }
 
@@ -2985,7 +2985,7 @@ function toJson(value: unknown): JsonValue {
   return structuredClone(value) as JsonValue;
 }
 
-function runIdFor(idempotencyKey: string): string {
+export function runIdFor(idempotencyKey: string): string {
   return `run_${createHash("sha256")
     .update(`sponsor-radar-workflow\0${idempotencyKey}`)
     .digest("hex")

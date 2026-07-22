@@ -118,7 +118,7 @@ function wordingAgentFromEnvironment(
   );
 }
 
-function workflowDataDirectory(repositoryRoot: string): string {
+export function workflowDataDirectory(repositoryRoot: string): string {
   const configured = process.env.SPONSOR_RADAR_DATA_DIR;
   return configured
     ? path.resolve(
@@ -128,7 +128,7 @@ function workflowDataDirectory(repositoryRoot: string): string {
     : path.join(repositoryRoot, ".data", "sponsor-radar");
 }
 
-function workflowMode(): EvidenceMode {
+export function workflowMode(): EvidenceMode {
   const mode = process.env.UPRIVER_MODE ?? "fixture";
   if (mode !== "fixture" && mode !== "live") {
     throw new LiveWorkflowDisabledError(
@@ -146,7 +146,7 @@ function workflowMode(): EvidenceMode {
   return mode;
 }
 
-function liveGateway(
+export function liveGateway(
   repositoryRoot: string,
   maximumCredits: number,
   audit:
@@ -173,7 +173,7 @@ function liveGateway(
   );
 }
 
-function environmentInteger(name: string, fallback: number): number {
+export function environmentInteger(name: string, fallback: number): number {
   const raw = process.env[name];
   if (raw === undefined) return fallback;
   const value = Number(raw);
